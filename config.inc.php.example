@@ -1,0 +1,29 @@
+<?php
+
+declare(strict_types=1);
+
+/**
+ * PowerClan - PHP/MySQL Clan Portal
+ * Configuration File
+ *
+ * Copy this file to config.inc.php and adjust the values.
+ *
+ * @copyright 2001-2025 PowerScripts
+ * @license   MIT License
+ * @link      https://github.com/schubertnico/PowerClan.git
+ */
+
+// Database Configuration
+$mysql = [
+    'host'     => 'localhost',  // Use 'db' for Docker
+    'user'     => 'your_username',
+    'password' => 'your_password',
+    'database' => 'powerclan',
+    'port'     => 3306,
+];
+
+// Display Settings
+$settings = [
+    'tablebg1' => '#000000',
+    'footer'   => '',
+];

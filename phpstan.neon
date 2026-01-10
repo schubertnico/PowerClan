@@ -1,0 +1,40 @@
+parameters:
+    level: 5
+    paths:
+        - .
+    excludePaths:
+        - vendor
+        - .docker
+        - logs
+        - Installationsguide
+        - .idea
+    bootstrapFiles:
+        - phpstan-bootstrap.php
+    reportUnmatchedIgnoredErrors: false
+    treatPhpDocTypesAsCertain: false
+    ignoreErrors:
+        # Globale Variablen aus Include-Dateien (Legacy-Architektur)
+        - '#Variable \$conn might not be defined#'
+        - '#Variable \$pcadmin might not be defined#'
+        - '#Variable \$admin_tbl1 might not be defined#'
+        - '#Variable \$admin_tbl2 might not be defined#'
+        - '#Variable \$admin_tbl3 might not be defined#'
+        - '#Variable \$settings might not be defined#'
+        - '#Variable \$mysql might not be defined#'
+        - '#Variable \$leagues might not be defined#'
+        - '#Variable \$bgcolor might not be defined#'
+        - '#Variable \$version might not be defined#'
+        # Formular-Variablen aus $_GET/$_POST (Legacy-Code)
+        - '#Variable \$\w+_checked might not be defined#'
+        - '#Variable \$memberid might not be defined#'
+        - '#Variable \$editmember might not be defined#'
+        - '#Variable \$newsid might not be defined#'
+        - '#Variable \$warid might not be defined#'
+        - '#Variable \$delmember might not be defined#'
+        - '#Variable \$delnews might not be defined#'
+        - '#Variable \$delwar might not be defined#'
+        - '#Variable \$nickname might not be defined#'
+        - '#Variable \$row might not be defined#'
+        # False positives in header.inc.php (intended behavior)
+        - '#Strict comparison using === between .NO. and .NO. will always evaluate to true#'
+        - '#Unreachable statement - code above always terminates#'

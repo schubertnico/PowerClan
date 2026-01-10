@@ -1,0 +1,70 @@
+name: PowerClan
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: powerclan_web
+    ports:
+      - "8086:80"
+    volumes:
+      - ../:/var/www/html
+      - ../logs:/var/www/html/logs
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - APACHE_DOCUMENT_ROOT=/var/www/html
+    networks:
+      - powerclan_network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  db:
+    image: mysql:8.0
+    container_name: powerclan_db
+    ports:
+      - "3316:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: powerclan_root
+      MYSQL_DATABASE: powerclan_v2.0
+      MYSQL_USER: powerclan
+      MYSQL_PASSWORD: powerclan_secure_2024
+    volumes:
+      - powerclan_mysql_data:/var/lib/mysql
+      - ../powerclan.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - powerclan_network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-ppowerclan_root"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: powerclan_phpmyadmin
+    ports:
+      - "8089:80"
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+      MYSQL_ROOT_PASSWORD: powerclan_root
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - powerclan_network
+
+networks:
+  powerclan_network:
+    driver: bridge
+
+volumes:
+  powerclan_mysql_data:

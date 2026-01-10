@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PowerClan - Dokumentation</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            line-height: 1.6;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        h1, h2, h3 {
+            color: #000080;
+        }
+        h1 {
+            border-bottom: 3px solid #000080;
+            padding-bottom: 10px;
+        }
+        h2 {
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 5px;
+            margin-top: 30px;
+        }
+        code {
+            background-color: #e8e8e8;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Consolas', 'Monaco', monospace;
+        }
+        pre {
+            background-color: #2d2d2d;
+            color: #f8f8f2;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        pre code {
+            background-color: transparent;
+            padding: 0;
+            color: inherit;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 15px 0;
+        }
+        th, td {
+            border: 1px solid #ccc;
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #000080;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        ul {
+            padding-left: 20px;
+        }
+        li {
+            margin: 5px 0;
+        }
+        .info-box {
+            background-color: #e7f3ff;
+            border-left: 4px solid #000080;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        .warning-box {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        a {
+            color: #000080;
+        }
+        .header-info {
+            background-color: #e0e0e0;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        hr {
+            border: none;
+            border-top: 2px solid #000080;
+            margin: 30px 0;
+        }
+    </style>
+</head>
+<body>
+
+<h1>PowerClan</h1>
+
+<div class="header-info">
+    <p><strong>Ein PHP/MySQL basiertes Clan-Portal-Management-System.</strong></p>
+    <p>
+        <strong>Version:</strong> 2.1 (PHP 8.4)<br>
+        <strong>Lizenz:</strong> MIT<br>
+        <strong>Repository:</strong> <a href="https://github.com/schubertnico/PowerClan.git">https://github.com/schubertnico/PowerClan.git</a>
+    </p>
+</div>
+
+<h2>Beschreibung</h2>
+
+<p>PowerClan ist ein klassisches Clan-Portal für Gaming-Communities. Es ermöglicht die Verwaltung von:</p>
+
+<ul>
+    <li><strong>Mitgliedern</strong> - Profilverwaltung, Kontaktdaten, Hardware-Infos</li>
+    <li><strong>News</strong> - Nachrichten und Ankündigungen</li>
+    <li><strong>Clanwars</strong> - War-Ergebnisse, Berichte, Screenshots</li>
+</ul>
+
+<h2>Systemanforderungen</h2>
+
+<ul>
+    <li>PHP 8.4 oder höher</li>
+    <li>MySQL 8.0 oder höher</li>
+    <li>Apache mit mod_rewrite (optional)</li>
+    <li>Docker &amp; Docker Compose (empfohlen)</li>
+</ul>
+
+<h2>Setup mit Docker (Empfohlen)</h2>
+
+<h3>1. Repository klonen</h3>
+
+<pre><code>git clone https://github.com/schubertnico/PowerClan.git
+cd PowerClan</code></pre>
+
+<h3>2. Docker-Container starten</h3>
+
+<pre><code>cd .docker
+docker compose build
+docker compose up -d</code></pre>
+
+<h3>3. Verwendete Ports</h3>
+
+<table>
+    <tr>
+        <th>Service</th>
+        <th>Port</th>
+        <th>URL</th>
+    </tr>
+    <tr>
+        <td>Web (PHP)</td>
+        <td>8086</td>
+        <td><a href="http://localhost:8086">http://localhost:8086</a></td>
+    </tr>
+    <tr>
+        <td>MySQL</td>
+        <td>3316</td>
+        <td>localhost:3316</td>
+    </tr>
+    <tr>
+        <td>phpMyAdmin</td>
+        <td>8089</td>
+        <td><a href="http://localhost:8089">http://localhost:8089</a></td>
+    </tr>
+</table>
+
+<h3>4. Prüfen ob alles läuft</h3>
+
+<pre><code># Container-Status prüfen
+docker compose ps
+
+# Logs anzeigen
+docker compose logs -f
+
+# PHP Error-Log prüfen
+cat ../logs/php-error.log</code></pre>
+
+<h3>5. Installation abschließen</h3>
+
+<ol>
+    <li>Öffne <a href="http://localhost:8086/install.php">http://localhost:8086/install.php</a></li>
+    <li>Folge dem Installationsassistenten</li>
+    <li><strong>Wichtig:</strong> Lösche <code>install.php</code> nach der Installation!</li>
+</ol>
+
+<h2>Setup ohne Docker</h2>
+
+<h3>1. Konfiguration anpassen</h3>
+
+<p>Bearbeite <code>config.inc.php</code>:</p>
+
+<pre><code>$mysql = [
+    'host'     =&gt; 'localhost',
+    'user'     =&gt; 'dein_user',
+    'password' =&gt; 'dein_passwort',
+    'database' =&gt; 'powerclan',
+    'port'     =&gt; 3306,
+];</code></pre>
+
+<h3>2. Datenbank importieren</h3>
+
+<pre><code>mysql -u root -p powerclan &lt; powerclan.sql</code></pre>
+
+<h3>3. Berechtigungen setzen</h3>
+
+<pre><code>chmod 755 logs/
+chmod 644 config.inc.php</code></pre>
+
+<h2>Nutzung</h2>
+
+<h3>Öffentliche Seiten</h3>
+
+<ul>
+    <li><strong>Startseite:</strong> <code>index.php</code> - News und aktuelle Wars</li>
+    <li><strong>Mitglieder:</strong> <code>member.php</code> - Mitgliederliste und Profile</li>
+    <li><strong>Wars:</strong> <code>wars.php</code> - Clanwar-Übersicht und Berichte</li>
+</ul>
+
+<h3>Admin-Bereich</h3>
+
+<ul>
+    <li><strong>Login:</strong> <code>admin/index.php</code></li>
+    <li><strong>Funktionen:</strong>
+        <ul>
+            <li>Mitglieder verwalten (hinzufügen, bearbeiten, löschen)</li>
+            <li>News verwalten</li>
+            <li>Clanwars verwalten</li>
+            <li>Konfiguration bearbeiten (nur Superadmin)</li>
+        </ul>
+    </li>
+</ul>
+
+<h2>Entwicklung</h2>
+
+<h3>PHPStan ausführen</h3>
+
+<pre><code>composer install
+composer run phpstan</code></pre>
+
+<h3>Rector ausführen</h3>
+
+<pre><code># Vorschau der Änderungen
+composer run rector:dry
+
+# Änderungen anwenden
+composer run rector</code></pre>
+
+<h2>Lizenz</h2>
+
+<p>MIT License - siehe <a href="LICENSE">LICENSE</a></p>
+
+<p>Copyright (c) 2001-2025 PowerScripts</p>
+
+<hr>
+
+<h2>Änderungen / Migration auf PHP 8.4</h2>
+
+<p>Diese Version wurde umfassend auf PHP 8.4 aktualisiert und enthält wichtige Sicherheitsfixes:</p>
+
+<h3>PHP 8.4 Kompatibilität</h3>
+
+<ul>
+    <li><code>declare(strict_types=1)</code> in allen PHP-Dateien aktiviert</li>
+    <li><code>eregi()</code> durch <code>preg_match()</code> mit <code>/i</code> Flag ersetzt</li>
+    <li><code>stripslashes()</code> entfernt (Magic Quotes seit PHP 7.0 nicht mehr vorhanden)</li>
+    <li>Array-Zugriffe mit Quotes korrigiert (<code>$row["key"]</code> statt <code>$row[key]</code>)</li>
+    <li>Null-Coalescing-Operator (<code>??</code>) für sichere Variable-Zugriffe</li>
+    <li>Type Declarations für Funktionsparameter und Rückgabewerte</li>
+</ul>
+
+<h3>Sicherheitsfixes</h3>
+
+<ul>
+    <li><strong>SQL Injection Prevention:</strong> Prepared Statements mit <code>mysqli_prepare()</code> und <code>bind_param()</code></li>
+    <li><strong>XSS-Schutz:</strong> <code>htmlspecialchars()</code> für alle Ausgaben über <code>e()</code> Helper-Funktion</li>
+    <li><strong>Passwort-Hashing:</strong> <code>password_hash()</code> mit PASSWORD_DEFAULT statt base64</li>
+    <li><strong>Automatische Passwort-Migration:</strong> Bestehende base64-Passwörter werden beim Login automatisch auf sichere Hashes migriert</li>
+    <li><strong>Path Traversal Fix:</strong> <code>showpic.php</code> validiert jetzt Pfade gegen Whitelist</li>
+    <li><strong>Cookie-Sicherheit:</strong> HttpOnly und SameSite-Attribute für Session-Cookies</li>
+    <li><strong>Include-Sicherheit:</strong> Dynamische Includes auf <code>basename()</code> beschränkt</li>
+    <li><strong>Cookie-Typo behoben:</strong> <code>setcookie("pcadmin_password]"</code> &rarr; <code>setcookie("pcadmin_password"</code></li>
+</ul>
+
+<h3>Version 2.1 - Umfassende Sicherheitsüberarbeitung (Januar 2026)</h3>
+
+<p><strong>Komplett neu geschriebene Admin-Dateien:</strong></p>
+
+<p>Alle Admin-Dateien wurden komplett überarbeitet mit:</p>
+<ul>
+    <li>Prepared Statements für alle SQL-Abfragen</li>
+    <li>XSS-Schutz durch <code>e()</code> Helper für alle Ausgaben</li>
+    <li>Sichere Variablen-Initialisierung mit Null-Coalescing (<code>??</code>)</li>
+    <li>Strikte Typisierung (<code>declare(strict_types=1)</code>)</li>
+</ul>
+
+<table>
+    <tr>
+        <th>Kategorie</th>
+        <th>Dateien</th>
+    </tr>
+    <tr>
+        <td>Mitglieder</td>
+        <td><code>addmember.php</code>, <code>editmember.php</code>, <code>delmember.php</code>, <code>choosemember.php</code></td>
+    </tr>
+    <tr>
+        <td>News</td>
+        <td><code>addnews.php</code>, <code>editnews.php</code>, <code>delnews.php</code>, <code>choosenews.php</code></td>
+    </tr>
+    <tr>
+        <td>Wars</td>
+        <td><code>addwar.php</code>, <code>editwar.php</code>, <code>delwar.php</code>, <code>choosewar.php</code></td>
+    </tr>
+    <tr>
+        <td>Sonstige</td>
+        <td><code>profile.php</code>, <code>header.inc.php</code>, <code>functions.inc.php</code></td>
+    </tr>
+</table>
+
+<p><strong>Cookie/Session-Fix:</strong></p>
+<ul>
+    <li>Login-Persistenz behoben - Benutzer bleiben nach Navigation eingeloggt</li>
+    <li><code>checklogin()</code> Funktion in <code>functions.inc.php</code> korrigiert</li>
+    <li>Hash-Vergleich erfolgt jetzt vor <code>password_verify()</code> für Cookie-Authentifizierung</li>
+</ul>
+
+<p><strong>PHPStan:</strong></p>
+<ul>
+    <li>0 Fehler bei Level 5 Analyse</li>
+    <li>Bootstrap-Datei für globale Variablen</li>
+    <li>Konfigurierte ignoreErrors für Legacy-Patterns</li>
+</ul>
+
+<h3>Neue Dateien</h3>
+
+<ul>
+    <li><code>LICENSE</code> - MIT-Lizenztext</li>
+    <li><code>README.md</code> - Markdown-Dokumentation</li>
+    <li><code>readme.html</code> - Diese HTML-Dokumentation</li>
+    <li><code>composer.json</code> - Composer-Setup mit PHPStan und Rector</li>
+    <li><code>phpstan.neon</code> - PHPStan-Konfiguration (Level 5)</li>
+    <li><code>rector.php</code> - Rector-Konfiguration für PHP 8.4</li>
+    <li><code>.docker/</code> - Docker-Konfiguration (Dockerfile, docker-compose.yml, php.ini)</li>
+    <li><code>logs/</code> - Verzeichnis für PHP Error-Logs</li>
+</ul>
+
+<h3>Lizenz-Änderung</h3>
+
+<ul>
+    <li>Von GNU GPL v2 auf MIT-Lizenz umgestellt</li>
+    <li>Alle PHP-Dateien enthalten den neuen MIT-Lizenz-Header</li>
+</ul>
+
+<hr>
+
+<p><em>PowerClan &copy; 2001-2025 PowerScripts</em></p>
+
+</body>
+</html>

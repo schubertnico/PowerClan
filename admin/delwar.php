@@ -1,0 +1,70 @@
+<?php
+
+declare(strict_types=1);
+
+/**
+ * PowerClan - PHP/MySQL Clan Portal
+ * Delete War
+ *
+ * @copyright 2001-2025 PowerScripts
+ * @license   MIT License
+ * @link      https://github.com/schubertnico/PowerClan.git
+ */
+
+include __DIR__ . '/header.inc.php';
+?>
+<!--MAINPAGE-->
+
+<center>
+<?php
+if (($pcadmin['wars_del'] ?? '') === 'YES' || ($pcadmin['superadmin'] ?? '') === 'YES') {
+    $warid = $_GET['warid'] ?? '';
+
+    if (!empty($warid)) {
+        $stmt = $conn->prepare("SELECT * FROM pc_wars WHERE id = ?");
+        $waridInt = (int)$warid;
+        $stmt->bind_param('i', $waridInt);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $num = mysqli_num_rows($result);
+
+        if ($num === 1) {
+            $row = mysqli_fetch_array($result, MYSQLI_ASSOC);
+            $stmt->close();
+
+            $delwar = $_GET['delwar'] ?? '';
+
+            if ($delwar === 'YES') {
+                $delStmt = $conn->prepare("DELETE FROM pc_wars WHERE id = ?");
+                $delStmt->bind_param('i', $waridInt);
+                $delStmt->execute();
+                $delStmt->close();
+                echo '<center><a href="choosewar.php">Der War wurde erfolgreich gel&ouml;scht!</a></center>';
+            } else {
+                $date = date('d.m.Y', (int)$row['time']);
+                $time = date('H:i', (int)$row['time']);
+                $enemy = e($row['enemy'] ?? '');
+                $warId = (int)$row['id'];
+
+                echo "
+<center>
+Soll der War gegen <b>{$enemy}</b> am <b>{$date}</b> um <b>{$time}</b> wirklich gel&ouml;scht werden?<br>
+<br>
+[ <a href=\"delwar.php?warid={$warId}&delwar=YES\">Ja, War l&ouml;schen!</a> | <a href=\"choosewar.php\">Nein, War nicht l&ouml;schen!</a> ]
+</center>";
+            }
+        } else {
+            $stmt->close();
+            echo '<center><a href="choosewar.php">Der gew&auml;hlte War existiert nicht!</a></center>';
+        }
+    } else {
+        echo '<center><a href="choosewar.php">Bitte w&auml;hle einen War aus!</a></center>';
+    }
+} else {
+    echo '<center>Du hast keine Zugang zu dieser Funktion!</center>';
+}
+?>
+</center>
+
+<!--FOOTER FILE-->
+<?php include __DIR__ . '/footer.inc.php'; ?>

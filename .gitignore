@@ -1,0 +1,43 @@
+# Dependencies
+/vendor/
+
+# IDE
+/.idea/
+*.iml
+.vscode/
+*.sublime-*
+
+# Logs
+/logs/*.log
+!/logs/.gitkeep
+
+# Config (contains credentials)
+/config.inc.php
+
+# System files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# Composer
+composer.lock
+
+# Old files (deprecated)
+/gnulicense.txt
+/header.pc
+/footer.pc
+/Installationsguide/
+
+# PHPStan cache
+/phpstan-cache/
+
+# PHPUnit cache
+/.phpunit.cache/
+/coverage/
+
+# Temporary files
+*.tmp
+*.bak
+*.old
