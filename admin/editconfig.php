@@ -17,6 +17,9 @@ include __DIR__ . '/header.inc.php';
 
 <center>
 <?php
+// CSRF protection
+csrf_check();
+
 if (($pcadmin['superadmin'] ?? '') === 'YES') {
     $stmt = $conn->prepare("SELECT * FROM pc_config WHERE id = 1");
     $stmt->execute();
@@ -95,6 +98,7 @@ if (($pcadmin['superadmin'] ?? '') === 'YES') {
             echo "
 <center>
 <form action=\"{$phpSelf}?editconfig=YES\" method=\"post\">
+" . csrf_field() . "
 <table border=\"0\" cellpadding=\"3\" cellspacing=\"2\" width=\"100%\">
 <tr><td colspan=\"2\" align=\"center\">
 <b>Konfiguration editieren</b>

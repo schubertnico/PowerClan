@@ -17,6 +17,9 @@ include __DIR__ . '/header.inc.php';
 
 <center>
 <?php
+// CSRF protection
+csrf_check();
+
 $newsid = $_GET['newsid'] ?? '';
 $row = null;
 
@@ -82,6 +85,7 @@ function insertBBCode(tag) {
 
             echo "<center>
 <form action=\"{$phpSelf}?editnews=YES&newsid={$newsIdEsc}\" method=\"post\">
+" . csrf_field() . "
 <table border=\"0\" cellpadding=\"3\" cellspacing=\"2\" width=\"100%\">
 <tr><td colspan=\"2\" align=\"center\">
 <b>News editieren</b>

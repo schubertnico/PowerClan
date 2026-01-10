@@ -17,8 +17,11 @@ include __DIR__ . '/header.inc.php';
 
 <center>
 <?php
+// CSRF protection
+csrf_check();
+
 if (($pcadmin['wars_del'] ?? '') === 'YES' || ($pcadmin['superadmin'] ?? '') === 'YES') {
-    $warid = $_GET['warid'] ?? '';
+    $warid = $_GET['warid'] ?? $_POST['warid'] ?? '';
 
     if (!empty($warid)) {
         $stmt = $conn->prepare("SELECT * FROM pc_wars WHERE id = ?");
@@ -32,9 +35,9 @@ if (($pcadmin['wars_del'] ?? '') === 'YES' || ($pcadmin['superadmin'] ?? '') ===
             $row = mysqli_fetch_array($result, MYSQLI_ASSOC);
             $stmt->close();
 
-            $delwar = $_GET['delwar'] ?? '';
+            $delwar = $_POST['delwar'] ?? '';
 
-            if ($delwar === 'YES') {
+            if ($delwar === 'YES' && $_SERVER['REQUEST_METHOD'] === 'POST') {
                 $delStmt = $conn->prepare("DELETE FROM pc_wars WHERE id = ?");
                 $delStmt->bind_param('i', $waridInt);
                 $delStmt->execute();
@@ -50,7 +53,13 @@ if (($pcadmin['wars_del'] ?? '') === 'YES' || ($pcadmin['superadmin'] ?? '') ===
 <center>
 Soll der War gegen <b>{$enemy}</b> am <b>{$date}</b> um <b>{$time}</b> wirklich gel&ouml;scht werden?<br>
 <br>
-[ <a href=\"delwar.php?warid={$warId}&delwar=YES\">Ja, War l&ouml;schen!</a> | <a href=\"choosewar.php\">Nein, War nicht l&ouml;schen!</a> ]
+<form action=\"delwar.php\" method=\"post\" style=\"display:inline;\">
+" . csrf_field() . "
+<input type=\"hidden\" name=\"warid\" value=\"{$warId}\">
+<input type=\"hidden\" name=\"delwar\" value=\"YES\">
+<button type=\"submit\">Ja, War l&ouml;schen!</button>
+</form>
+ | <a href=\"choosewar.php\">Nein, War nicht l&ouml;schen!</a>
 </center>";
             }
         } else {

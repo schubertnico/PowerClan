@@ -6,7 +6,6 @@ parameters:
         - vendor
         - .docker
         - logs
-        - Installationsguide
         - .idea
     bootstrapFiles:
         - phpstan-bootstrap.php

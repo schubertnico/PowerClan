@@ -17,8 +17,11 @@ include __DIR__ . '/header.inc.php';
 
 <center>
 <?php
+// CSRF protection
+csrf_check();
+
 if (($pcadmin['member_del'] ?? '') === 'YES' || ($pcadmin['superadmin'] ?? '') === 'YES') {
-    $memberid = $_GET['memberid'] ?? '';
+    $memberid = $_GET['memberid'] ?? $_POST['memberid'] ?? '';
 
     if (!empty($memberid)) {
         $stmt = $conn->prepare("SELECT * FROM pc_members WHERE id = ?");
@@ -44,9 +47,9 @@ if (($pcadmin['member_del'] ?? '') === 'YES' || ($pcadmin['superadmin'] ?? '') =
                 exit;
             }
 
-            $delmember = $_GET['delmember'] ?? '';
+            $delmember = $_POST['delmember'] ?? '';
 
-            if ($delmember === 'YES') {
+            if ($delmember === 'YES' && $_SERVER['REQUEST_METHOD'] === 'POST') {
                 $delStmt = $conn->prepare("DELETE FROM pc_members WHERE id = ?");
                 $delStmt->bind_param('i', $memberidInt);
                 $delStmt->execute();
@@ -61,7 +64,13 @@ if (($pcadmin['member_del'] ?? '') === 'YES' || ($pcadmin['superadmin'] ?? '') =
 <center>
 Soll der Member <b>{$nick}</b> ({$work}) wirklich gel&ouml;scht werden?<br>
 <br>
-[ <a href=\"delmember.php?memberid={$memberId}&delmember=YES\">Ja, Member l&ouml;schen!</a> | <a href=\"choosemember.php\">Nein, Member nicht l&ouml;schen!</a> ]
+<form action=\"delmember.php\" method=\"post\" style=\"display:inline;\">
+" . csrf_field() . "
+<input type=\"hidden\" name=\"memberid\" value=\"{$memberId}\">
+<input type=\"hidden\" name=\"delmember\" value=\"YES\">
+<button type=\"submit\">Ja, Member l&ouml;schen!</button>
+</form>
+ | <a href=\"choosemember.php\">Nein, Member nicht l&ouml;schen!</a>
 </center>";
             }
         } else {

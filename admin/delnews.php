@@ -17,8 +17,11 @@ include __DIR__ . '/header.inc.php';
 
 <center>
 <?php
+// CSRF protection
+csrf_check();
+
 if (($pcadmin['news_del'] ?? '') === 'YES' || ($pcadmin['superadmin'] ?? '') === 'YES') {
-    $newsid = $_GET['newsid'] ?? '';
+    $newsid = $_GET['newsid'] ?? $_POST['newsid'] ?? '';
 
     if (!empty($newsid)) {
         $stmt = $conn->prepare("SELECT * FROM pc_news WHERE id = ?");
@@ -32,9 +35,9 @@ if (($pcadmin['news_del'] ?? '') === 'YES' || ($pcadmin['superadmin'] ?? '') ===
             $row = mysqli_fetch_array($result, MYSQLI_ASSOC);
             $stmt->close();
 
-            $delnews = $_GET['delnews'] ?? '';
+            $delnews = $_POST['delnews'] ?? '';
 
-            if ($delnews === 'YES') {
+            if ($delnews === 'YES' && $_SERVER['REQUEST_METHOD'] === 'POST') {
                 $delStmt = $conn->prepare("DELETE FROM pc_news WHERE id = ?");
                 $delStmt->bind_param('i', $newsidInt);
                 $delStmt->execute();
@@ -49,7 +52,13 @@ if (($pcadmin['news_del'] ?? '') === 'YES' || ($pcadmin['superadmin'] ?? '') ===
 <center>
 Sollen die News <b>{$title}</b> vom {$date} wirklich gel&ouml;scht werden?<br>
 <br>
-[ <a href=\"delnews.php?newsid={$newsId}&delnews=YES\">Ja, Newseintrag l&ouml;schen!</a> | <a href=\"choosenews.php\">Nein, Newseintrag nicht l&ouml;schen!</a> ]
+<form action=\"delnews.php\" method=\"post\" style=\"display:inline;\">
+" . csrf_field() . "
+<input type=\"hidden\" name=\"newsid\" value=\"{$newsId}\">
+<input type=\"hidden\" name=\"delnews\" value=\"YES\">
+<button type=\"submit\">Ja, Newseintrag l&ouml;schen!</button>
+</form>
+ | <a href=\"choosenews.php\">Nein, Newseintrag nicht l&ouml;schen!</a>
 </center>";
             }
         } else {

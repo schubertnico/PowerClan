@@ -17,6 +17,9 @@ include __DIR__ . '/header.inc.php';
 
 <center>
 <?php
+// CSRF protection
+csrf_check();
+
 if (($pcadmin['wars_edit'] ?? '') === 'YES' || ($pcadmin['superadmin'] ?? '') === 'YES') {
     $warid = $_GET['warid'] ?? '';
     $uploadscreen = $_GET['uploadscreen'] ?? '';
@@ -139,6 +142,7 @@ function insertBBCode(tag) {
 
                 echo "<center>
 <form action=\"{$phpSelf}?editwar=YES&warid={$rowId}\" method=\"post\">
+" . csrf_field() . "
 <table border=\"0\" cellpadding=\"3\" cellspacing=\"2\" width=\"100%\">
 <tr><td colspan=\"2\" align=\"center\">
 <b>War editieren</b>
@@ -289,6 +293,7 @@ Folgende Befehle k&ouml;nnen verwendet werden:<br>
 
                     echo "
 <form action=\"{$phpSelf}?uploadscreen=YES&warid={$rowId}&map={$mapNum}\" method=\"post\" enctype=\"multipart/form-data\">
+" . csrf_field() . "
 <table border=\"0\" cellpadding=\"3\" cellspacing=\"2\" width=\"100%\">
 <tr><td valign=\"top\" width=\"*\" bgcolor=\"{$bgColor}\">
 <b>Screenshot (Map{$mapNum})</b><br>
