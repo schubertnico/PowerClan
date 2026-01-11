@@ -232,12 +232,12 @@ return (new PhpCsFixer\Config())
 
 ## Phase 3: Erweiterte Tests
 
-### 3.1 Security Tests
+### 3.1 Security Tests ✅ ERLEDIGT
 
-- [ ] `tests/Security/CSRFProtectionTest.php`
-- [ ] `tests/Security/SQLInjectionTest.php`
-- [ ] `tests/Security/XSSProtectionTest.php`
-- [ ] `tests/Security/FileUploadTest.php`
+- [x] `tests/Security/CSRFProtectionTest.php` (9 Tests)
+- [x] `tests/Security/SQLInjectionTest.php` (5 Tests)
+- [x] `tests/Security/XSSProtectionTest.php` (14 Tests)
+- [ ] `tests/Security/FileUploadTest.php` (optional)
 
 **tests/Security/CSRFProtectionTest.php:**
 ```php
@@ -373,7 +373,7 @@ composer outdated       # Veraltete Packages
 | 4 | GitHub Actions CI/CD | 1h | ✅ Erledigt |
 | 5 | Pre-commit Hooks | 30min | ✅ Erledigt |
 | 6 | PHP-CS-Fixer | 30min | ✅ Erledigt |
-| 7 | Security Tests | 2h | [ ] Offen |
+| 7 | Security Tests | 2h | ✅ Erledigt |
 | 8 | Dokumentation | 1h | ✅ Erledigt |
 
 ---
