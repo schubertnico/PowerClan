@@ -16,7 +16,7 @@
 | Input Validation | Gemischt | MITTEL |
 | Prepared Statements | ✅ 100% umgesetzt | ERLEDIGT |
 | CI/CD Pipeline | ✅ **GitHub Actions** | ERLEDIGT |
-| Pre-commit Hooks | **Nicht vorhanden** | MITTEL |
+| Pre-commit Hooks | ✅ **Implementiert** | ERLEDIGT |
 
 ---
 
@@ -153,10 +153,10 @@ jobs:
         run: composer audit
 ```
 
-### 2.2 Pre-commit Hooks
+### 2.2 Pre-commit Hooks ✅ ERLEDIGT
 
-- [ ] `composer.json` Scripts erweitern
-- [ ] `.git/hooks/pre-commit` erstellen
+- [x] `composer.json` Scripts erweitern (Commit: 1279d6f)
+- [x] `.git/hooks/pre-commit` erstellen
 
 **composer.json erweitern:**
 ```json
@@ -205,10 +205,10 @@ echo "All checks passed!"
 exit 0
 ```
 
-### 2.3 PHP-CS-Fixer
+### 2.3 PHP-CS-Fixer ✅ ERLEDIGT
 
-- [ ] `composer require --dev friendsofphp/php-cs-fixer`
-- [ ] `.php-cs-fixer.php` erstellen
+- [x] `composer require --dev friendsofphp/php-cs-fixer` (v3.92.5)
+- [x] `.php-cs-fixer.php` erstellen
 
 ```php
 <?php
@@ -371,10 +371,10 @@ composer outdated       # Veraltete Packages
 | 2 | CSRF-Token implementieren | 2-3h | ✅ Erledigt |
 | 3 | Passwort-Hashing korrigieren | 30min | ✅ Erledigt |
 | 4 | GitHub Actions CI/CD | 1h | ✅ Erledigt |
-| 5 | Pre-commit Hooks | 30min | [ ] Offen |
-| 6 | PHP-CS-Fixer | 30min | [ ] Offen |
+| 5 | Pre-commit Hooks | 30min | ✅ Erledigt |
+| 6 | PHP-CS-Fixer | 30min | ✅ Erledigt |
 | 7 | Security Tests | 2h | [ ] Offen |
-| 8 | Dokumentation | 1h | [ ] Offen |
+| 8 | Dokumentation | 1h | ✅ Erledigt |
 
 ---
 
