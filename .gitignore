@@ -37,6 +37,9 @@ composer.lock
 /.phpunit.cache/
 /coverage/
 
+# PHP-CS-Fixer cache
+.php-cs-fixer.cache
+
 # Temporary files
 *.tmp
 *.bak
