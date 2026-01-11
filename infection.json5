@@ -1,0 +1,52 @@
+{
+    "$schema": "https://raw.githubusercontent.com/infection/infection/0.32/resources/schema.json",
+    "source": {
+        "directories": [
+            "."
+        ],
+        "excludes": [
+            "vendor",
+            "tests",
+            ".docker",
+            "logs",
+            "images",
+            "screenshots",
+            "coverage",
+            "todos",
+            "admin",
+            "install.php",
+            "mysql.inc.php",
+            "config.inc.php",
+            "header.inc.php",
+            "footer.inc.php",
+            "index.php",
+            "member.php",
+            "wars.php",
+            "showpic.php",
+            "rector.php",
+            "phpstan-bootstrap.php"
+        ]
+    },
+    "logs": {
+        "text": "infection.log",
+        "html": "infection.html",
+        "summary": "infection-summary.log"
+    },
+    "mutators": {
+        "@default": true,
+        // Disable problematic mutators for legacy code
+        "CastInt": false,
+        "CastString": false,
+        "CastFloat": false
+    },
+    "phpUnit": {
+        "configDir": ".",
+        "customPath": "vendor/bin/phpunit"
+    },
+    "testFramework": "phpunit",
+    "testFrameworkOptions": "--testsuite=Unit",
+    "timeout": 10,
+    // MSI thresholds - start low for legacy code
+    "minMsi": 30,
+    "minCoveredMsi": 40
+}

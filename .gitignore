@@ -42,3 +42,9 @@ composer.lock
 *.tmp
 *.bak
 *.old
+
+# Infection
+infection.log
+infection.html
+infection-summary.log
+coverage/

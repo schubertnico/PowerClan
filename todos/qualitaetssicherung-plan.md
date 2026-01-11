@@ -377,6 +377,7 @@ composer outdated       # Veraltete Packages
 | 8 | Dokumentation | 1h | ✅ Erledigt |
 | 9 | Psalm Level 4 | 30min | ✅ Erledigt |
 | 10 | PHPStan Level 8 | 30min | ✅ Erledigt |
+| 11 | Infection Mutation Testing | 30min | ✅ Erledigt |
 
 ---
 
@@ -385,6 +386,7 @@ composer outdated       # Veraltete Packages
 - [x] Alle Tests bestehen (`composer run test`) - 67 Unit Tests ✅
 - [x] PHPStan ohne Fehler (`composer run phpstan`) - Level 8 ✅
 - [x] Psalm ohne Fehler (`composer run psalm`) - Level 4 ✅
+- [x] Infection Mutation Testing (`composer run infection`) - CI ✅
 - [ ] Keine bekannten Vulnerabilities (`composer audit`)
 - [x] CSRF-Token auf allen Formularen ✅
 - [x] Keine SQL-String-Konkatenation (außer install.php)

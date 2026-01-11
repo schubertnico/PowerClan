@@ -67,17 +67,24 @@ jobs:
           find . -name "*.php" -not -path "./vendor/*" -exec php -l {} \; | grep -v "No syntax errors"
           echo "Syntax check completed"
 
-      - name: PHPStan Static Analysis
-        run: vendor/bin/phpstan analyse --level=5 --no-progress
+      - name: PHPStan Static Analysis (Level 8)
+        run: vendor/bin/phpstan analyse --memory-limit=512M --no-progress
 
-      - name: PHPUnit Tests
-        run: vendor/bin/phpunit --coverage-text
+      - name: Psalm Static Analysis (Level 4)
+        run: vendor/bin/psalm --no-progress
+
+      - name: PHPUnit Tests with Coverage
+        run: vendor/bin/phpunit --coverage-text --coverage-xml=coverage/coverage-xml --log-junit=coverage/junit.xml
         env:
           DB_HOST: 127.0.0.1
           DB_USER: powerclan
           DB_PASSWORD: powerclan_secure_2024
           DB_DATABASE: powerclan_test
           DB_PORT: 3306
+
+      - name: Infection Mutation Testing
+        run: vendor/bin/infection --threads=4 --skip-initial-tests --coverage=coverage --no-progress --logger-github
+        continue-on-error: true
 
       - name: Security Check
         run: composer audit
@@ -97,6 +104,5 @@ jobs:
       - name: Install dependencies
         run: composer install --prefer-dist --no-progress
 
-      - name: Check PHP syntax
-        run: |
-          find . -name "*.php" -not -path "./vendor/*" -print0 | xargs -0 -n1 php -l > /dev/null
+      - name: PHP-CS-Fixer Check
+        run: vendor/bin/php-cs-fixer fix --dry-run --diff
