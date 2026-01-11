@@ -26,8 +26,6 @@ composer.lock
 
 # Old files (deprecated)
 /gnulicense.txt
-/header.pc
-/footer.pc
 /Installationsguide/
 
 # PHPStan cache
