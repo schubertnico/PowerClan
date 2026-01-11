@@ -2,211 +2,266 @@
 
 Ein PHP/MySQL basiertes Clan-Portal-Management-System.
 
-**Version:** 2.1 (PHP 8.4)
-**Lizenz:** MIT
+**Version:** 2.1 (PHP 8.4)  
+**Lizenz:** MIT  
 **Repository:** https://github.com/schubertnico/PowerClan.git
+
+---
+
+## Inhaltsverzeichnis
+
+- [Beschreibung](#beschreibung)
+- [Systemanforderungen](#systemanforderungen)
+- [Installation](#installation)
+  - [Mit Docker (Empfohlen)](#mit-docker-empfohlen)
+  - [Ohne Docker](#ohne-docker)
+- [Nutzung](#nutzung)
+- [Entwicklung](#entwicklung)
+  - [Qualitaetssicherung](#qualitaetssicherung)
+  - [Verfuegbare Scripts](#verfuegbare-scripts)
+- [Sicherheit](#sicherheit)
+- [Changelog](#changelog)
+- [Lizenz](#lizenz)
+
+---
 
 ## Beschreibung
 
-PowerClan ist ein klassisches Clan-Portal für Gaming-Communities. Es ermöglicht die Verwaltung von:
+PowerClan ist ein klassisches Clan-Portal fuer Gaming-Communities. Es ermoeglicht die Verwaltung von:
 
 - **Mitgliedern** - Profilverwaltung, Kontaktdaten, Hardware-Infos
-- **News** - Nachrichten und Ankündigungen
+- **News** - Nachrichten und Ankuendigungen
 - **Clanwars** - War-Ergebnisse, Berichte, Screenshots
+
+---
 
 ## Systemanforderungen
 
-- PHP 8.4 oder höher
-- MySQL 8.0 oder höher
-- Apache mit mod_rewrite (optional)
-- Docker & Docker Compose (empfohlen)
+| Komponente | Version | Hinweis |
+|------------|---------|---------|
+| PHP | 8.4+ | Mit mysqli-Extension |
+| MySQL | 8.0+ | Oder MariaDB 10.6+ |
+| Composer | 2.x | Fuer Entwicklung |
+| Docker | 24.x | Optional, empfohlen |
 
-## Setup mit Docker (Empfohlen)
+---
 
-### 1. Repository klonen
+## Installation
+
+### Mit Docker (Empfohlen)
 
 ```bash
+# 1. Repository klonen
 git clone https://github.com/schubertnico/PowerClan.git
 cd PowerClan
-```
 
-### 2. Docker-Container starten
+# 2. Dependencies installieren
+composer install
 
-```bash
+# 3. Docker-Container starten
 cd .docker
-docker compose build
 docker compose up -d
-```
 
-### 3. Verwendete Ports
-
-| Service     | Port | URL                        |
-|-------------|------|----------------------------|
-| Web (PHP)   | 8086 | http://localhost:8086      |
-| MySQL       | 3316 | localhost:3316             |
-| phpMyAdmin  | 8089 | http://localhost:8089      |
-
-### 4. Prüfen ob alles läuft
-
-```bash
-# Container-Status prüfen
+# 4. Container-Status pruefen
 docker compose ps
-
-# Logs anzeigen
-docker compose logs -f
-
-# PHP Error-Log prüfen
-cat ../logs/php-error.log
 ```
 
-### 5. Installation abschließen
+**Ports:**
 
-1. Öffne http://localhost:8086/install.php
+| Service | Port | URL |
+|---------|------|-----|
+| Web (PHP) | 8086 | http://localhost:8086 |
+| MySQL | 3316 | localhost:3316 |
+| phpMyAdmin | 8089 | http://localhost:8089 |
+
+**Installation abschliessen:**
+
+1. Oeffne http://localhost:8086/install.php
 2. Folge dem Installationsassistenten
-3. **Wichtig:** Lösche `install.php` nach der Installation!
+3. **Wichtig:** Loesche install.php nach der Installation!
 
-## Setup ohne Docker
-
-### 1. Konfiguration anpassen
-
-Bearbeite `config.inc.php`:
-
-```php
-$mysql = [
-    'host'     => 'localhost',
-    'user'     => 'dein_user',
-    'password' => 'dein_passwort',
-    'database' => 'powerclan',
-    'port'     => 3306,
-];
-```
-
-### 2. Datenbank importieren
+### Ohne Docker
 
 ```bash
+# 1. Repository klonen
+git clone https://github.com/schubertnico/PowerClan.git
+cd PowerClan
+
+# 2. Dependencies installieren
+composer install
+
+# 3. Konfiguration anpassen
+cp config.inc.php.example config.inc.php
+# config.inc.php bearbeiten mit Datenbankzugangsdaten
+
+# 4. Datenbank importieren
 mysql -u root -p powerclan < powerclan.sql
-```
 
-### 3. Berechtigungen setzen
-
-```bash
+# 5. Berechtigungen setzen (Linux/Mac)
 chmod 755 logs/
 chmod 644 config.inc.php
 ```
 
+---
+
 ## Nutzung
 
-### Öffentliche Seiten
+### Oeffentliche Seiten
 
-- **Startseite:** `index.php` - News und aktuelle Wars
-- **Mitglieder:** `member.php` - Mitgliederliste und Profile
-- **Wars:** `wars.php` - Clanwar-Übersicht und Berichte
+| Seite | URL | Beschreibung |
+|-------|-----|--------------|
+| Startseite | index.php | News und aktuelle Wars |
+| Mitglieder | member.php | Mitgliederliste und Profile |
+| Wars | wars.php | Clanwar-Uebersicht und Berichte |
 
 ### Admin-Bereich
 
-- **Login:** `admin/index.php`
-- **Funktionen:**
-  - Mitglieder verwalten (hinzufügen, bearbeiten, löschen)
-  - News verwalten
-  - Clanwars verwalten
-  - Konfiguration bearbeiten (nur Superadmin)
+| Funktion | URL | Berechtigung |
+|----------|-----|--------------|
+| Login | admin/index.php | Alle Admins |
+| Mitglieder verwalten | admin/choosemember.php | member_* |
+| News verwalten | admin/choosenews.php | news_* |
+| Wars verwalten | admin/choosewar.php | wars_* |
+| Konfiguration | admin/editconfig.php | Nur Superadmin |
+
+---
 
 ## Entwicklung
 
-### PHPStan ausführen
+### Qualitaetssicherung
+
+PowerClan verwendet moderne PHP-Qualitaetswerkzeuge:
+
+| Tool | Version | Level | Beschreibung |
+|------|---------|-------|--------------|
+| **PHPStan** | 2.x | Level 8 | Statische Analyse |
+| **Psalm** | 6.x | Level 4 | Strikte Typ-Analyse |
+| **PHP-CS-Fixer** | 3.x | PSR-12 | Code Style |
+| **PHPUnit** | 11.x | - | Unit Tests |
+| **Infection** | 0.32.x | - | Mutation Testing |
+| **Rector** | 2.x | PHP 8.4 | Automatische Refactoring |
+| **PHPCS** | 4.x | PSR-12 | Code Sniffer |
+
+### Verfuegbare Scripts
 
 ```bash
-composer install
-composer run phpstan
+# Alle Checks auf einmal (CS, PHPStan, Psalm, Tests)
+composer run check
+
+# Code Style
+composer run cs-check      # Pruefen
+composer run cs-fix        # Automatisch beheben
+
+# Statische Analyse
+composer run phpstan       # PHPStan Level 8
+composer run psalm         # Psalm Level 4
+
+# Tests
+composer run test          # Alle Tests
+composer run test:unit     # Unit Tests
+composer run test:integration  # Integration Tests
+composer run test:security # Security Tests
+composer run test:coverage # Mit Coverage Report
+
+# Mutation Testing
+composer run infection     # Lokal (benoetigt Xdebug)
+composer run infection:ci  # CI mit Coverage
+
+# Code Modernisierung
+composer run rector:dry    # Vorschau
+composer run rector        # Anwenden
+
+# Code Sniffer
+composer run phpcs         # Pruefen
+composer run phpcbf        # Automatisch beheben
 ```
 
-### Rector ausführen
+### Test-Struktur
 
-```bash
-# Vorschau der Änderungen
-composer run rector:dry
-
-# Änderungen anwenden
-composer run rector
 ```
+tests/
+├── bootstrap.php           # Test-Initialisierung
+├── Unit/                   # Unit Tests
+│   ├── FunctionsTest.php
+│   ├── AdminFunctionsTest.php
+│   └── ValidationTest.php
+├── Integration/            # Integration Tests
+│   ├── IntegrationTestCase.php
+│   ├── AuthenticationTest.php
+│   ├── MemberTest.php
+│   ├── NewsTest.php
+│   └── WarTest.php
+├── Security/               # Security Tests
+│   ├── CSRFProtectionTest.php
+│   ├── SQLInjectionTest.php
+│   └── XSSProtectionTest.php
+└── Fixtures/
+    └── TestDatabase.php
+```
+
+### CI/CD Pipeline
+
+GitHub Actions fuehrt bei jedem Push/PR aus:
+
+1. **PHP Syntax Check** - Alle PHP-Dateien
+2. **PHPStan Level 8** - Statische Analyse
+3. **Psalm Level 4** - Typ-Analyse
+4. **PHPUnit** - Tests mit Coverage
+5. **Infection** - Mutation Testing
+6. **Security Audit** - composer audit
+7. **PHP-CS-Fixer** - Code Style Check
+
+---
+
+## Sicherheit
+
+PowerClan implementiert moderne Sicherheitsmassnahmen:
+
+- **SQL Injection Prevention** - 100% Prepared Statements
+- **XSS-Schutz** - e() Helper fuer alle Ausgaben
+- **CSRF-Token** - Auf allen Formularen
+- **Bcrypt Passwort-Hashing** - PASSWORD_DEFAULT
+- **Session-Sicherheit** - HttpOnly, SameSite, Secure
+
+Siehe [SECURITY.md](SECURITY.md) fuer Details.
+
+**Sicherheitsluecke melden:** security@powerscripts.org
+
+---
+
+## Changelog
+
+### Version 2.1 (Januar 2026)
+
+**Qualitaetssicherung:**
+- PHPStan auf Level 8 erhoeht
+- Psalm Level 4 hinzugefuegt
+- Infection Mutation Testing integriert
+- 67+ Unit Tests, 28 Security Tests
+- GitHub Actions CI/CD Pipeline
+
+**Sicherheit:**
+- CSRF-Schutz auf allen Admin-Formularen
+- SQL Injection komplett behoben (Prepared Statements)
+- XSS-Schutz mit e() Helper
+- Sichere Passwort-Migration (base64 -> bcrypt)
+
+### Version 2.0 (2025)
+
+- PHP 8.4 Kompatibilitaet
+- declare(strict_types=1) in allen Dateien
+- Moderne Array-Syntax und Null-Coalescing
+- Docker-Entwicklungsumgebung
+- MIT-Lizenz
+
+---
 
 ## Lizenz
 
 MIT License - siehe [LICENSE](LICENSE)
 
-Copyright (c) 2001-2025 PowerScripts
+Copyright (c) 2001-2026 PowerScripts
 
 ---
 
-## Änderungen / Migration auf PHP 8.4
-
-Diese Version wurde umfassend auf PHP 8.4 aktualisiert und enthält wichtige Sicherheitsfixes:
-
-### PHP 8.4 Kompatibilität
-
-- `declare(strict_types=1)` in allen PHP-Dateien aktiviert
-- `eregi()` durch `preg_match()` mit `/i` Flag ersetzt
-- `stripslashes()` entfernt (Magic Quotes seit PHP 7.0 nicht mehr vorhanden)
-- Array-Zugriffe mit Quotes korrigiert (`$row["key"]` statt `$row[key]`)
-- Null-Coalescing-Operator (`??`) für sichere Variable-Zugriffe
-- Type Declarations für Funktionsparameter und Rückgabewerte
-
-### Sicherheitsfixes
-
-- **SQL Injection Prevention:** Prepared Statements mit `mysqli_prepare()` und `bind_param()`
-- **XSS-Schutz:** `htmlspecialchars()` für alle Ausgaben über `e()` Helper-Funktion
-- **Passwort-Hashing:** `password_hash()` mit PASSWORD_DEFAULT statt base64
-- **Automatische Passwort-Migration:** Bestehende base64-Passwörter werden beim Login automatisch auf sichere Hashes migriert
-- **Path Traversal Fix:** `showpic.php` validiert jetzt Pfade gegen Whitelist
-- **Cookie-Sicherheit:** HttpOnly und SameSite-Attribute für Session-Cookies
-- **Include-Sicherheit:** Dynamische Includes auf `basename()` beschränkt
-- **Cookie-Typo behoben:** `setcookie("pcadmin_password]"` → `setcookie("pcadmin_password"`
-
-### Version 2.1 - Umfassende Sicherheitsüberarbeitung (Januar 2026)
-
-**Komplett neu geschriebene Admin-Dateien:**
-
-Alle Admin-Dateien wurden komplett überarbeitet mit:
-- Prepared Statements für alle SQL-Abfragen
-- XSS-Schutz durch `e()` Helper für alle Ausgaben
-- Sichere Variablen-Initialisierung mit Null-Coalescing (`??`)
-- Strikte Typisierung (`declare(strict_types=1)`)
-
-| Kategorie | Dateien |
-|-----------|---------|
-| Mitglieder | `addmember.php`, `editmember.php`, `delmember.php`, `choosemember.php` |
-| News | `addnews.php`, `editnews.php`, `delnews.php`, `choosenews.php` |
-| Wars | `addwar.php`, `editwar.php`, `delwar.php`, `choosewar.php` |
-| Sonstige | `profile.php`, `header.inc.php`, `functions.inc.php` |
-
-**Cookie/Session-Fix:**
-
-- Login-Persistenz behoben - Benutzer bleiben nach Navigation eingeloggt
-- `checklogin()` Funktion in `functions.inc.php` korrigiert
-- Hash-Vergleich erfolgt jetzt vor `password_verify()` für Cookie-Authentifizierung
-
-**PHPStan:**
-
-- 0 Fehler bei Level 5 Analyse
-- Bootstrap-Datei für globale Variablen
-- Konfigurierte ignoreErrors für Legacy-Patterns
-
-### Neue Dateien
-
-- `LICENSE` - MIT-Lizenztext
-- `README.md` - Diese Dokumentation
-- `README.html` - HTML-Version der Dokumentation
-- `composer.json` - Composer-Setup mit PHPStan und Rector
-- `phpstan.neon` - PHPStan-Konfiguration (Level 5)
-- `rector.php` - Rector-Konfiguration für PHP 8.4
-- `.docker/` - Docker-Konfiguration (Dockerfile, docker-compose.yml, php.ini)
-- `logs/` - Verzeichnis für PHP Error-Logs
-
-### Lizenz-Änderung
-
-- Von GNU GPL v2 auf MIT-Lizenz umgestellt
-- Alle PHP-Dateien enthalten den neuen MIT-Lizenz-Header
-
----
-
-*PowerClan &copy; 2001-2025 PowerScripts*
+*PowerClan - https://www.powerscripts.org*
