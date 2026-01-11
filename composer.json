@@ -17,7 +17,8 @@
         "friendsofphp/php-cs-fixer": "^3.92",
         "phpstan/phpstan": "^2.0",
         "phpunit/phpunit": "^11.0",
-        "rector/rector": "^2.0"
+        "rector/rector": "^2.0",
+        "squizlabs/php_codesniffer": "^4.0"
     },
     "autoload": {
         "files": [
@@ -37,12 +38,15 @@
         ],
         "cs-fix": "php-cs-fixer fix",
         "cs-check": "php-cs-fixer fix --dry-run --diff",
+        "phpcs": "phpcs --standard=PSR12 --ignore=vendor,tests,.docker,logs,images,screenshots .",
+        "phpcbf": "phpcbf --standard=PSR12 --ignore=vendor,tests,.docker,logs,images,screenshots .",
         "phpstan": "phpstan analyse --memory-limit=512M",
         "rector": "rector process",
         "rector:dry": "rector process --dry-run",
         "test": "phpunit",
         "test:unit": "phpunit --testsuite Unit",
         "test:integration": "phpunit --testsuite Integration",
+        "test:security": "phpunit --testsuite Security",
         "test:coverage": "phpunit --coverage-html coverage/"
     },
     "config": {

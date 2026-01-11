@@ -1,5 +1,7 @@
 <?php
+
 /************************************************************************/
+
 /* PowerClan is a PHP and mySQL based clanportal - www.powerscripts.org */
 /* Copyright (C) 2001-2023 PowerScripts                                 */
 /*                                                                      */
@@ -380,7 +382,6 @@ switch ($type) {
             </center>
         ';
                     }
-
                 } else {
                     echo 'Es sind nicht alle erforderlichen Dateien vorhanden. Bitte &uuml;berpr&uuml;fe ob Du alle Dateien hochgeladen hast (Siehe auch Readme-Datei)';
                 }

@@ -50,10 +50,12 @@ if (($pcadmin['superadmin'] ?? '') === 'YES') {
             $warlimit = trim($_POST['warlimit'] ?? '');
 
             // Validate required fields
-            if (empty($clanname) || empty($clantag) || empty($url) || empty($serverpath) ||
+            if (
+                empty($clanname) || empty($clantag) || empty($url) || empty($serverpath) ||
                 empty($header) || empty($footer) || empty($tablebg1) || empty($tablebg2) ||
                 empty($tablebg3) || empty($clrwon) || empty($clrdraw) || empty($clrlost) ||
-                empty($newslimit) || empty($warlimit)) {
+                empty($newslimit) || empty($warlimit)
+            ) {
                 echo '<center><a href="javascript:history.back()">Bitte f&uuml;lle alle Felder aus!</a></center>';
             } else {
                 // Use prepared statement to prevent SQL injection
