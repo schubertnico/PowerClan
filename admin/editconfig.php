@@ -21,7 +21,7 @@ include __DIR__ . '/header.inc.php';
 csrf_check();
 
 if (($pcadmin['superadmin'] ?? '') === 'YES') {
-    $stmt = $conn->prepare("SELECT * FROM pc_config WHERE id = 1");
+    $stmt = $conn->prepare('SELECT * FROM pc_config WHERE id = 1');
     $stmt->execute();
     $result = $stmt->get_result();
     $num = mysqli_num_rows($result);
@@ -57,19 +57,29 @@ if (($pcadmin['superadmin'] ?? '') === 'YES') {
                 echo '<center><a href="javascript:history.back()">Bitte f&uuml;lle alle Felder aus!</a></center>';
             } else {
                 // Use prepared statement to prevent SQL injection
-                $updateStmt = $conn->prepare("UPDATE pc_config SET
+                $updateStmt = $conn->prepare('UPDATE pc_config SET
                     clanname = ?, clantag = ?, url = ?, serverpath = ?,
                     header = ?, footer = ?, tablebg1 = ?, tablebg2 = ?,
                     tablebg3 = ?, clrwon = ?, clrdraw = ?, clrlost = ?,
                     newslimit = ?, warlimit = ?
-                    WHERE id = 1");
+                    WHERE id = 1');
 
                 $updateStmt->bind_param(
                     'ssssssssssssss',
-                    $clanname, $clantag, $url, $serverpath,
-                    $header, $footer, $tablebg1, $tablebg2,
-                    $tablebg3, $clrwon, $clrdraw, $clrlost,
-                    $newslimit, $warlimit
+                    $clanname,
+                    $clantag,
+                    $url,
+                    $serverpath,
+                    $header,
+                    $footer,
+                    $tablebg1,
+                    $tablebg2,
+                    $tablebg3,
+                    $clrwon,
+                    $clrdraw,
+                    $clrlost,
+                    $newslimit,
+                    $warlimit
                 );
                 $updateStmt->execute();
                 $updateStmt->close();

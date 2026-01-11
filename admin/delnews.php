@@ -24,8 +24,8 @@ if (($pcadmin['news_del'] ?? '') === 'YES' || ($pcadmin['superadmin'] ?? '') ===
     $newsid = $_GET['newsid'] ?? $_POST['newsid'] ?? '';
 
     if (!empty($newsid)) {
-        $stmt = $conn->prepare("SELECT * FROM pc_news WHERE id = ?");
-        $newsidInt = (int)$newsid;
+        $stmt = $conn->prepare('SELECT * FROM pc_news WHERE id = ?');
+        $newsidInt = (int) $newsid;
         $stmt->bind_param('i', $newsidInt);
         $stmt->execute();
         $result = $stmt->get_result();
@@ -38,15 +38,15 @@ if (($pcadmin['news_del'] ?? '') === 'YES' || ($pcadmin['superadmin'] ?? '') ===
             $delnews = $_POST['delnews'] ?? '';
 
             if ($delnews === 'YES' && $_SERVER['REQUEST_METHOD'] === 'POST') {
-                $delStmt = $conn->prepare("DELETE FROM pc_news WHERE id = ?");
+                $delStmt = $conn->prepare('DELETE FROM pc_news WHERE id = ?');
                 $delStmt->bind_param('i', $newsidInt);
                 $delStmt->execute();
                 $delStmt->close();
                 echo '<center><a href="choosenews.php">Der Newseintrag wurde erfolgreich gel&ouml;scht!</a></center>';
             } else {
-                $date = date('d.m.Y', (int)$row['time']);
+                $date = date('d.m.Y', (int) $row['time']);
                 $title = e($row['title'] ?? '');
-                $newsId = (int)$row['id'];
+                $newsId = (int) $row['id'];
 
                 echo "
 <center>

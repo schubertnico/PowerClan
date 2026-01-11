@@ -31,11 +31,11 @@ if (($pcadmin['wars_add'] ?? '') === 'YES' || ($pcadmin['superadmin'] ?? '') ===
         $map1 = trim($_POST['map1'] ?? '');
         $map2 = trim($_POST['map2'] ?? '');
         $map3 = trim($_POST['map3'] ?? '');
-        $time_day = (int)($_POST['time_day'] ?? 1);
-        $time_hour = (int)($_POST['time_hour'] ?? 20);
-        $time_minute = (int)($_POST['time_minute'] ?? 0);
-        $time_month = (int)($_POST['time_month'] ?? 1);
-        $time_year = (int)($_POST['time_year'] ?? date('Y'));
+        $time_day = (int) ($_POST['time_day'] ?? 1);
+        $time_hour = (int) ($_POST['time_hour'] ?? 20);
+        $time_minute = (int) ($_POST['time_minute'] ?? 0);
+        $time_month = (int) ($_POST['time_month'] ?? 1);
+        $time_year = (int) ($_POST['time_year'] ?? date('Y'));
 
         if (empty($enemy) || empty($enemy_tag) || empty($homepage) || empty($league) || empty($map1) || empty($map2) || $time_day < 1) {
             echo '<center><a href="javascript:history.back()">Bitte f&uuml;lle alle nicht optionalen Felder aus!</a></center>';
@@ -132,19 +132,19 @@ if (($pcadmin['wars_add'] ?? '') === 'YES' || ($pcadmin['superadmin'] ?? '') ===
 <input name=\"time_day\" size=\"2\" maxlength=\"2\" type=\"number\" min=\"1\" max=\"31\" required>
 <select name=\"time_year\" size=\"1\">";
 
-        $curyear = (int)date('Y');
+        $curyear = (int) date('Y');
         for ($i = 0; $i <= 4; $i++) {
             $year = $curyear + $i;
             echo "<option value=\"{$year}\">{$year}</option>";
         }
 
-        echo "
+        echo '
 </select>
-<select name=\"time_hour\" size=\"1\">";
+<select name="time_hour" size="1">';
 
         for ($i = 0; $i <= 23; $i++) {
             $selected = ($i === 20) ? ' selected' : '';
-            $hour = str_pad((string)$i, 2, '0', STR_PAD_LEFT);
+            $hour = str_pad((string) $i, 2, '0', STR_PAD_LEFT);
             echo "<option value=\"{$i}\"{$selected}>{$hour}</option>";
         }
 

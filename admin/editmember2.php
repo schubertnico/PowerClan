@@ -18,7 +18,7 @@ include __DIR__ . '/header.inc.php';
 <center>
 <?php
 // Initialize form variables
-$memberid = (int)($_GET['memberid'] ?? $_POST['memberid'] ?? 0);
+$memberid = (int) ($_GET['memberid'] ?? $_POST['memberid'] ?? 0);
 $editmember = $_GET['editmember'] ?? '';
 
 // CSRF protection for POST requests
@@ -27,7 +27,7 @@ csrf_check();
 if (($pcadmin['member_edit'] ?? '') === 'YES' || ($pcadmin['superadmin'] ?? '') === 'YES') {
     if ($memberid > 0) {
         // Use prepared statement to prevent SQL injection
-        $stmt = $conn->prepare("SELECT * FROM pc_members WHERE id = ?");
+        $stmt = $conn->prepare('SELECT * FROM pc_members WHERE id = ?');
         $stmt->bind_param('i', $memberid);
         $stmt->execute();
         $result = $stmt->get_result();
@@ -36,7 +36,7 @@ if (($pcadmin['member_edit'] ?? '') === 'YES' || ($pcadmin['superadmin'] ?? '') 
         if ($num === 1) {
             $row = mysqli_fetch_array($result, MYSQLI_ASSOC);
             $stmt->close();
-            $rowId = (int)$row['id'];
+            $rowId = (int) $row['id'];
 
             if ($editmember === 'YES' && $_SERVER['REQUEST_METHOD'] === 'POST') {
                 // Get and sanitize form data
@@ -45,10 +45,10 @@ if (($pcadmin['member_edit'] ?? '') === 'YES' || ($pcadmin['superadmin'] ?? '') 
                 $password1 = $_POST['password1'] ?? '';
                 $password2 = $_POST['password2'] ?? '';
                 $work = trim($_POST['work'] ?? '');
-                $icq = (int)($_POST['icq'] ?? 0);
+                $icq = (int) ($_POST['icq'] ?? 0);
                 $homepage = trim($_POST['homepage'] ?? '');
                 $realname = trim($_POST['realname'] ?? '');
-                $age = (int)($_POST['age'] ?? 0);
+                $age = (int) ($_POST['age'] ?? 0);
                 $hardware = trim(strip_tags($_POST['hardware'] ?? ''));
                 $info = trim(strip_tags($_POST['info'] ?? ''));
                 $pic = trim($_POST['pic'] ?? '');
@@ -72,7 +72,7 @@ if (($pcadmin['member_edit'] ?? '') === 'YES' || ($pcadmin['superadmin'] ?? '') 
                 }
 
                 // Check for duplicate email/nick using prepared statement
-                $checkStmt = $conn->prepare("SELECT id FROM pc_members WHERE (email = ? OR nick = ?) AND id != ?");
+                $checkStmt = $conn->prepare('SELECT id FROM pc_members WHERE (email = ? OR nick = ?) AND id != ?');
                 $checkStmt->bind_param('ssi', $email, $nick, $rowId);
                 $checkStmt->execute();
                 $checkResult = $checkStmt->get_result();
@@ -106,20 +106,34 @@ if (($pcadmin['member_edit'] ?? '') === 'YES' || ($pcadmin['superadmin'] ?? '') 
                 }
 
                 // Update member using prepared statement
-                $updateStmt = $conn->prepare("UPDATE pc_members SET
+                $updateStmt = $conn->prepare('UPDATE pc_members SET
                     nick = ?, email = ?, work = ?, icq = ?, homepage = ?,
                     realname = ?, age = ?, hardware = ?, info = ?, pic = ?,
                     member_add = ?, member_edit = ?, member_del = ?,
                     news_add = ?, news_edit = ?, news_del = ?,
                     wars_add = ?, wars_edit = ?, wars_del = ?
-                    WHERE id = ?");
+                    WHERE id = ?');
                 $updateStmt->bind_param(
                     'sssississssssssssssi',
-                    $nick, $email, $work, $icq, $homepage,
-                    $realname, $age, $hardware, $info, $pic,
-                    $member_add, $member_edit, $member_del,
-                    $news_add, $news_edit, $news_del,
-                    $wars_add, $wars_edit, $wars_del,
+                    $nick,
+                    $email,
+                    $work,
+                    $icq,
+                    $homepage,
+                    $realname,
+                    $age,
+                    $hardware,
+                    $info,
+                    $pic,
+                    $member_add,
+                    $member_edit,
+                    $member_del,
+                    $news_add,
+                    $news_edit,
+                    $news_del,
+                    $wars_add,
+                    $wars_edit,
+                    $wars_del,
                     $rowId
                 );
                 $updateStmt->execute();
@@ -132,7 +146,7 @@ if (($pcadmin['member_edit'] ?? '') === 'YES' || ($pcadmin['superadmin'] ?? '') 
                     // Use secure password hashing (NOT base64!)
                     $newPasswordHash = password_hash($password1, PASSWORD_DEFAULT);
 
-                    $pwStmt = $conn->prepare("UPDATE pc_members SET password = ? WHERE id = ?");
+                    $pwStmt = $conn->prepare('UPDATE pc_members SET password = ? WHERE id = ?');
                     $pwStmt->bind_param('si', $newPasswordHash, $rowId);
                     $pwStmt->execute();
                     $pwStmt->close();
@@ -146,7 +160,7 @@ if (($pcadmin['member_edit'] ?? '') === 'YES' || ($pcadmin['superadmin'] ?? '') 
                         "E-Mail: {$email}\n" .
                         "Passwort: {$password1}\n\n" .
                         "Du kannst Deine Daten jederzeit aendern!\n\n" .
-                        "-BITTE NICHT AUF DIESE AUTOMATISCH GENERIERTE EMAIL ANTWORTEN-";
+                        '-BITTE NICHT AUF DIESE AUTOMATISCH GENERIERTE EMAIL ANTWORTEN-';
 
                     $mailHeaders = "From: PowerClan Automailer <noreply@{$_SERVER['HTTP_HOST']}>";
                     @mail($email, $mailSubject, $mailBody, $mailHeaders);
@@ -193,7 +207,7 @@ if (($pcadmin['member_edit'] ?? '') === 'YES' || ($pcadmin['superadmin'] ?? '') 
                 <b>ICQ Nummer</b><br>
                 <small>Die ICQ Nummer des Members, falls dieser ICQ n&uuml;tzt (0 = Keine Angabe)</small>
                 </td><td valign="top" bgcolor="<?= e($admin_tbl1) ?>">
-                <input name="icq" type="number" size="10" maxlength="10" value="<?= (int)$row['icq'] ?>" min="0">
+                <input name="icq" type="number" size="10" maxlength="10" value="<?= (int) $row['icq'] ?>" min="0">
                 </td></tr>
                 <tr><td valign="top">
                 <b>Homepage</b><br>
@@ -211,7 +225,7 @@ if (($pcadmin['member_edit'] ?? '') === 'YES' || ($pcadmin['superadmin'] ?? '') 
                 <b>Alter</b><br>
                 <small>Das Alter des Members (0 = Keine Angabe)</small>
                 </td><td valign="top">
-                <input name="age" type="number" size="2" maxlength="3" value="<?= (int)$row['age'] ?>" min="0" max="150">
+                <input name="age" type="number" size="2" maxlength="3" value="<?= (int) $row['age'] ?>" min="0" max="150">
                 </td></tr>
                 <tr><td valign="top" bgcolor="<?= e($admin_tbl1) ?>">
                 <b>Hardware Informationen</b><br>

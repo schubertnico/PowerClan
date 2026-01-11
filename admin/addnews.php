@@ -32,12 +32,12 @@ if (($pcadmin['news_add'] ?? '') === 'YES' || ($pcadmin['superadmin'] ?? '') ===
         } else {
             $title = strip_tags($title);
             $now = time();
-            $userId = (int)($pcadmin['id'] ?? 0);
+            $userId = (int) ($pcadmin['id'] ?? 0);
             $nick = $pcadmin['nick'] ?? '';
             $email = $pcadmin['email'] ?? '';
 
             // Use prepared statement to prevent SQL injection
-            $stmt = $conn->prepare("INSERT INTO pc_news (userid, time, nick, email, title, text) VALUES (?, ?, ?, ?, ?, ?)");
+            $stmt = $conn->prepare('INSERT INTO pc_news (userid, time, nick, email, title, text) VALUES (?, ?, ?, ?, ?, ?)');
             $stmt->bind_param('iissss', $userId, $now, $nick, $email, $title, $text);
             $stmt->execute();
             $stmt->close();

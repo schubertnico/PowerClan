@@ -25,8 +25,8 @@ $row = null;
 
 // Get news data if newsid provided
 if (!empty($newsid)) {
-    $stmt = $conn->prepare("SELECT * FROM pc_news WHERE id = ?");
-    $newsidInt = (int)$newsid;
+    $stmt = $conn->prepare('SELECT * FROM pc_news WHERE id = ?');
+    $newsidInt = (int) $newsid;
     $stmt->bind_param('i', $newsidInt);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -38,7 +38,7 @@ if (!empty($newsid)) {
 
 // Check permissions
 $hasAccess = ($pcadmin['news_edit'] ?? '') === 'YES'
-    || ($row !== null && (int)($row['userid'] ?? 0) === (int)($pcadmin['id'] ?? 0))
+    || ($row !== null && (int) ($row['userid'] ?? 0) === (int) ($pcadmin['id'] ?? 0))
     || ($pcadmin['superadmin'] ?? '') === 'YES';
 
 if ($hasAccess) {
@@ -53,10 +53,10 @@ if ($hasAccess) {
                 echo '<center><a href="javascript:history.back()">Bitte f&uuml;lle alle Felder aus!</a></center>';
             } else {
                 $title = strip_tags($title);
-                $newsIdForUpdate = (int)$row['id'];
+                $newsIdForUpdate = (int) $row['id'];
 
                 // Use prepared statement
-                $updateStmt = $conn->prepare("UPDATE pc_news SET title = ?, text = ? WHERE id = ?");
+                $updateStmt = $conn->prepare('UPDATE pc_news SET title = ?, text = ? WHERE id = ?');
                 $updateStmt->bind_param('ssi', $title, $text, $newsIdForUpdate);
                 $updateStmt->execute();
                 $updateStmt->close();
@@ -65,7 +65,7 @@ if ($hasAccess) {
             }
         } else {
             $phpSelf = e($_SERVER['PHP_SELF']);
-            $newsIdEsc = (int)$row['id'];
+            $newsIdEsc = (int) $row['id'];
             $nickEsc = e($row['nick'] ?? '');
             $emailEsc = e($row['email'] ?? '');
             $titleEsc = e($row['title'] ?? '');

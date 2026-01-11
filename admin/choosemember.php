@@ -16,7 +16,7 @@ include __DIR__ . '/header.inc.php';
 <!--MAINPAGE-->
 
 <?php
-$query = "SELECT * FROM pc_members ORDER BY nick";
+$query = 'SELECT * FROM pc_members ORDER BY nick';
 $result = $conn->query($query);
 $num = mysqli_num_rows($result);
 
@@ -26,7 +26,7 @@ if ($num === 0) {
     echo "<ul type=\"square\">Memberliste\n";
     while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
         $nick = e($row['nick'] ?? '');
-        $memberId = (int)$row['id'];
+        $memberId = (int) $row['id'];
         echo "<li><b>{$nick}</b> <small>[ <a href=\"editmember.php?memberid={$memberId}\">editieren</a> | <a href=\"delmember.php?memberid={$memberId}\">l&ouml;schen</a> ]</small></li>\n";
     }
     echo '</ul>';

@@ -29,7 +29,7 @@ class WarTest extends IntegrationTestCase
             'map2' => 'de_inferno',
         ]);
 
-        $stmt = $conn->prepare("SELECT * FROM pc_wars WHERE id = ?");
+        $stmt = $conn->prepare('SELECT * FROM pc_wars WHERE id = ?');
         $stmt->bind_param('i', $warId);
         $stmt->execute();
         $result = $stmt->get_result();
@@ -53,7 +53,7 @@ class WarTest extends IntegrationTestCase
             'map3' => 'de_nuke',
         ]);
 
-        $stmt = $conn->prepare("SELECT map1, map2, map3 FROM pc_wars WHERE id = ?");
+        $stmt = $conn->prepare('SELECT map1, map2, map3 FROM pc_wars WHERE id = ?');
         $stmt->bind_param('i', $warId);
         $stmt->execute();
         $result = $stmt->get_result();
@@ -76,14 +76,14 @@ class WarTest extends IntegrationTestCase
             'time' => $scheduledTime,
         ]);
 
-        $stmt = $conn->prepare("SELECT time FROM pc_wars WHERE id = ?");
+        $stmt = $conn->prepare('SELECT time FROM pc_wars WHERE id = ?');
         $stmt->bind_param('i', $warId);
         $stmt->execute();
         $result = $stmt->get_result();
         $war = $result->fetch_assoc();
         $stmt->close();
 
-        $this->assertSame($scheduledTime, (int)$war['time']);
+        $this->assertSame($scheduledTime, (int) $war['time']);
     }
 
     // =========================================================================
@@ -100,12 +100,12 @@ class WarTest extends IntegrationTestCase
         // Set results
         $res1 = '16:10';
         $res2 = '13:16';
-        $stmt = $conn->prepare("UPDATE pc_wars SET res1 = ?, res2 = ? WHERE id = ?");
+        $stmt = $conn->prepare('UPDATE pc_wars SET res1 = ?, res2 = ? WHERE id = ?');
         $stmt->bind_param('ssi', $res1, $res2, $warId);
         $stmt->execute();
         $stmt->close();
 
-        $stmt = $conn->prepare("SELECT res1, res2 FROM pc_wars WHERE id = ?");
+        $stmt = $conn->prepare('SELECT res1, res2 FROM pc_wars WHERE id = ?');
         $stmt->bind_param('i', $warId);
         $stmt->execute();
         $result = $stmt->get_result();
@@ -126,8 +126,8 @@ class WarTest extends IntegrationTestCase
         $parts1 = explode(':', $res1);
         $parts2 = explode(':', $res2);
 
-        $ownScore = (int)$parts1[0] + (int)$parts2[0]; // 16 + 13 = 29
-        $enemyScore = (int)$parts1[1] + (int)$parts2[1]; // 10 + 16 = 26
+        $ownScore = (int) $parts1[0] + (int) $parts2[0]; // 16 + 13 = 29
+        $enemyScore = (int) $parts1[1] + (int) $parts2[1]; // 10 + 16 = 26
 
         $this->assertSame(29, $ownScore);
         $this->assertSame(26, $enemyScore);
@@ -144,7 +144,7 @@ class WarTest extends IntegrationTestCase
             'res2' => '',
         ]);
 
-        $stmt = $conn->prepare("SELECT res1, res2 FROM pc_wars WHERE id = ?");
+        $stmt = $conn->prepare('SELECT res1, res2 FROM pc_wars WHERE id = ?');
         $stmt->bind_param('i', $warId);
         $stmt->execute();
         $result = $stmt->get_result();
@@ -167,12 +167,12 @@ class WarTest extends IntegrationTestCase
         $warId = $this->createWar();
 
         $report = 'Great match! We won 2-0 with excellent teamplay.';
-        $stmt = $conn->prepare("UPDATE pc_wars SET report = ? WHERE id = ?");
+        $stmt = $conn->prepare('UPDATE pc_wars SET report = ? WHERE id = ?');
         $stmt->bind_param('si', $report, $warId);
         $stmt->execute();
         $stmt->close();
 
-        $stmt = $conn->prepare("SELECT report FROM pc_wars WHERE id = ?");
+        $stmt = $conn->prepare('SELECT report FROM pc_wars WHERE id = ?');
         $stmt->bind_param('i', $warId);
         $stmt->execute();
         $result = $stmt->get_result();
@@ -195,12 +195,12 @@ class WarTest extends IntegrationTestCase
 
         $screen1 = 'war_123_map1.jpg';
         $screen2 = 'war_123_map2.jpg';
-        $stmt = $conn->prepare("UPDATE pc_wars SET screen1 = ?, screen2 = ? WHERE id = ?");
+        $stmt = $conn->prepare('UPDATE pc_wars SET screen1 = ?, screen2 = ? WHERE id = ?');
         $stmt->bind_param('ssi', $screen1, $screen2, $warId);
         $stmt->execute();
         $stmt->close();
 
-        $stmt = $conn->prepare("SELECT screen1, screen2 FROM pc_wars WHERE id = ?");
+        $stmt = $conn->prepare('SELECT screen1, screen2 FROM pc_wars WHERE id = ?');
         $stmt->bind_param('i', $warId);
         $stmt->execute();
         $result = $stmt->get_result();
@@ -222,12 +222,12 @@ class WarTest extends IntegrationTestCase
 
         $warId = $this->createWar(['enemy' => 'ToDelete']);
 
-        $stmt = $conn->prepare("DELETE FROM pc_wars WHERE id = ?");
+        $stmt = $conn->prepare('DELETE FROM pc_wars WHERE id = ?');
         $stmt->bind_param('i', $warId);
         $stmt->execute();
         $stmt->close();
 
-        $stmt = $conn->prepare("SELECT id FROM pc_wars WHERE id = ?");
+        $stmt = $conn->prepare('SELECT id FROM pc_wars WHERE id = ?');
         $stmt->bind_param('i', $warId);
         $stmt->execute();
         $result = $stmt->get_result();
@@ -249,10 +249,10 @@ class WarTest extends IntegrationTestCase
         $this->createWar(['enemy' => 'Team B']);
         $this->createWar(['enemy' => 'Team C']);
 
-        $result = $conn->query("SELECT COUNT(*) as count FROM pc_wars");
+        $result = $conn->query('SELECT COUNT(*) as count FROM pc_wars');
         $row = $result->fetch_assoc();
 
-        $this->assertSame(3, (int)$row['count']);
+        $this->assertSame(3, (int) $row['count']);
     }
 
     #[Test]
@@ -263,7 +263,7 @@ class WarTest extends IntegrationTestCase
         $this->createWar(['enemy' => 'Past', 'time' => time() - 86400]);
         $this->createWar(['enemy' => 'Future', 'time' => time() + 86400]);
 
-        $result = $conn->query("SELECT enemy FROM pc_wars ORDER BY time DESC");
+        $result = $conn->query('SELECT enemy FROM pc_wars ORDER BY time DESC');
         $first = $result->fetch_assoc();
 
         $this->assertSame('Future', $first['enemy']);
@@ -278,7 +278,7 @@ class WarTest extends IntegrationTestCase
         $this->createWar(['enemy' => 'Friendly Team', 'league' => 'Friendly']);
         $this->createWar(['enemy' => 'ESPL Team 2', 'league' => 'ESPL']);
 
-        $stmt = $conn->prepare("SELECT COUNT(*) as count FROM pc_wars WHERE league = ?");
+        $stmt = $conn->prepare('SELECT COUNT(*) as count FROM pc_wars WHERE league = ?');
         $league = 'ESPL';
         $stmt->bind_param('s', $league);
         $stmt->execute();
@@ -286,6 +286,6 @@ class WarTest extends IntegrationTestCase
         $row = $result->fetch_assoc();
         $stmt->close();
 
-        $this->assertSame(2, (int)$row['count']);
+        $this->assertSame(2, (int) $row['count']);
     }
 }

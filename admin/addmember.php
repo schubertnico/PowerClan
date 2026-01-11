@@ -44,7 +44,7 @@ if (($pcadmin['member_add'] ?? '') === 'YES' || ($pcadmin['superadmin'] ?? '') =
         }
 
         // Check for existing member using prepared statement
-        $checkStmt = $conn->prepare("SELECT id FROM pc_members WHERE email = ? OR nick = ?");
+        $checkStmt = $conn->prepare('SELECT id FROM pc_members WHERE email = ? OR nick = ?');
         $checkStmt->bind_param('ss', $email, $nickname);
         $checkStmt->execute();
         $checkResult = $checkStmt->get_result();

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace PowerClan\Tests\Integration;
 
 use PHPUnit\Framework\Attributes\Test;
-use PowerClan\Tests\Fixtures\TestDatabase;
 
 /**
  * Integration tests for member management
@@ -93,7 +92,7 @@ class MemberTest extends IntegrationTestCase
         $this->createMember(['email' => $email, 'nick' => 'First']);
 
         // Check for duplicate
-        $stmt = $conn->prepare("SELECT id FROM pc_members WHERE email = ?");
+        $stmt = $conn->prepare('SELECT id FROM pc_members WHERE email = ?');
         $stmt->bind_param('s', $email);
         $stmt->execute();
         $result = $stmt->get_result();
@@ -113,7 +112,7 @@ class MemberTest extends IntegrationTestCase
         $this->createMember(['nick' => $nick, 'email' => 'first@example.com']);
 
         // Check for duplicate
-        $stmt = $conn->prepare("SELECT id FROM pc_members WHERE nick = ?");
+        $stmt = $conn->prepare('SELECT id FROM pc_members WHERE nick = ?');
         $stmt->bind_param('s', $nick);
         $stmt->execute();
         $result = $stmt->get_result();
@@ -139,7 +138,7 @@ class MemberTest extends IntegrationTestCase
 
         // Update member
         $newNick = 'UpdatedNick';
-        $stmt = $conn->prepare("UPDATE pc_members SET nick = ? WHERE id = ?");
+        $stmt = $conn->prepare('UPDATE pc_members SET nick = ? WHERE id = ?');
         $stmt->bind_param('si', $newNick, $memberId);
         $stmt->execute();
         $stmt->close();
@@ -161,7 +160,7 @@ class MemberTest extends IntegrationTestCase
         $newPassword = 'NewSecurePassword123!';
         $hash = password_hash($newPassword, PASSWORD_DEFAULT);
 
-        $stmt = $conn->prepare("UPDATE pc_members SET password = ? WHERE id = ?");
+        $stmt = $conn->prepare('UPDATE pc_members SET password = ? WHERE id = ?');
         $stmt->bind_param('si', $hash, $memberId);
         $stmt->execute();
         $stmt->close();
@@ -182,7 +181,7 @@ class MemberTest extends IntegrationTestCase
 
         // Grant news permissions
         $yes = 'YES';
-        $stmt = $conn->prepare("UPDATE pc_members SET news_add = ?, news_edit = ? WHERE id = ?");
+        $stmt = $conn->prepare('UPDATE pc_members SET news_add = ?, news_edit = ? WHERE id = ?');
         $stmt->bind_param('ssi', $yes, $yes, $memberId);
         $stmt->execute();
         $stmt->close();
@@ -208,7 +207,7 @@ class MemberTest extends IntegrationTestCase
         ]);
 
         // Delete member
-        $stmt = $conn->prepare("DELETE FROM pc_members WHERE id = ?");
+        $stmt = $conn->prepare('DELETE FROM pc_members WHERE id = ?');
         $stmt->bind_param('i', $memberId);
         $stmt->execute();
         $stmt->close();
@@ -226,7 +225,7 @@ class MemberTest extends IntegrationTestCase
         $member2 = $this->createMember(['nick' => 'Member2', 'email' => 'm2@example.com']);
 
         // Delete first member
-        $stmt = $conn->prepare("DELETE FROM pc_members WHERE id = ?");
+        $stmt = $conn->prepare('DELETE FROM pc_members WHERE id = ?');
         $stmt->bind_param('i', $member1);
         $stmt->execute();
         $stmt->close();

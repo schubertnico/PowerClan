@@ -54,7 +54,7 @@ if ($login === 'YES' && $_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (!empty($loginpassword) && !empty($loginemail)) {
         // Use prepared statement for login query
-        $stmt = $conn->prepare("SELECT * FROM pc_members WHERE email = ?");
+        $stmt = $conn->prepare('SELECT * FROM pc_members WHERE email = ?');
         $stmt->bind_param('s', $loginemail);
         $stmt->execute();
         $result = $stmt->get_result();
@@ -73,7 +73,7 @@ if ($login === 'YES' && $_SERVER['REQUEST_METHOD'] === 'POST') {
                     // Rehash if needed
                     if (password_needs_rehash($storedPassword, PASSWORD_DEFAULT)) {
                         $newHash = password_hash((string) $loginpassword, PASSWORD_DEFAULT);
-                        $updateStmt = $conn->prepare("UPDATE pc_members SET password = ? WHERE id = ?");
+                        $updateStmt = $conn->prepare('UPDATE pc_members SET password = ? WHERE id = ?');
                         $updateStmt->bind_param('si', $newHash, $pcadmin['id']);
                         $updateStmt->execute();
                         $updateStmt->close();
@@ -87,7 +87,7 @@ if ($login === 'YES' && $_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 // Migrate to secure hash
                 $newHash = password_hash((string) $loginpassword, PASSWORD_DEFAULT);
-                $updateStmt = $conn->prepare("UPDATE pc_members SET password = ? WHERE id = ?");
+                $updateStmt = $conn->prepare('UPDATE pc_members SET password = ? WHERE id = ?');
                 $updateStmt->bind_param('si', $newHash, $pcadmin['id']);
                 $updateStmt->execute();
                 $updateStmt->close();
@@ -102,7 +102,7 @@ if ($login === 'YES' && $_SERVER['REQUEST_METHOD'] === 'POST') {
                     'httponly' => true,
                     'samesite' => 'Lax'
                 ];
-                setcookie('pcadmin_id', (string)$pcadmin['id'], $cookieOptions);
+                setcookie('pcadmin_id', (string) $pcadmin['id'], $cookieOptions);
                 setcookie('pcadmin_password', (string) $storedPassword, $cookieOptions);
                 $loggedin = 'YES';
 

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace PowerClan\Tests\Integration;
 
+use mysqli;
 use PHPUnit\Framework\TestCase;
 use PowerClan\Tests\Fixtures\TestDatabase;
-use mysqli;
 
 /**
  * Base class for integration tests

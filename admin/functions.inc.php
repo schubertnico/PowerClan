@@ -25,8 +25,8 @@ function checklogin(string $id, string $password): void
     }
 
     // Use prepared statement to prevent SQL injection
-    $stmt = $conn->prepare("SELECT * FROM pc_members WHERE id = ?");
-    $idInt = (int)$id;
+    $stmt = $conn->prepare('SELECT * FROM pc_members WHERE id = ?');
+    $idInt = (int) $id;
     $stmt->bind_param('i', $idInt);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -49,7 +49,7 @@ function checklogin(string $id, string $password): void
                 // Rehash if needed (algorithm update)
                 if (password_needs_rehash($storedPassword, PASSWORD_DEFAULT)) {
                     $newHash = password_hash($password, PASSWORD_DEFAULT);
-                    $updateStmt = $conn->prepare("UPDATE pc_members SET password = ? WHERE id = ?");
+                    $updateStmt = $conn->prepare('UPDATE pc_members SET password = ? WHERE id = ?');
                     $updateStmt->bind_param('si', $newHash, $idInt);
                     $updateStmt->execute();
                     $updateStmt->close();
@@ -62,7 +62,7 @@ function checklogin(string $id, string $password): void
 
             // Migrate to secure password hash
             $newHash = password_hash($password, PASSWORD_DEFAULT);
-            $updateStmt = $conn->prepare("UPDATE pc_members SET password = ? WHERE id = ?");
+            $updateStmt = $conn->prepare('UPDATE pc_members SET password = ? WHERE id = ?');
             $updateStmt->bind_param('si', $newHash, $idInt);
             $updateStmt->execute();
             $updateStmt->close();
@@ -78,29 +78,29 @@ function checklogin(string $id, string $password): void
  * Load settings from database (admin version)
  */
 if (!function_exists('getsettings')) {
-function getsettings(): void
-{
-    global $conn, $settings;
+    function getsettings(): void
+    {
+        global $conn, $settings;
 
-    $query = "SELECT * FROM pc_config WHERE id = 1";
-    $result = $conn->query($query);
+        $query = 'SELECT * FROM pc_config WHERE id = 1';
+        $result = $conn->query($query);
 
-    if ($result === false) {
-        echo '<center><b>Die Konfiguration konnte nicht geladen werden!</b></center>';
-        exit;
-    }
-
-    $num = mysqli_num_rows($result);
-    if ($num === 1) {
-        $dbSettings = mysqli_fetch_array($result, MYSQLI_ASSOC);
-        if ($dbSettings !== null) {
-            $settings = array_merge($settings ?? [], $dbSettings);
+        if ($result === false) {
+            echo '<center><b>Die Konfiguration konnte nicht geladen werden!</b></center>';
+            exit;
         }
-    } else {
-        echo '<center><b>Die Konfiguration konnte nicht geladen werden!</b></center>';
-        exit;
+
+        $num = mysqli_num_rows($result);
+        if ($num === 1) {
+            $dbSettings = mysqli_fetch_array($result, MYSQLI_ASSOC);
+            if ($dbSettings !== null) {
+                $settings = array_merge($settings ?? [], $dbSettings);
+            }
+        } else {
+            echo '<center><b>Die Konfiguration konnte nicht geladen werden!</b></center>';
+            exit;
+        }
     }
-}
 } // end function_exists('getsettings')
 
 /**
@@ -115,18 +115,18 @@ function hash_password(string $password): string
  * Safely escape output for HTML
  */
 if (!function_exists('e')) {
-function e(mixed $value): string
-{
-    return htmlspecialchars((string)$value, ENT_QUOTES, 'UTF-8');
-}
+    function e(mixed $value): string
+    {
+        return htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8');
+    }
 }
 
 /**
  * Validate email address using filter_var (replaces deprecated eregi)
  */
 if (!function_exists('validate_email')) {
-function validate_email(string $email): bool
-{
-    return filter_var(trim($email), FILTER_VALIDATE_EMAIL) !== false;
-}
+    function validate_email(string $email): bool
+    {
+        return filter_var(trim($email), FILTER_VALIDATE_EMAIL) !== false;
+    }
 }

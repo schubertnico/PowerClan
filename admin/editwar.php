@@ -26,8 +26,8 @@ if (($pcadmin['wars_edit'] ?? '') === 'YES' || ($pcadmin['superadmin'] ?? '') ==
 
     if (!empty($warid)) {
         // Get war data using prepared statement
-        $stmt = $conn->prepare("SELECT * FROM pc_wars WHERE id = ?");
-        $waridInt = (int)$warid;
+        $stmt = $conn->prepare('SELECT * FROM pc_wars WHERE id = ?');
+        $waridInt = (int) $warid;
         $stmt->bind_param('i', $waridInt);
         $stmt->execute();
         $result = $stmt->get_result();
@@ -36,7 +36,7 @@ if (($pcadmin['wars_edit'] ?? '') === 'YES' || ($pcadmin['superadmin'] ?? '') ==
         if ($num === 1) {
             $row = mysqli_fetch_array($result, MYSQLI_ASSOC);
             $stmt->close();
-            $rowId = (int)$row['id'];
+            $rowId = (int) $row['id'];
 
             $editwar = $_GET['editwar'] ?? '';
 
@@ -49,11 +49,11 @@ if (($pcadmin['wars_edit'] ?? '') === 'YES' || ($pcadmin['superadmin'] ?? '') ==
                 $map1 = trim($_POST['map1'] ?? '');
                 $map2 = trim($_POST['map2'] ?? '');
                 $map3 = trim($_POST['map3'] ?? '');
-                $time_day = (int)($_POST['time_day'] ?? 1);
-                $time_hour = (int)($_POST['time_hour'] ?? 20);
-                $time_minute = (int)($_POST['time_minute'] ?? 0);
-                $time_month = (int)($_POST['time_month'] ?? 1);
-                $time_year = (int)($_POST['time_year'] ?? date('Y'));
+                $time_day = (int) ($_POST['time_day'] ?? 1);
+                $time_hour = (int) ($_POST['time_hour'] ?? 20);
+                $time_minute = (int) ($_POST['time_minute'] ?? 0);
+                $time_month = (int) ($_POST['time_month'] ?? 1);
+                $time_year = (int) ($_POST['time_year'] ?? date('Y'));
                 $report = trim($_POST['report'] ?? '');
                 $res1 = trim($_POST['res1'] ?? '');
                 $res2 = trim($_POST['res2'] ?? '');
@@ -64,7 +64,7 @@ if (($pcadmin['wars_edit'] ?? '') === 'YES' || ($pcadmin['superadmin'] ?? '') ==
                 } else {
                     $playtime = mktime($time_hour, $time_minute, 0, $time_month, $time_day, $time_year);
 
-                    $updateStmt = $conn->prepare("UPDATE pc_wars SET enemy = ?, enemy_tag = ?, homepage = ?, league = ?, map1 = ?, map2 = ?, map3 = ?, time = ?, report = ?, res1 = ?, res2 = ?, res3 = ? WHERE id = ?");
+                    $updateStmt = $conn->prepare('UPDATE pc_wars SET enemy = ?, enemy_tag = ?, homepage = ?, league = ?, map1 = ?, map2 = ?, map3 = ?, time = ?, report = ?, res1 = ?, res2 = ?, res3 = ? WHERE id = ?');
                     $updateStmt->bind_param('ssssssssssssi', $enemy, $enemy_tag, $homepage, $league, $map1, $map2, $map3, $playtime, $report, $res1, $res2, $res3, $rowId);
                     $updateStmt->execute();
                     $updateStmt->close();
@@ -72,7 +72,7 @@ if (($pcadmin['wars_edit'] ?? '') === 'YES' || ($pcadmin['superadmin'] ?? '') ==
                     echo '<center><a href="choosewar.php">Der War wurde erfolgreich editiert</a></center>';
                 }
             } elseif ($uploadscreen === 'YES' && isset($_GET['map'])) {
-                $map = (int)$_GET['map'];
+                $map = (int) $_GET['map'];
 
                 if ($map >= 1 && $map <= 3) {
                     $targetDirectory = __DIR__ . '/../images/wars/';
@@ -132,12 +132,12 @@ function insertBBCode(tag) {
                 $res2Esc = e($row['res2'] ?? '');
                 $res3Esc = e($row['res3'] ?? '');
                 $reportEsc = e($row['report'] ?? '');
-                $warTime = (int)$row['time'];
+                $warTime = (int) $row['time'];
 
-                $month = (int)date('n', $warTime);
+                $month = (int) date('n', $warTime);
                 $day = date('d', $warTime);
-                $year = (int)date('Y', $warTime);
-                $hour = (int)date('G', $warTime);
+                $year = (int) date('Y', $warTime);
+                $hour = (int) date('G', $warTime);
                 $minute = date('i', $warTime);
 
                 echo "<center>
@@ -207,7 +207,7 @@ function insertBBCode(tag) {
                 $months = ['Januar', 'Februar', 'M&auml;rz', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'];
                 for ($i = 1; $i <= 12; $i++) {
                     $selected = ($i === $month) ? ' selected' : '';
-                    echo "<option value=\"{$i}\"{$selected}>{$months[$i-1]}</option>";
+                    echo "<option value=\"{$i}\"{$selected}>{$months[$i - 1]}</option>";
                 }
 
                 echo "
@@ -215,29 +215,29 @@ function insertBBCode(tag) {
 <input name=\"time_day\" size=\"2\" maxlength=\"2\" value=\"{$day}\" type=\"number\" min=\"1\" max=\"31\" required>
 <select name=\"time_year\" size=\"1\">";
 
-                $curyear = (int)date('Y');
+                $curyear = (int) date('Y');
                 for ($i = $curyear - 5; $i <= $curyear + 5; $i++) {
                     $selected = ($i === $year) ? ' selected' : '';
                     echo "<option value=\"{$i}\"{$selected}>{$i}</option>";
                 }
 
-                echo "
+                echo '
 </select>
-<select name=\"time_hour\" size=\"1\">";
+<select name="time_hour" size="1">';
 
                 for ($i = 0; $i <= 23; $i++) {
                     $selected = ($i === $hour) ? ' selected' : '';
-                    $hourStr = str_pad((string)$i, 2, '0', STR_PAD_LEFT);
+                    $hourStr = str_pad((string) $i, 2, '0', STR_PAD_LEFT);
                     echo "<option value=\"{$i}\"{$selected}>{$hourStr}</option>";
                 }
 
-                echo "
+                echo '
 </select>
-<select name=\"time_minute\" size=\"1\">
-<option value=\"0\"" . ((int)$minute === 0 ? ' selected' : '') . ">00</option>
-<option value=\"15\"" . ((int)$minute === 15 ? ' selected' : '') . ">15</option>
-<option value=\"30\"" . ((int)$minute === 30 ? ' selected' : '') . ">30</option>
-<option value=\"45\"" . ((int)$minute === 45 ? ' selected' : '') . ">45</option>
+<select name="time_minute" size="1">
+<option value="0"' . ((int) $minute === 0 ? ' selected' : '') . '>00</option>
+<option value="15"' . ((int) $minute === 15 ? ' selected' : '') . '>15</option>
+<option value="30"' . ((int) $minute === 30 ? ' selected' : '') . '>30</option>
+<option value="45"' . ((int) $minute === 45 ? ' selected' : '') . ">45</option>
 </select>
 </td></tr>
 <tr><td valign=\"top\" bgcolor=\"{$admin_tbl1}\">

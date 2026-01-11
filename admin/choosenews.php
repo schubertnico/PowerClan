@@ -16,7 +16,7 @@ include __DIR__ . '/header.inc.php';
 <!--MAINPAGE-->
 
 <?php
-$query = "SELECT * FROM pc_news ORDER BY id DESC";
+$query = 'SELECT * FROM pc_news ORDER BY id DESC';
 $result = $conn->query($query);
 $num = mysqli_num_rows($result);
 
@@ -40,11 +40,11 @@ if ($num === 0) {
         $bgcolor = ($i === 0) ? '' : $admin_tbl1;
         $i = ($i === 0) ? 1 : 0;
 
-        $date = date('d.m.Y', (int)$row['time']);
+        $date = date('d.m.Y', (int) $row['time']);
         $title = e($row['title'] ?? '');
         $nick = e($row['nick'] ?? '');
         $email = e($row['email'] ?? '');
-        $newsId = (int)$row['id'];
+        $newsId = (int) $row['id'];
 
         echo "
 <tr><td align=\"center\" bgcolor=\"{$bgcolor}\">

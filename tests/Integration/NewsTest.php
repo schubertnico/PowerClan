@@ -27,7 +27,7 @@ class NewsTest extends IntegrationTestCase
             'email' => 'author@example.com',
         ]);
 
-        $stmt = $conn->prepare("SELECT * FROM pc_news WHERE id = ?");
+        $stmt = $conn->prepare('SELECT * FROM pc_news WHERE id = ?');
         $stmt->bind_param('i', $newsId);
         $stmt->execute();
         $result = $stmt->get_result();
@@ -48,15 +48,15 @@ class NewsTest extends IntegrationTestCase
         $newsId = $this->createNews(['title' => 'Timestamp Test']);
         $afterTime = time();
 
-        $stmt = $conn->prepare("SELECT time FROM pc_news WHERE id = ?");
+        $stmt = $conn->prepare('SELECT time FROM pc_news WHERE id = ?');
         $stmt->bind_param('i', $newsId);
         $stmt->execute();
         $result = $stmt->get_result();
         $news = $result->fetch_assoc();
         $stmt->close();
 
-        $this->assertGreaterThanOrEqual($beforeTime, (int)$news['time']);
-        $this->assertLessThanOrEqual($afterTime, (int)$news['time']);
+        $this->assertGreaterThanOrEqual($beforeTime, (int) $news['time']);
+        $this->assertLessThanOrEqual($afterTime, (int) $news['time']);
     }
 
     #[Test]
@@ -73,14 +73,14 @@ class NewsTest extends IntegrationTestCase
             'title' => 'Author Test',
         ]);
 
-        $stmt = $conn->prepare("SELECT userid, nick, email FROM pc_news WHERE id = ?");
+        $stmt = $conn->prepare('SELECT userid, nick, email FROM pc_news WHERE id = ?');
         $stmt->bind_param('i', $newsId);
         $stmt->execute();
         $result = $stmt->get_result();
         $news = $result->fetch_assoc();
         $stmt->close();
 
-        $this->assertSame($adminId, (int)$news['userid']);
+        $this->assertSame($adminId, (int) $news['userid']);
         $this->assertSame('NewsAuthor', $news['nick']);
     }
 
@@ -96,12 +96,12 @@ class NewsTest extends IntegrationTestCase
         $newsId = $this->createNews(['title' => 'Original Title']);
 
         $newTitle = 'Updated Title';
-        $stmt = $conn->prepare("UPDATE pc_news SET title = ? WHERE id = ?");
+        $stmt = $conn->prepare('UPDATE pc_news SET title = ? WHERE id = ?');
         $stmt->bind_param('si', $newTitle, $newsId);
         $stmt->execute();
         $stmt->close();
 
-        $stmt = $conn->prepare("SELECT title FROM pc_news WHERE id = ?");
+        $stmt = $conn->prepare('SELECT title FROM pc_news WHERE id = ?');
         $stmt->bind_param('i', $newsId);
         $stmt->execute();
         $result = $stmt->get_result();
@@ -119,12 +119,12 @@ class NewsTest extends IntegrationTestCase
         $newsId = $this->createNews(['text' => 'Original text']);
 
         $newText = 'Updated text with [b]BBCode[/b]';
-        $stmt = $conn->prepare("UPDATE pc_news SET text = ? WHERE id = ?");
+        $stmt = $conn->prepare('UPDATE pc_news SET text = ? WHERE id = ?');
         $stmt->bind_param('si', $newText, $newsId);
         $stmt->execute();
         $stmt->close();
 
-        $stmt = $conn->prepare("SELECT text FROM pc_news WHERE id = ?");
+        $stmt = $conn->prepare('SELECT text FROM pc_news WHERE id = ?');
         $stmt->bind_param('i', $newsId);
         $stmt->execute();
         $result = $stmt->get_result();
@@ -145,12 +145,12 @@ class NewsTest extends IntegrationTestCase
 
         $newsId = $this->createNews(['title' => 'To Be Deleted']);
 
-        $stmt = $conn->prepare("DELETE FROM pc_news WHERE id = ?");
+        $stmt = $conn->prepare('DELETE FROM pc_news WHERE id = ?');
         $stmt->bind_param('i', $newsId);
         $stmt->execute();
         $stmt->close();
 
-        $stmt = $conn->prepare("SELECT id FROM pc_news WHERE id = ?");
+        $stmt = $conn->prepare('SELECT id FROM pc_news WHERE id = ?');
         $stmt->bind_param('i', $newsId);
         $stmt->execute();
         $result = $stmt->get_result();
@@ -201,10 +201,10 @@ class NewsTest extends IntegrationTestCase
         $this->createNews(['title' => 'News 2']);
         $this->createNews(['title' => 'News 3']);
 
-        $result = $conn->query("SELECT COUNT(*) as count FROM pc_news");
+        $result = $conn->query('SELECT COUNT(*) as count FROM pc_news');
         $row = $result->fetch_assoc();
 
-        $this->assertSame(3, (int)$row['count']);
+        $this->assertSame(3, (int) $row['count']);
     }
 
     #[Test]
@@ -215,7 +215,7 @@ class NewsTest extends IntegrationTestCase
         $this->createNews(['title' => 'Old News', 'time' => time() - 3600]);
         $this->createNews(['title' => 'New News', 'time' => time()]);
 
-        $result = $conn->query("SELECT title FROM pc_news ORDER BY time DESC");
+        $result = $conn->query('SELECT title FROM pc_news ORDER BY time DESC');
         $first = $result->fetch_assoc();
 
         $this->assertSame('New News', $first['title']);

@@ -31,7 +31,7 @@ switch ($pcpage) {
           </td></tr>
         ";
 
-        $result = $conn->query("SELECT * FROM pc_members ORDER BY nick");
+        $result = $conn->query('SELECT * FROM pc_members ORDER BY nick');
         if ($result === false) {
             echo '<tr><td colspan="2" align="center" bgcolor="' . $bg1 . '"><br><b>Die Datenbank konnte nicht ausgelesen werden!</b><br><br></td></tr>';
             break;
@@ -39,11 +39,11 @@ switch ($pcpage) {
 
         $num = mysqli_num_rows($result);
         if ($num === 0) {
-            echo "
-              <tr><td colspan=\"2\" align=\"center\">
+            echo '
+              <tr><td colspan="2" align="center">
               <br>Es sind keine Member vorhanden!<br><br>
               </td></tr>
-            ";
+            ';
         } else {
             echo '<ul>';
             $i = 1;
@@ -53,7 +53,7 @@ switch ($pcpage) {
                     : e($settings['tablebg3'] ?? '');
                 $i = ($i === 1) ? 2 : 1;
 
-                $memberId = (int)$row['id'];
+                $memberId = (int) $row['id'];
                 $nick = e($row['nick'] ?? '');
                 $work = e($row['work'] ?? '');
 
@@ -73,8 +73,8 @@ switch ($pcpage) {
         if (empty($memberid)) {
             default_error('member.php', 'Bitte w&auml;hle einen Member aus!');
         } else {
-            $stmt = $conn->prepare("SELECT * FROM pc_members WHERE id = ?");
-            $memberIdInt = (int)$memberid;
+            $stmt = $conn->prepare('SELECT * FROM pc_members WHERE id = ?');
+            $memberIdInt = (int) $memberid;
             $stmt->bind_param('i', $memberIdInt);
             $stmt->execute();
             $result = $stmt->get_result();

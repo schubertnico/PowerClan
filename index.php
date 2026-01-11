@@ -25,8 +25,8 @@ declare(strict_types=1);
   </td></tr>
   <tr><td valign="top" bgcolor="<?php echo e($settings['tablebg2'] ?? ''); ?>">
 <?php
-$newsLimit = (int)($settings['newslimit'] ?? 5);
-$stmt = $conn->prepare("SELECT * FROM pc_news ORDER BY id DESC LIMIT ?");
+$newsLimit = (int) ($settings['newslimit'] ?? 5);
+$stmt = $conn->prepare('SELECT * FROM pc_news ORDER BY id DESC LIMIT ?');
 $stmt->bind_param('i', $newsLimit);
 $stmt->execute();
 $result = $stmt->get_result();
@@ -34,8 +34,8 @@ $num = mysqli_num_rows($result);
 
 if ($num !== 0) {
     while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
-        $date = date('d.m.Y', (int)$row['time']);
-        $newsId = (int)$row['id'];
+        $date = date('d.m.Y', (int) $row['time']);
+        $newsId = (int) $row['id'];
         $title = e($row['title'] ?? '');
         echo "<small>{$date}</small> <a href=\"#news{$newsId}\">{$title}</a><br>\n";
     }
@@ -44,7 +44,7 @@ $stmt->close();
 ?>
   </td><td valign="top" bgcolor="<?php echo e($settings['tablebg2'] ?? ''); ?>">
 <?php
-$warLimit = (int)($settings['warlimit'] ?? 5);
+$warLimit = (int) ($settings['warlimit'] ?? 5);
 $stmt = $conn->prepare("SELECT * FROM pc_wars WHERE res1 != '' AND res2 != '' ORDER BY time DESC LIMIT ?");
 $stmt->bind_param('i', $warLimit);
 $stmt->execute();
@@ -53,23 +53,23 @@ $num = mysqli_num_rows($result);
 
 if ($num !== 0) {
     while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
-        $date = date('d.m.Y', (int)$row['time']);
+        $date = date('d.m.Y', (int) $row['time']);
         $allres = ['left' => 0, 'right' => 0];
 
         if (!empty($row['map1']) && !empty($row['res1'])) {
             $res = explode(':', (string) $row['res1']);
-            $allres['left'] += (int)($res[0] ?? 0);
-            $allres['right'] += (int)($res[1] ?? 0);
+            $allres['left'] += (int) ($res[0] ?? 0);
+            $allres['right'] += (int) ($res[1] ?? 0);
         }
         if (!empty($row['map2']) && !empty($row['res2'])) {
             $res = explode(':', (string) $row['res2']);
-            $allres['left'] += (int)($res[0] ?? 0);
-            $allres['right'] += (int)($res[1] ?? 0);
+            $allres['left'] += (int) ($res[0] ?? 0);
+            $allres['right'] += (int) ($res[1] ?? 0);
         }
         if (!empty($row['map3']) && !empty($row['res3'])) {
             $res = explode(':', (string) $row['res3']);
-            $allres['left'] += (int)($res[0] ?? 0);
-            $allres['right'] += (int)($res[1] ?? 0);
+            $allres['left'] += (int) ($res[0] ?? 0);
+            $allres['right'] += (int) ($res[1] ?? 0);
         }
 
         if ($allres['left'] > $allres['right']) {
@@ -80,7 +80,7 @@ if ($num !== 0) {
             $style = e($settings['clrlost'] ?? '#FF0000');
         }
 
-        $warId = (int)$row['id'];
+        $warId = (int) $row['id'];
         $clanTag = e($settings['clantag'] ?? '');
         $enemyTag = e($row['enemy_tag'] ?? '');
         echo "<small>{$date}</small> <a href=\"wars.php#war{$warId}\" style=\"color: {$style}\">{$clanTag} vs. {$enemyTag}</a><br>\n";
@@ -94,7 +94,7 @@ $stmt->close();
 </table>
 <table border="0" cellpadding="3" cellspacing="2" width="100%">
 <?php
-$stmt = $conn->prepare("SELECT * FROM pc_news ORDER BY id DESC LIMIT ?");
+$stmt = $conn->prepare('SELECT * FROM pc_news ORDER BY id DESC LIMIT ?');
 $stmt->bind_param('i', $newsLimit);
 $stmt->execute();
 $result = $stmt->get_result();
@@ -102,9 +102,9 @@ $num = mysqli_num_rows($result);
 
 if ($num !== 0) {
     while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
-        $date = date('d.m.Y', (int)$row['time']);
+        $date = date('d.m.Y', (int) $row['time']);
         $text = news_replace($row['text'] ?? '');
-        $newsId = (int)$row['id'];
+        $newsId = (int) $row['id'];
         $title = e($row['title'] ?? '');
         $nick = e($row['nick'] ?? '');
         $email = e($row['email'] ?? '');

@@ -109,7 +109,7 @@ class TestDatabase
 
         $data = array_merge($defaults, $data);
 
-        $stmt = $conn->prepare("INSERT INTO pc_members (nick, email, password, work, realname, icq, homepage, age, hardware, info, pic, member_add, member_edit, member_del, news_add, news_edit, news_del, wars_add, wars_edit, wars_del, superadmin) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt = $conn->prepare('INSERT INTO pc_members (nick, email, password, work, realname, icq, homepage, age, hardware, info, pic, member_add, member_edit, member_del, news_add, news_edit, news_del, wars_add, wars_edit, wars_del, superadmin) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
         $stmt->bind_param(
             'sssssisisssssssssssss',
             $data['nick'],
@@ -135,7 +135,7 @@ class TestDatabase
             $data['superadmin']
         );
         $stmt->execute();
-        $id = (int)$conn->insert_id;
+        $id = (int) $conn->insert_id;
         $stmt->close();
 
         return $id;
@@ -182,10 +182,10 @@ class TestDatabase
 
         $data = array_merge($defaults, $data);
 
-        $stmt = $conn->prepare("INSERT INTO pc_news (userid, time, nick, email, title, text) VALUES (?, ?, ?, ?, ?, ?)");
+        $stmt = $conn->prepare('INSERT INTO pc_news (userid, time, nick, email, title, text) VALUES (?, ?, ?, ?, ?, ?)');
         $stmt->bind_param('iissss', $data['userid'], $data['time'], $data['nick'], $data['email'], $data['title'], $data['text']);
         $stmt->execute();
-        $id = (int)$conn->insert_id;
+        $id = (int) $conn->insert_id;
         $stmt->close();
 
         return $id;
@@ -218,7 +218,7 @@ class TestDatabase
 
         $data = array_merge($defaults, $data);
 
-        $stmt = $conn->prepare("INSERT INTO pc_wars (enemy, enemy_tag, homepage, league, map1, map2, map3, time, report, res1, res2, res3, screen1, screen2, screen3) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt = $conn->prepare('INSERT INTO pc_wars (enemy, enemy_tag, homepage, league, map1, map2, map3, time, report, res1, res2, res3, screen1, screen2, screen3) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
         $stmt->bind_param(
             'sssssssisssssss',
             $data['enemy'],
@@ -238,7 +238,7 @@ class TestDatabase
             $data['screen3']
         );
         $stmt->execute();
-        $id = (int)$conn->insert_id;
+        $id = (int) $conn->insert_id;
         $stmt->close();
 
         return $id;
@@ -250,7 +250,7 @@ class TestDatabase
     public static function getMember(int $id): ?array
     {
         $conn = self::getConnection();
-        $stmt = $conn->prepare("SELECT * FROM pc_members WHERE id = ?");
+        $stmt = $conn->prepare('SELECT * FROM pc_members WHERE id = ?');
         $stmt->bind_param('i', $id);
         $stmt->execute();
         $result = $stmt->get_result();

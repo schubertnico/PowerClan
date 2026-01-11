@@ -35,7 +35,7 @@ class AuthenticationTest extends IntegrationTestCase
             'password' => $hash,
         ]);
 
-        checklogin((string)$memberId, $password);
+        checklogin((string) $memberId, $password);
 
         $this->assertSame('YES', $loggedin);
         $this->assertSame('TestUser', $pcadmin['nick']);
@@ -56,7 +56,7 @@ class AuthenticationTest extends IntegrationTestCase
         ]);
 
         // Simulate cookie-based login (hash as password)
-        checklogin((string)$memberId, $hash);
+        checklogin((string) $memberId, $hash);
 
         $this->assertSame('YES', $loggedin);
         $this->assertSame('CookieUser', $pcadmin['nick']);
@@ -73,7 +73,7 @@ class AuthenticationTest extends IntegrationTestCase
             'password' => password_hash('correct', PASSWORD_DEFAULT),
         ]);
 
-        checklogin((string)$memberId, 'incorrect');
+        checklogin((string) $memberId, 'incorrect');
 
         $this->assertSame('NO', $loggedin);
     }
@@ -98,7 +98,7 @@ class AuthenticationTest extends IntegrationTestCase
             'email' => 'empty@example.com',
         ]);
 
-        checklogin((string)$memberId, '');
+        checklogin((string) $memberId, '');
 
         $this->assertSame('NO', $loggedin);
     }
@@ -127,12 +127,12 @@ class AuthenticationTest extends IntegrationTestCase
             'password' => $legacyHash,
         ]);
 
-        checklogin((string)$memberId, $password);
+        checklogin((string) $memberId, $password);
 
         $this->assertSame('YES', $loggedin);
 
         // Check that password was migrated
-        $stmt = $conn->prepare("SELECT password FROM pc_members WHERE id = ?");
+        $stmt = $conn->prepare('SELECT password FROM pc_members WHERE id = ?');
         $stmt->bind_param('i', $memberId);
         $stmt->execute();
         $result = $stmt->get_result();

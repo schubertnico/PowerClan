@@ -25,8 +25,8 @@ function default_error(string $url, string $error): void
     }
 
     $safeError = htmlspecialchars($error, ENT_QUOTES, 'UTF-8');
-    echo "
-        <tr><td align=\"center\" bgcolor=\"" . htmlspecialchars((string)$errortablebg, ENT_QUOTES, 'UTF-8') . "\">
+    echo '
+        <tr><td align="center" bgcolor="' . htmlspecialchars((string) $errortablebg, ENT_QUOTES, 'UTF-8') . "\">
         <br>
         <a href=\"{$safeUrl}\">{$safeError}</a><br>
         <br>
@@ -99,7 +99,7 @@ function getsettings(): void
     global $conn, $settings;
 
     try {
-        $query = "SELECT * FROM pc_config WHERE id = 1";
+        $query = 'SELECT * FROM pc_config WHERE id = 1';
         $result = $conn->query($query);
 
         if ($result === false) {
@@ -129,7 +129,7 @@ function getwarstats(): void
 {
     global $conn, $settings;
 
-    $result = $conn->query("SELECT * FROM pc_wars");
+    $result = $conn->query('SELECT * FROM pc_wars');
     if ($result === false) {
         return;
     }
@@ -143,18 +143,18 @@ function getwarstats(): void
         if (!empty($row['res1']) && !empty($row['res2'])) {
             if (!empty($row['map1']) && !empty($row['res1'])) {
                 $res = explode(':', (string) $row['res1']);
-                $allres['left'] += (int)($res[0] ?? 0);
-                $allres['right'] += (int)($res[1] ?? 0);
+                $allres['left'] += (int) ($res[0] ?? 0);
+                $allres['right'] += (int) ($res[1] ?? 0);
             }
             if (!empty($row['map2']) && !empty($row['res2'])) {
                 $res = explode(':', (string) $row['res2']);
-                $allres['left'] += (int)($res[0] ?? 0);
-                $allres['right'] += (int)($res[1] ?? 0);
+                $allres['left'] += (int) ($res[0] ?? 0);
+                $allres['right'] += (int) ($res[1] ?? 0);
             }
             if (!empty($row['map3']) && !empty($row['res3'])) {
                 $res = explode(':', (string) $row['res3']);
-                $allres['left'] += (int)($res[0] ?? 0);
-                $allres['right'] += (int)($res[1] ?? 0);
+                $allres['left'] += (int) ($res[0] ?? 0);
+                $allres['right'] += (int) ($res[1] ?? 0);
             }
 
             if ($allres['left'] > $allres['right']) {
@@ -220,7 +220,7 @@ function getwarstats(): void
  */
 function e(mixed $value): string
 {
-    return htmlspecialchars((string)$value, ENT_QUOTES, 'UTF-8');
+    return htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8');
 }
 
 /**

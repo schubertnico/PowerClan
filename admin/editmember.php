@@ -21,8 +21,8 @@ if (($pcadmin['member_edit'] ?? '') === 'YES' || ($pcadmin['superadmin'] ?? '') 
     $memberid = $_GET['memberid'] ?? '';
 
     if (!empty($memberid)) {
-        $stmt = $conn->prepare("SELECT * FROM pc_members WHERE id = ?");
-        $memberidInt = (int)$memberid;
+        $stmt = $conn->prepare('SELECT * FROM pc_members WHERE id = ?');
+        $memberidInt = (int) $memberid;
         $stmt->bind_param('i', $memberidInt);
         $stmt->execute();
         $result = $stmt->get_result();
@@ -31,7 +31,7 @@ if (($pcadmin['member_edit'] ?? '') === 'YES' || ($pcadmin['superadmin'] ?? '') 
         if ($num === 1) {
             $row = mysqli_fetch_array($result, MYSQLI_ASSOC);
             $stmt->close();
-            $rowId = (int)$row['id'];
+            $rowId = (int) $row['id'];
 
             $editmember = $_GET['editmember'] ?? '';
 
@@ -68,7 +68,7 @@ if (($pcadmin['member_edit'] ?? '') === 'YES' || ($pcadmin['superadmin'] ?? '') 
                 }
 
                 // Check for duplicate
-                $checkStmt = $conn->prepare("SELECT id FROM pc_members WHERE (email = ? OR nick = ?) AND id != ?");
+                $checkStmt = $conn->prepare('SELECT id FROM pc_members WHERE (email = ? OR nick = ?) AND id != ?');
                 $checkStmt->bind_param('ssi', $email, $nick, $rowId);
                 $checkStmt->execute();
                 $checkResult = $checkStmt->get_result();
@@ -97,7 +97,7 @@ if (($pcadmin['member_edit'] ?? '') === 'YES' || ($pcadmin['superadmin'] ?? '') 
                 }
 
                 // Update member using prepared statement
-                $updateStmt = $conn->prepare("UPDATE pc_members SET nick = ?, email = ?, work = ?, realname = ?, icq = ?, homepage = ?, age = ?, hardware = ?, info = ?, pic = ?, member_add = ?, member_edit = ?, member_del = ?, news_add = ?, news_edit = ?, news_del = ?, wars_add = ?, wars_edit = ?, wars_del = ? WHERE id = ?");
+                $updateStmt = $conn->prepare('UPDATE pc_members SET nick = ?, email = ?, work = ?, realname = ?, icq = ?, homepage = ?, age = ?, hardware = ?, info = ?, pic = ?, member_add = ?, member_edit = ?, member_del = ?, news_add = ?, news_edit = ?, news_del = ?, wars_add = ?, wars_edit = ?, wars_del = ? WHERE id = ?');
                 $updateStmt->bind_param('sssssssssssssssssssi', $nick, $email, $work, $realname, $icq, $homepage, $age, $hardware, $info, $pic, $member_add, $member_edit, $member_del, $news_add, $news_edit, $news_del, $wars_add, $wars_edit, $wars_del, $rowId);
                 $updateStmt->execute();
                 $updateStmt->close();
@@ -108,7 +108,7 @@ if (($pcadmin['member_edit'] ?? '') === 'YES' || ($pcadmin['superadmin'] ?? '') 
                 // Update password if changed
                 if ($password1 !== '' && $password2 !== '' && $password1 === $password2) {
                     $newPassword = password_hash(trim($password1), PASSWORD_DEFAULT);
-                    $pwStmt = $conn->prepare("UPDATE pc_members SET password = ? WHERE id = ?");
+                    $pwStmt = $conn->prepare('UPDATE pc_members SET password = ? WHERE id = ?');
                     $pwStmt->bind_param('si', $newPassword, $rowId);
                     $pwStmt->execute();
                     $pwStmt->close();

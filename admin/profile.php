@@ -19,8 +19,8 @@ include __DIR__ . '/header.inc.php';
 <?php
 
 // Get current member data using prepared statement
-$stmt = $conn->prepare("SELECT * FROM pc_members WHERE id = ?");
-$memberId = (int)($pcadmin['id'] ?? 0);
+$stmt = $conn->prepare('SELECT * FROM pc_members WHERE id = ?');
+$memberId = (int) ($pcadmin['id'] ?? 0);
 $stmt->bind_param('i', $memberId);
 $stmt->execute();
 $result = $stmt->get_result();
@@ -56,7 +56,7 @@ if ($num === 1) {
         }
 
         // Check for duplicate email/nick using prepared statement
-        $checkStmt = $conn->prepare("SELECT id FROM pc_members WHERE (email = ? OR nick = ?) AND id != ?");
+        $checkStmt = $conn->prepare('SELECT id FROM pc_members WHERE (email = ? OR nick = ?) AND id != ?');
         $checkStmt->bind_param('ssi', $email, $nick, $memberId);
         $checkStmt->execute();
         $checkResult = $checkStmt->get_result();
@@ -95,7 +95,7 @@ if ($num === 1) {
         $pic = trim($pic);
 
         // Update profile using prepared statement
-        $updateStmt = $conn->prepare("UPDATE pc_members SET nick = ?, email = ?, realname = ?, icq = ?, homepage = ?, age = ?, hardware = ?, info = ?, pic = ? WHERE id = ?");
+        $updateStmt = $conn->prepare('UPDATE pc_members SET nick = ?, email = ?, realname = ?, icq = ?, homepage = ?, age = ?, hardware = ?, info = ?, pic = ? WHERE id = ?');
         $updateStmt->bind_param('sssssssssi', $nick, $email, $realname, $icq, $homepage, $age, $hardware, $info, $pic, $memberId);
         $updateStmt->execute();
         $updateStmt->close();
@@ -105,7 +105,7 @@ if ($num === 1) {
         // Update password if changed
         if ($password1 !== '' && $password2 !== '' && $password1 === $password2) {
             $newPassword = password_hash(trim($password1), PASSWORD_DEFAULT);
-            $pwStmt = $conn->prepare("UPDATE pc_members SET password = ? WHERE id = ?");
+            $pwStmt = $conn->prepare('UPDATE pc_members SET password = ? WHERE id = ?');
             $pwStmt->bind_param('si', $newPassword, $memberId);
             $pwStmt->execute();
             $pwStmt->close();

@@ -16,7 +16,7 @@ include __DIR__ . '/header.inc.php';
 <!--MAINPAGE-->
 
 <?php
-$query = "SELECT * FROM pc_wars ORDER BY time DESC";
+$query = 'SELECT * FROM pc_wars ORDER BY time DESC';
 $result = $conn->query($query);
 $num = mysqli_num_rows($result);
 
@@ -40,13 +40,13 @@ if ($num === 0) {
         $bgcolor = ($i === 0) ? '' : $admin_tbl1;
         $i = ($i === 0) ? 1 : 0;
 
-        $date = date('d.m.Y', (int)$row['time']);
-        $time = date('H:i', (int)$row['time']);
+        $date = date('d.m.Y', (int) $row['time']);
+        $time = date('H:i', (int) $row['time']);
         $enemy = e($row['enemy'] ?? '');
         $map1 = e($row['map1'] ?? '');
         $map2 = e($row['map2'] ?? '');
         $map3 = e($row['map3'] ?? '');
-        $warId = (int)$row['id'];
+        $warId = (int) $row['id'];
 
         echo "
 <tr><td align=\"center\" bgcolor=\"{$bgcolor}\">

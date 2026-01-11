@@ -24,8 +24,8 @@ if (($pcadmin['wars_del'] ?? '') === 'YES' || ($pcadmin['superadmin'] ?? '') ===
     $warid = $_GET['warid'] ?? $_POST['warid'] ?? '';
 
     if (!empty($warid)) {
-        $stmt = $conn->prepare("SELECT * FROM pc_wars WHERE id = ?");
-        $waridInt = (int)$warid;
+        $stmt = $conn->prepare('SELECT * FROM pc_wars WHERE id = ?');
+        $waridInt = (int) $warid;
         $stmt->bind_param('i', $waridInt);
         $stmt->execute();
         $result = $stmt->get_result();
@@ -38,16 +38,16 @@ if (($pcadmin['wars_del'] ?? '') === 'YES' || ($pcadmin['superadmin'] ?? '') ===
             $delwar = $_POST['delwar'] ?? '';
 
             if ($delwar === 'YES' && $_SERVER['REQUEST_METHOD'] === 'POST') {
-                $delStmt = $conn->prepare("DELETE FROM pc_wars WHERE id = ?");
+                $delStmt = $conn->prepare('DELETE FROM pc_wars WHERE id = ?');
                 $delStmt->bind_param('i', $waridInt);
                 $delStmt->execute();
                 $delStmt->close();
                 echo '<center><a href="choosewar.php">Der War wurde erfolgreich gel&ouml;scht!</a></center>';
             } else {
-                $date = date('d.m.Y', (int)$row['time']);
-                $time = date('H:i', (int)$row['time']);
+                $date = date('d.m.Y', (int) $row['time']);
+                $time = date('H:i', (int) $row['time']);
                 $enemy = e($row['enemy'] ?? '');
-                $warId = (int)$row['id'];
+                $warId = (int) $row['id'];
 
                 echo "
 <center>

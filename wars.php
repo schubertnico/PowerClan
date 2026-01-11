@@ -32,7 +32,7 @@ switch ($pcpage) {
           </td></tr>
         ";
 
-        $result = $conn->query("SELECT * FROM pc_wars ORDER BY time DESC");
+        $result = $conn->query('SELECT * FROM pc_wars ORDER BY time DESC');
         if ($result === false) {
             break;
         }
@@ -78,9 +78,9 @@ switch ($pcpage) {
                 $bgnum = ($bgnum === 0) ? 1 : 0;
 
                 $endres = [0, 0];
-                $warId = (int)$row['id'];
-                $date = date('d.m.Y', (int)$row['time']);
-                $time = date('H:i', (int)$row['time']);
+                $warId = (int) $row['id'];
+                $date = date('d.m.Y', (int) $row['time']);
+                $time = date('H:i', (int) $row['time']);
                 $enemyTag = e($row['enemy_tag'] ?? '');
                 $homepage = $row['homepage'] ?? '';
                 $league = e($row['league'] ?? '');
@@ -116,8 +116,8 @@ switch ($pcpage) {
                 }
                 if (!empty($row['res1'])) {
                     $res = explode(':', (string) $row['res1']);
-                    $r0 = (int)($res[0] ?? 0);
-                    $r1 = (int)($res[1] ?? 0);
+                    $r0 = (int) ($res[0] ?? 0);
+                    $r1 = (int) ($res[1] ?? 0);
                     if ($r0 > $r1) {
                         $style = e($settings['clrwon'] ?? '#00FF00');
                     } elseif ($r0 === $r1) {
@@ -144,8 +144,8 @@ switch ($pcpage) {
                 }
                 if (!empty($row['res2'])) {
                     $res = explode(':', (string) $row['res2']);
-                    $r0 = (int)($res[0] ?? 0);
-                    $r1 = (int)($res[1] ?? 0);
+                    $r0 = (int) ($res[0] ?? 0);
+                    $r1 = (int) ($res[1] ?? 0);
                     if ($r0 > $r1) {
                         $style = e($settings['clrwon'] ?? '#00FF00');
                     } elseif ($r0 === $r1) {
@@ -172,8 +172,8 @@ switch ($pcpage) {
                 }
                 if (!empty($row['res3'])) {
                     $res = explode(':', (string) $row['res3']);
-                    $r0 = (int)($res[0] ?? 0);
-                    $r1 = (int)($res[1] ?? 0);
+                    $r0 = (int) ($res[0] ?? 0);
+                    $r1 = (int) ($res[1] ?? 0);
                     if ($r0 > $r1) {
                         $style = e($settings['clrwon'] ?? '#00FF00');
                     } elseif ($r0 === $r1) {
@@ -210,9 +210,9 @@ switch ($pcpage) {
                     echo '<a href="wars.php?pcpage=showreport&amp;warid=' . $warId . '"><img src="images/report.gif" border="0" alt="Bericht lesen"></a>';
                 }
 
-                echo "
+                echo '
                   </td></tr>
-                ";
+                ';
 
                 $warnumber--;
             }
@@ -224,8 +224,8 @@ switch ($pcpage) {
         if (empty($warid)) {
             default_error('wars.php', 'Du musst einen War ausw&auml;hlen!');
         } else {
-            $stmt = $conn->prepare("SELECT * FROM pc_wars WHERE id = ?");
-            $warIdInt = (int)$warid;
+            $stmt = $conn->prepare('SELECT * FROM pc_wars WHERE id = ?');
+            $warIdInt = (int) $warid;
             $stmt->bind_param('i', $warIdInt);
             $stmt->execute();
             $result = $stmt->get_result();

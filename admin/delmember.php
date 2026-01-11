@@ -24,8 +24,8 @@ if (($pcadmin['member_del'] ?? '') === 'YES' || ($pcadmin['superadmin'] ?? '') =
     $memberid = $_GET['memberid'] ?? $_POST['memberid'] ?? '';
 
     if (!empty($memberid)) {
-        $stmt = $conn->prepare("SELECT * FROM pc_members WHERE id = ?");
-        $memberidInt = (int)$memberid;
+        $stmt = $conn->prepare('SELECT * FROM pc_members WHERE id = ?');
+        $memberidInt = (int) $memberid;
         $stmt->bind_param('i', $memberidInt);
         $stmt->execute();
         $result = $stmt->get_result();
@@ -36,7 +36,7 @@ if (($pcadmin['member_del'] ?? '') === 'YES' || ($pcadmin['superadmin'] ?? '') =
             $stmt->close();
 
             // Prevent self-deletion
-            if ((int)$row['id'] === (int)($pcadmin['id'] ?? 0)) {
+            if ((int) $row['id'] === (int) ($pcadmin['id'] ?? 0)) {
                 echo '<center><a href="choosemember.php">Du kannst Dich nicht selbst l&ouml;schen!</a></center>';
                 exit;
             }
@@ -50,7 +50,7 @@ if (($pcadmin['member_del'] ?? '') === 'YES' || ($pcadmin['superadmin'] ?? '') =
             $delmember = $_POST['delmember'] ?? '';
 
             if ($delmember === 'YES' && $_SERVER['REQUEST_METHOD'] === 'POST') {
-                $delStmt = $conn->prepare("DELETE FROM pc_members WHERE id = ?");
+                $delStmt = $conn->prepare('DELETE FROM pc_members WHERE id = ?');
                 $delStmt->bind_param('i', $memberidInt);
                 $delStmt->execute();
                 $delStmt->close();
@@ -58,7 +58,7 @@ if (($pcadmin['member_del'] ?? '') === 'YES' || ($pcadmin['superadmin'] ?? '') =
             } else {
                 $nick = e($row['nick'] ?? '');
                 $work = e($row['work'] ?? '');
-                $memberId = (int)$row['id'];
+                $memberId = (int) $row['id'];
 
                 echo "
 <center>
