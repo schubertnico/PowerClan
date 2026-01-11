@@ -61,7 +61,9 @@ if ($num === 1) {
         $checkStmt->execute();
         $checkResult = $checkStmt->get_result();
         if (mysqli_num_rows($checkResult) !== 0) {
-            echo '<center><a href="javascript:history.back()">Es gibt schon einen Member mit dieser E-Mail Adresse oder diesem Nickname!</a></center>';
+            echo '<center><a href="javascript:history.back()">'
+                . 'Es gibt schon einen Member mit dieser E-Mail Adresse oder diesem Nickname!'
+                . '</a></center>';
             $checkStmt->close();
             exit;
         }
@@ -69,17 +71,23 @@ if ($num === 1) {
 
         // Validate email using filter_var (replaces deprecated regex)
         if (!validate_email($email)) {
-            echo '<center><a href="javascript:history.back()">Die angegebene E-Mail Adresse ist ung&uuml;ltig!</a></center>';
+            echo '<center><a href="javascript:history.back()">'
+                . 'Die angegebene E-Mail Adresse ist ung&uuml;ltig!</a></center>';
             exit;
         }
 
         // Password validation
-        if (($password1 !== '' && $password2 === '') || ($password1 === '' && $password2 !== '')) {
-            echo '<center><a href="javascript:history.back()">Du musst Dein neues Passwort best&auml;tigen</a></center>';
+        if (
+            ($password1 !== '' && $password2 === '')
+            || ($password1 === '' && $password2 !== '')
+        ) {
+            echo '<center><a href="javascript:history.back()">'
+                . 'Du musst Dein neues Passwort best&auml;tigen</a></center>';
             exit;
         }
         if ($password1 !== $password2) {
-            echo '<center><a href="javascript:history.back()">Das neue Passwort wurde falsch best&auml;tigt!</a></center>';
+            echo '<center><a href="javascript:history.back()">'
+                . 'Das neue Passwort wurde falsch best&auml;tigt!</a></center>';
             exit;
         }
 
@@ -95,8 +103,22 @@ if ($num === 1) {
         $pic = trim($pic);
 
         // Update profile using prepared statement
-        $updateStmt = $conn->prepare('UPDATE pc_members SET nick = ?, email = ?, realname = ?, icq = ?, homepage = ?, age = ?, hardware = ?, info = ?, pic = ? WHERE id = ?');
-        $updateStmt->bind_param('sssssssssi', $nick, $email, $realname, $icq, $homepage, $age, $hardware, $info, $pic, $memberId);
+        $sql = 'UPDATE pc_members SET nick = ?, email = ?, realname = ?, icq = ?, '
+            . 'homepage = ?, age = ?, hardware = ?, info = ?, pic = ? WHERE id = ?';
+        $updateStmt = $conn->prepare($sql);
+        $updateStmt->bind_param(
+            'sssssssssi',
+            $nick,
+            $email,
+            $realname,
+            $icq,
+            $homepage,
+            $age,
+            $hardware,
+            $info,
+            $pic,
+            $memberId
+        );
         $updateStmt->execute();
         $updateStmt->close();
 

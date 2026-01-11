@@ -37,14 +37,31 @@ if (($pcadmin['wars_add'] ?? '') === 'YES' || ($pcadmin['superadmin'] ?? '') ===
         $time_month = (int) ($_POST['time_month'] ?? 1);
         $time_year = (int) ($_POST['time_year'] ?? date('Y'));
 
-        if (empty($enemy) || empty($enemy_tag) || empty($homepage) || empty($league) || empty($map1) || empty($map2) || $time_day < 1) {
-            echo '<center><a href="javascript:history.back()">Bitte f&uuml;lle alle nicht optionalen Felder aus!</a></center>';
+        if (
+            empty($enemy) || empty($enemy_tag) || empty($homepage)
+            || empty($league) || empty($map1) || empty($map2) || $time_day < 1
+        ) {
+            echo '<center><a href="javascript:history.back()">'
+                . 'Bitte f&uuml;lle alle nicht optionalen Felder aus!</a></center>';
         } else {
             $playtime = mktime($time_hour, $time_minute, 0, $time_month, $time_day, $time_year);
 
             // Use prepared statement to prevent SQL injection
-            $stmt = $conn->prepare("INSERT INTO pc_wars (enemy, enemy_tag, homepage, league, map1, map2, map3, time, report, res1, res2, res3, screen1, screen2, screen3) VALUES (?, ?, ?, ?, ?, ?, ?, ?, '', '', '', '', '', '', '')");
-            $stmt->bind_param('sssssssi', $enemy, $enemy_tag, $homepage, $league, $map1, $map2, $map3, $playtime);
+            $sql = "INSERT INTO pc_wars (enemy, enemy_tag, homepage, league, map1, map2, map3, "
+                . "time, report, res1, res2, res3, screen1, screen2, screen3) "
+                . "VALUES (?, ?, ?, ?, ?, ?, ?, ?, '', '', '', '', '', '', '')";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param(
+                'sssssssi',
+                $enemy,
+                $enemy_tag,
+                $homepage,
+                $league,
+                $map1,
+                $map2,
+                $map3,
+                $playtime
+            );
             $stmt->execute();
             $stmt->close();
 

@@ -37,7 +37,9 @@ if (($pcadmin['news_add'] ?? '') === 'YES' || ($pcadmin['superadmin'] ?? '') ===
             $email = $pcadmin['email'] ?? '';
 
             // Use prepared statement to prevent SQL injection
-            $stmt = $conn->prepare('INSERT INTO pc_news (userid, time, nick, email, title, text) VALUES (?, ?, ?, ?, ?, ?)');
+            $sql = 'INSERT INTO pc_news (userid, time, nick, email, title, text) '
+                . 'VALUES (?, ?, ?, ?, ?, ?)';
+            $stmt = $conn->prepare($sql);
             $stmt->bind_param('iissss', $userId, $now, $nick, $email, $title, $text);
             $stmt->execute();
             $stmt->close();
@@ -73,7 +75,8 @@ function insertBBCode(tag) {
         <tr>
             <td bgcolor=\"{$admin_tbl1}\" valign=\"top\">
                 <b>Nickname</b><br>
-                <small>Wenn Du Deinen Nickname &auml;ndern m&ouml;chtest, editiere <a href=\"profile.php\">Dein Profil</a></small>
+                <small>Wenn Du Deinen Nickname &auml;ndern m&ouml;chtest, editiere "
+            . "<a href=\"profile.php\">Dein Profil</a></small>
             </td>
             <td bgcolor=\"{$admin_tbl1}\" valign=\"top\" width=\"400\">
                 {$nickDisplay}
@@ -82,7 +85,8 @@ function insertBBCode(tag) {
         <tr>
             <td valign=\"top\">
                 <b>E-Mail Adresse</b><br>
-                <small>Wenn Du Deine E-Mail Adresse &auml;ndern m&ouml;chtest, editiere <a href=\"profile.php\">Dein Profil</a></small>
+                <small>Wenn Du Deine E-Mail Adresse &auml;ndern m&ouml;chtest, editiere "
+            . "<a href=\"profile.php\">Dein Profil</a></small>
             </td>
             <td valign=\"top\">
                 {$emailDisplay}
@@ -107,10 +111,18 @@ function insertBBCode(tag) {
                     <b class=\"red\">[b]</b><b>fett</b><b class=\"red\">[/b]</b><br>
                     <b class=\"red\">[u]</b><u>unterstrichen</u><b class=\"red\">[/u]</b><br>
                     <b class=\"red\">[i]</b><i>kursiv</i><b class=\"red\">[/i]</b><br>
-                    <b class=\"red\">[url]</b><a href=\"https://www.powerscripts.org/\" target=\"_new\">www.powerscripts.org</a><b class=\"red\">[/url]</b><br>
-                    <b class=\"red\">[url=https://www.powerscripts.org/]</b><a href=\"https://www.powerscripts.org/\">PowerScripts</a><b class=\"red\">[/url]</b><br>
-                    <b class=\"red\">[email]</b><a href=\"mailto:support@powerscripts.org\">support@powerscripts.org</a><b class=\"red\">[/email]</b><br>
-                    <b class=\"red\">[email=support@powerscripts.org]</b><a href=\"mailto:support@powerscripts.org\">Support</a><b class=\"red\">[/email]</b><br>
+                    <b class=\"red\">[url]</b>"
+            . "<a href=\"https://www.powerscripts.org/\" target=\"_new\">"
+            . "www.powerscripts.org</a><b class=\"red\">[/url]</b><br>
+                    <b class=\"red\">[url=https://www.powerscripts.org/]</b>"
+            . "<a href=\"https://www.powerscripts.org/\">PowerScripts</a>"
+            . "<b class=\"red\">[/url]</b><br>
+                    <b class=\"red\">[email]</b>"
+            . "<a href=\"mailto:support@powerscripts.org\">support@powerscripts.org</a>"
+            . "<b class=\"red\">[/email]</b><br>
+                    <b class=\"red\">[email=support@powerscripts.org]</b>"
+            . "<a href=\"mailto:support@powerscripts.org\">Support</a>"
+            . "<b class=\"red\">[/email]</b><br>
                     <br>
                     Enter f&uuml;r Zeilenumbruch
                 </small>
@@ -121,12 +133,14 @@ function insertBBCode(tag) {
                 <button type=\"button\" onclick=\"insertBBCode('i')\">Kursiv</button>
                 <button type=\"button\" onclick=\"insertBBCode('url')\">URL</button>
                 <button type=\"button\" onclick=\"insertBBCode('email')\">E-Mail</button>
-                <textarea id=\"text\" name=\"text\" cols=\"45\" rows=\"15\" style=\"margin-top: 5px;\" required></textarea>
+                <textarea id=\"text\" name=\"text\" cols=\"45\" rows=\"15\" "
+            . "style=\"margin-top: 5px;\" required></textarea>
             </td>
         </tr>
         <tr>
             <td colspan=\"2\" align=\"center\" bgcolor=\"{$admin_tbl1}\">
-                <input type=\"submit\" value=\"News hinzuf&uuml;gen\"> <input type=\"reset\" value=\"Daten zur&uuml;cksetzen\">
+                <input type=\"submit\" value=\"News hinzuf&uuml;gen\"> "
+            . "<input type=\"reset\" value=\"Daten zur&uuml;cksetzen\">
             </td>
         </tr>
     </table>

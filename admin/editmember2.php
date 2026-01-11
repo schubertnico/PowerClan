@@ -79,7 +79,9 @@ if (($pcadmin['member_edit'] ?? '') === 'YES' || ($pcadmin['superadmin'] ?? '') 
 
                 if (mysqli_num_rows($checkResult) !== 0) {
                     $checkStmt->close();
-                    echo '<center><a href="javascript:history.back()">Es gibt schon einen Member mit dieser E-Mail oder diesem Nickname!</a></center>';
+                    echo '<center><a href="javascript:history.back()">'
+                        . 'Es gibt schon einen Member mit dieser E-Mail oder diesem Nickname!'
+                        . '</a></center>';
                     include __DIR__ . '/footer.inc.php';
                     exit;
                 }
@@ -87,20 +89,27 @@ if (($pcadmin['member_edit'] ?? '') === 'YES' || ($pcadmin['superadmin'] ?? '') 
 
                 // Validate email
                 if (!validate_email($email)) {
-                    echo '<center><a href="javascript:history.back()">Die angegebene E-Mail Adresse ist ung&uuml;ltig!</a></center>';
+                    echo '<center><a href="javascript:history.back()">'
+                        . 'Die angegebene E-Mail Adresse ist ung&uuml;ltig!</a></center>';
                     include __DIR__ . '/footer.inc.php';
                     exit;
                 }
 
                 // Password validation
-                if (($password1 !== '' && $password2 === '') || ($password1 === '' && $password2 !== '')) {
-                    echo '<center><a href="javascript:history.back()">Du musst das neue Passwort f&uuml;r ' . e($row['nick']) . ' best&auml;tigen</a></center>';
+                if (
+                    ($password1 !== '' && $password2 === '')
+                    || ($password1 === '' && $password2 !== '')
+                ) {
+                    echo '<center><a href="javascript:history.back()">'
+                        . 'Du musst das neue Passwort f&uuml;r ' . e($row['nick'])
+                        . ' best&auml;tigen</a></center>';
                     include __DIR__ . '/footer.inc.php';
                     exit;
                 }
 
                 if ($password1 !== $password2) {
-                    echo '<center><a href="javascript:history.back()">Das neue Passwort wurde falsch best&auml;tigt!</a></center>';
+                    echo '<center><a href="javascript:history.back()">'
+                        . 'Das neue Passwort wurde falsch best&auml;tigt!</a></center>';
                     include __DIR__ . '/footer.inc.php';
                     exit;
                 }
@@ -139,7 +148,9 @@ if (($pcadmin['member_edit'] ?? '') === 'YES' || ($pcadmin['superadmin'] ?? '') 
                 $updateStmt->execute();
                 $updateStmt->close();
 
-                echo '<center><a href="choosemember.php">Der Member <b>' . e($row['nick']) . '</b> wurde erfolgreich editiert!</a></center>';
+                echo '<center><a href="choosemember.php">'
+                    . 'Der Member <b>' . e($row['nick']) . '</b> wurde erfolgreich editiert!'
+                    . '</a></center>';
 
                 // Password change
                 if ($password1 !== '' && $password2 !== '' && $password1 === $password2) {
@@ -165,7 +176,8 @@ if (($pcadmin['member_edit'] ?? '') === 'YES' || ($pcadmin['superadmin'] ?? '') 
                     $mailHeaders = "From: PowerClan Automailer <noreply@{$_SERVER['HTTP_HOST']}>";
                     @mail($email, $mailSubject, $mailBody, $mailHeaders);
 
-                    echo '<center><br><br>Au&szlig;erdem wurde ' . e($row['nick']) . ' eine E-Mail mit seinem neuen Passwort zugeschickt!</center>';
+                    echo '<center><br><br>Au&szlig;erdem wurde ' . e($row['nick'])
+                        . ' eine E-Mail mit seinem neuen Passwort zugeschickt!</center>';
                 }
             } else {
                 // Display edit form
@@ -225,7 +237,8 @@ if (($pcadmin['member_edit'] ?? '') === 'YES' || ($pcadmin['superadmin'] ?? '') 
                 <b>Alter</b><br>
                 <small>Das Alter des Members (0 = Keine Angabe)</small>
                 </td><td valign="top">
-                <input name="age" type="number" size="2" maxlength="3" value="<?= (int) $row['age'] ?>" min="0" max="150">
+                <input name="age" type="number" size="2" maxlength="3"
+                    value="<?= (int) $row['age'] ?>" min="0" max="150">
                 </td></tr>
                 <tr><td valign="top" bgcolor="<?= e($admin_tbl1) ?>">
                 <b>Hardware Informationen</b><br>

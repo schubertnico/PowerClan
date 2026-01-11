@@ -59,13 +59,35 @@ if (($pcadmin['wars_edit'] ?? '') === 'YES' || ($pcadmin['superadmin'] ?? '') ==
                 $res2 = trim($_POST['res2'] ?? '');
                 $res3 = trim($_POST['res3'] ?? '');
 
-                if (empty($enemy) || empty($enemy_tag) || empty($homepage) || empty($league) || empty($map1) || empty($map2) || $time_day < 1) {
-                    echo '<center><a href="javascript:history.back()">Bitte f&uuml;lle alle nicht optionalen Felder aus!</a></center>';
+                if (
+                    empty($enemy) || empty($enemy_tag) || empty($homepage)
+                    || empty($league) || empty($map1) || empty($map2) || $time_day < 1
+                ) {
+                    echo '<center><a href="javascript:history.back()">'
+                        . 'Bitte f&uuml;lle alle nicht optionalen Felder aus!</a></center>';
                 } else {
                     $playtime = mktime($time_hour, $time_minute, 0, $time_month, $time_day, $time_year);
 
-                    $updateStmt = $conn->prepare('UPDATE pc_wars SET enemy = ?, enemy_tag = ?, homepage = ?, league = ?, map1 = ?, map2 = ?, map3 = ?, time = ?, report = ?, res1 = ?, res2 = ?, res3 = ? WHERE id = ?');
-                    $updateStmt->bind_param('ssssssssssssi', $enemy, $enemy_tag, $homepage, $league, $map1, $map2, $map3, $playtime, $report, $res1, $res2, $res3, $rowId);
+                    $sql = 'UPDATE pc_wars SET enemy = ?, enemy_tag = ?, homepage = ?, '
+                        . 'league = ?, map1 = ?, map2 = ?, map3 = ?, time = ?, report = ?, '
+                        . 'res1 = ?, res2 = ?, res3 = ? WHERE id = ?';
+                    $updateStmt = $conn->prepare($sql);
+                    $updateStmt->bind_param(
+                        'ssssssssssssi',
+                        $enemy,
+                        $enemy_tag,
+                        $homepage,
+                        $league,
+                        $map1,
+                        $map2,
+                        $map3,
+                        $playtime,
+                        $report,
+                        $res1,
+                        $res2,
+                        $res3,
+                        $rowId
+                    );
                     $updateStmt->execute();
                     $updateStmt->close();
 
@@ -89,18 +111,27 @@ if (($pcadmin['wars_edit'] ?? '') === 'YES' || ($pcadmin['superadmin'] ?? '') ==
                                     $updateStmt->bind_param('si', $targetFileName, $rowId);
                                     $updateStmt->execute();
                                     $updateStmt->close();
-                                    echo "<center><a href=\"choosewar.php\">Der Screenshot f&uuml;r Map {$map} wurde erfolgreich hochgeladen</a></center>";
+                                    echo "<center><a href=\"choosewar.php\">"
+                                        . "Der Screenshot f&uuml;r Map {$map} wurde erfolgreich hochgeladen"
+                                        . "</a></center>";
                                 } else {
-                                    echo "<center><a href=\"javascript:history.back()\">Fehler beim Verschieben des Screenshots f&uuml;r Map {$map}</a></center>";
+                                    echo "<center><a href=\"javascript:history.back()\">"
+                                        . "Fehler beim Verschieben des Screenshots f&uuml;r Map {$map}"
+                                        . "</a></center>";
                                 }
                             } else {
-                                echo '<center><a href="choosewar.php">Fehler: Das Zielverzeichnis ist nicht beschreibbar.</a></center>';
+                                echo '<center><a href="choosewar.php">'
+                                    . 'Fehler: Das Zielverzeichnis ist nicht beschreibbar.</a></center>';
                             }
                         } else {
-                            echo "<center><a href=\"choosewar.php\">Bitte einen Screenshot f&uuml;r Map {$map} ausw&auml;hlen.</a></center>";
+                            echo "<center><a href=\"choosewar.php\">"
+                                . "Bitte einen Screenshot f&uuml;r Map {$map} ausw&auml;hlen."
+                                . "</a></center>";
                         }
                     } else {
-                        echo "<center><a href=\"choosewar.php\">Fehler: Keine Screenshot-Datei f&uuml;r Map {$map} gefunden.</a></center>";
+                        echo "<center><a href=\"choosewar.php\">"
+                            . "Fehler: Keine Screenshot-Datei f&uuml;r Map {$map} gefunden."
+                            . "</a></center>";
                     }
                 } else {
                     echo '<center><a href="javascript:history.back()">Ung&uuml;ltige Kartennummer.</a></center>';
@@ -204,7 +235,10 @@ function insertBBCode(tag) {
 </td><td align=\"top\">
 <select name=\"time_month\" size=\"1\">";
 
-                $months = ['Januar', 'Februar', 'M&auml;rz', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'];
+                $months = [
+                    'Januar', 'Februar', 'M&auml;rz', 'April', 'Mai', 'Juni',
+                    'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'
+                ];
                 for ($i = 1; $i <= 12; $i++) {
                     $selected = ($i === $month) ? ' selected' : '';
                     echo "<option value=\"{$i}\"{$selected}>{$months[$i - 1]}</option>";
@@ -292,7 +326,8 @@ Folgende Befehle k&ouml;nnen verwendet werden:<br>
                     $bgColor = ($mapNum === 2) ? $admin_tbl1 : '';
 
                     echo "
-<form action=\"{$phpSelf}?uploadscreen=YES&warid={$rowId}&map={$mapNum}\" method=\"post\" enctype=\"multipart/form-data\">
+<form action=\"{$phpSelf}?uploadscreen=YES&warid={$rowId}&map={$mapNum}\" "
+    . "method=\"post\" enctype=\"multipart/form-data\">
 " . csrf_field() . "
 <table border=\"0\" cellpadding=\"3\" cellspacing=\"2\" width=\"100%\">
 <tr><td valign=\"top\" width=\"*\" bgcolor=\"{$bgColor}\">
@@ -303,7 +338,8 @@ Folgende Befehle k&ouml;nnen verwendet werden:<br>
 
                     if (!empty($screenValue)) {
                         $screenEsc = e($screenValue);
-                        echo " <small><a href=\"../showpic.php?path=images/wars/{$screenEsc}\" target=\"_screen\">Aktuell</a></small>";
+                        echo " <small><a href=\"../showpic.php?path=images/wars/{$screenEsc}\""
+                            . " target=\"_screen\">Aktuell</a></small>";
                     }
 
                     echo "

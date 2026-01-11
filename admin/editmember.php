@@ -73,7 +73,9 @@ if (($pcadmin['member_edit'] ?? '') === 'YES' || ($pcadmin['superadmin'] ?? '') 
                 $checkStmt->execute();
                 $checkResult = $checkStmt->get_result();
                 if (mysqli_num_rows($checkResult) !== 0) {
-                    echo '<center><a href="javascript:history.back()">Es gibt schon einen Member mit dieser E-Mail oder diesem Nickname!</a></center>';
+                    echo '<center><a href="javascript:history.back()">'
+                        . 'Es gibt schon einen Member mit dieser E-Mail oder diesem Nickname!'
+                        . '</a></center>';
                     $checkStmt->close();
                     exit;
                 }
@@ -81,29 +83,64 @@ if (($pcadmin['member_edit'] ?? '') === 'YES' || ($pcadmin['superadmin'] ?? '') 
 
                 // Validate email
                 if (!validate_email($email)) {
-                    echo '<center><a href="javascript:history.back()">Die angegebene E-Mail Adresse ist ung&uuml;ltig!</a></center>';
+                    echo '<center><a href="javascript:history.back()">'
+                        . 'Die angegebene E-Mail Adresse ist ung&uuml;ltig!</a></center>';
                     exit;
                 }
 
                 // Password validation
-                if (($password1 !== '' && $password2 === '') || ($password1 === '' && $password2 !== '')) {
+                if (
+                    ($password1 !== '' && $password2 === '')
+                    || ($password1 === '' && $password2 !== '')
+                ) {
                     $nickEsc = e($row['nick'] ?? '');
-                    echo "<center><a href=\"javascript:history.back()\">Du musst das neue Passwort f&uuml;r {$nickEsc} best&auml;tigen</a></center>";
+                    echo "<center><a href=\"javascript:history.back()\">"
+                        . "Du musst das neue Passwort f&uuml;r {$nickEsc} best&auml;tigen"
+                        . "</a></center>";
                     exit;
                 }
                 if ($password1 !== $password2) {
-                    echo '<center><a href="javascript:history.back()">Das neue Passwort wurde falsch best&auml;tigt!</a></center>';
+                    echo '<center><a href="javascript:history.back()">'
+                        . 'Das neue Passwort wurde falsch best&auml;tigt!</a></center>';
                     exit;
                 }
 
                 // Update member using prepared statement
-                $updateStmt = $conn->prepare('UPDATE pc_members SET nick = ?, email = ?, work = ?, realname = ?, icq = ?, homepage = ?, age = ?, hardware = ?, info = ?, pic = ?, member_add = ?, member_edit = ?, member_del = ?, news_add = ?, news_edit = ?, news_del = ?, wars_add = ?, wars_edit = ?, wars_del = ? WHERE id = ?');
-                $updateStmt->bind_param('sssssssssssssssssssi', $nick, $email, $work, $realname, $icq, $homepage, $age, $hardware, $info, $pic, $member_add, $member_edit, $member_del, $news_add, $news_edit, $news_del, $wars_add, $wars_edit, $wars_del, $rowId);
+                $sql = 'UPDATE pc_members SET nick = ?, email = ?, work = ?, realname = ?, '
+                    . 'icq = ?, homepage = ?, age = ?, hardware = ?, info = ?, pic = ?, '
+                    . 'member_add = ?, member_edit = ?, member_del = ?, news_add = ?, '
+                    . 'news_edit = ?, news_del = ?, wars_add = ?, wars_edit = ?, wars_del = ? '
+                    . 'WHERE id = ?';
+                $updateStmt = $conn->prepare($sql);
+                $updateStmt->bind_param(
+                    'sssssssssssssssssssi',
+                    $nick,
+                    $email,
+                    $work,
+                    $realname,
+                    $icq,
+                    $homepage,
+                    $age,
+                    $hardware,
+                    $info,
+                    $pic,
+                    $member_add,
+                    $member_edit,
+                    $member_del,
+                    $news_add,
+                    $news_edit,
+                    $news_del,
+                    $wars_add,
+                    $wars_edit,
+                    $wars_del,
+                    $rowId
+                );
                 $updateStmt->execute();
                 $updateStmt->close();
 
                 $nickEsc = e($row['nick'] ?? '');
-                echo "<center><a href=\"choosemember.php\">Der Member <b>{$nickEsc}</b> wurde erfolgreich editiert!</a></center>";
+                echo "<center><a href=\"choosemember.php\">"
+                    . "Der Member <b>{$nickEsc}</b> wurde erfolgreich editiert!</a></center>";
 
                 // Update password if changed
                 if ($password1 !== '' && $password2 !== '' && $password1 === $password2) {
@@ -134,7 +171,8 @@ Du kannst Deine Daten jederzeit aendern!
                     $headers = 'From: PowerClan Automailer <powerclan@powerscripts.org>';
                     @mail($memberEmail, $subject, $message, $headers);
 
-                    echo "<center><br><br>Au&szlig;erdem wurde {$nickEsc} eine E-Mail mit seinem neuen Passwort zugeschickt!</center>";
+                    echo "<center><br><br>Au&szlig;erdem wurde {$nickEsc} "
+                        . "eine E-Mail mit seinem neuen Passwort zugeschickt!</center>";
                 }
             } else {
                 // Display edit form

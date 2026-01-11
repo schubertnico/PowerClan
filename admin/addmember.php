@@ -50,7 +50,8 @@ if (($pcadmin['member_add'] ?? '') === 'YES' || ($pcadmin['superadmin'] ?? '') =
         $checkResult = $checkStmt->get_result();
 
         if (mysqli_num_rows($checkResult) !== 0) {
-            echo '<center><a href="javascript:history.back()">Es gibt schon einen Member mit dieser E-Mail oder diesem Nickname!</a></center>';
+            echo '<center><a href="javascript:history.back()">'
+                . 'Es gibt schon einen Member mit dieser E-Mail oder diesem Nickname!</a></center>';
             $checkStmt->close();
             exit;
         }
@@ -58,7 +59,8 @@ if (($pcadmin['member_add'] ?? '') === 'YES' || ($pcadmin['superadmin'] ?? '') =
 
         // Validate email
         if (!validate_email($email)) {
-            echo '<center><a href="javascript:history.back()">Die angegebene E-Mail-Adresse ist ung&uuml;ltig!</a></center>';
+            echo '<center><a href="javascript:history.back()">'
+                . 'Die angegebene E-Mail-Adresse ist ung&uuml;ltig!</a></center>';
             exit;
         }
 
@@ -67,8 +69,26 @@ if (($pcadmin['member_add'] ?? '') === 'YES' || ($pcadmin['superadmin'] ?? '') =
         $passwordHash = password_hash($generatedPassword, PASSWORD_DEFAULT);
 
         // Insert member using prepared statement
-        $insertStmt = $conn->prepare("INSERT INTO pc_members (nick, email, password, work, member_add, member_edit, member_del, news_add, news_edit, news_del, wars_add, wars_edit, wars_del, superadmin, realname, homepage, hardware, info, pic) VALUES (?, ?, ?, 'Fighter', ?, ?, ?, ?, ?, ?, ?, ?, ?, 'NO', '', '', '', '', '')");
-        $insertStmt->bind_param('ssssssssssss', $nickname, $email, $passwordHash, $member_add, $member_edit, $member_del, $news_add, $news_edit, $news_del, $wars_add, $wars_edit, $wars_del);
+        $sql = "INSERT INTO pc_members (nick, email, password, work, member_add, member_edit, "
+            . "member_del, news_add, news_edit, news_del, wars_add, wars_edit, wars_del, "
+            . "superadmin, realname, homepage, hardware, info, pic) "
+            . "VALUES (?, ?, ?, 'Fighter', ?, ?, ?, ?, ?, ?, ?, ?, ?, 'NO', '', '', '', '', '')";
+        $insertStmt = $conn->prepare($sql);
+        $insertStmt->bind_param(
+            'ssssssssssss',
+            $nickname,
+            $email,
+            $passwordHash,
+            $member_add,
+            $member_edit,
+            $member_del,
+            $news_add,
+            $news_edit,
+            $news_del,
+            $wars_add,
+            $wars_edit,
+            $wars_del
+        );
         $insertStmt->execute();
         $insertStmt->close();
 
@@ -96,7 +116,8 @@ Das Passwort und Deine anderen Daten kannst Du jederzeit aendern.
         // Suppress mail errors if mail server not configured
         @mail($email, $subject, $message, $headers);
 
-        echo '<center><a href="index.php">Der Member wurde erfolgreich hinzugef&uuml;gt und per E-Mail benachrichtigt!</a></center>';
+        echo '<center><a href="index.php">'
+            . 'Der Member wurde erfolgreich hinzugef&uuml;gt und per E-Mail benachrichtigt!</a></center>';
     } else {
         $phpSelf = e($_SERVER['PHP_SELF']);
 
