@@ -94,9 +94,9 @@ if (($pcadmin['member_edit'] ?? '') === 'YES' || ($pcadmin['superadmin'] ?? '') 
                     || ($password1 === '' && $password2 !== '')
                 ) {
                     $nickEsc = e($row['nick'] ?? '');
-                    echo "<center><a href=\"javascript:history.back()\">"
+                    echo '<center><a href="javascript:history.back()">'
                         . "Du musst das neue Passwort f&uuml;r {$nickEsc} best&auml;tigen"
-                        . "</a></center>";
+                        . '</a></center>';
                     exit;
                 }
                 if ($password1 !== $password2) {
@@ -139,7 +139,7 @@ if (($pcadmin['member_edit'] ?? '') === 'YES' || ($pcadmin['superadmin'] ?? '') 
                 $updateStmt->close();
 
                 $nickEsc = e($row['nick'] ?? '');
-                echo "<center><a href=\"choosemember.php\">"
+                echo '<center><a href="choosemember.php">'
                     . "Der Member <b>{$nickEsc}</b> wurde erfolgreich editiert!</a></center>";
 
                 // Update password if changed
@@ -172,7 +172,7 @@ Du kannst Deine Daten jederzeit aendern!
                     @mail($memberEmail, $subject, $message, $headers);
 
                     echo "<center><br><br>Au&szlig;erdem wurde {$nickEsc} "
-                        . "eine E-Mail mit seinem neuen Passwort zugeschickt!</center>";
+                        . 'eine E-Mail mit seinem neuen Passwort zugeschickt!</center>';
                 }
             } else {
                 // Display edit form

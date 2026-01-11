@@ -111,27 +111,27 @@ if (($pcadmin['wars_edit'] ?? '') === 'YES' || ($pcadmin['superadmin'] ?? '') ==
                                     $updateStmt->bind_param('si', $targetFileName, $rowId);
                                     $updateStmt->execute();
                                     $updateStmt->close();
-                                    echo "<center><a href=\"choosewar.php\">"
+                                    echo '<center><a href="choosewar.php">'
                                         . "Der Screenshot f&uuml;r Map {$map} wurde erfolgreich hochgeladen"
-                                        . "</a></center>";
+                                        . '</a></center>';
                                 } else {
-                                    echo "<center><a href=\"javascript:history.back()\">"
+                                    echo '<center><a href="javascript:history.back()">'
                                         . "Fehler beim Verschieben des Screenshots f&uuml;r Map {$map}"
-                                        . "</a></center>";
+                                        . '</a></center>';
                                 }
                             } else {
                                 echo '<center><a href="choosewar.php">'
                                     . 'Fehler: Das Zielverzeichnis ist nicht beschreibbar.</a></center>';
                             }
                         } else {
-                            echo "<center><a href=\"choosewar.php\">"
+                            echo '<center><a href="choosewar.php">'
                                 . "Bitte einen Screenshot f&uuml;r Map {$map} ausw&auml;hlen."
-                                . "</a></center>";
+                                . '</a></center>';
                         }
                     } else {
-                        echo "<center><a href=\"choosewar.php\">"
+                        echo '<center><a href="choosewar.php">'
                             . "Fehler: Keine Screenshot-Datei f&uuml;r Map {$map} gefunden."
-                            . "</a></center>";
+                            . '</a></center>';
                     }
                 } else {
                     echo '<center><a href="javascript:history.back()">Ung&uuml;ltige Kartennummer.</a></center>';
@@ -327,8 +327,8 @@ Folgende Befehle k&ouml;nnen verwendet werden:<br>
 
                     echo "
 <form action=\"{$phpSelf}?uploadscreen=YES&warid={$rowId}&map={$mapNum}\" "
-    . "method=\"post\" enctype=\"multipart/form-data\">
-" . csrf_field() . "
+    . 'method="post" enctype="multipart/form-data">
+' . csrf_field() . "
 <table border=\"0\" cellpadding=\"3\" cellspacing=\"2\" width=\"100%\">
 <tr><td valign=\"top\" width=\"*\" bgcolor=\"{$bgColor}\">
 <b>Screenshot (Map{$mapNum})</b><br>
@@ -339,7 +339,7 @@ Folgende Befehle k&ouml;nnen verwendet werden:<br>
                     if (!empty($screenValue)) {
                         $screenEsc = e($screenValue);
                         echo " <small><a href=\"../showpic.php?path=images/wars/{$screenEsc}\""
-                            . " target=\"_screen\">Aktuell</a></small>";
+                            . ' target="_screen">Aktuell</a></small>';
                     }
 
                     echo "

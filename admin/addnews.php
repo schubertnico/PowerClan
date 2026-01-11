@@ -112,16 +112,16 @@ function insertBBCode(tag) {
                     <b class=\"red\">[u]</b><u>unterstrichen</u><b class=\"red\">[/u]</b><br>
                     <b class=\"red\">[i]</b><i>kursiv</i><b class=\"red\">[/i]</b><br>
                     <b class=\"red\">[url]</b>"
-            . "<a href=\"https://www.powerscripts.org/\" target=\"_new\">"
-            . "www.powerscripts.org</a><b class=\"red\">[/url]</b><br>
-                    <b class=\"red\">[url=https://www.powerscripts.org/]</b>"
-            . "<a href=\"https://www.powerscripts.org/\">PowerScripts</a>"
-            . "<b class=\"red\">[/url]</b><br>
-                    <b class=\"red\">[email]</b>"
-            . "<a href=\"mailto:support@powerscripts.org\">support@powerscripts.org</a>"
-            . "<b class=\"red\">[/email]</b><br>
-                    <b class=\"red\">[email=support@powerscripts.org]</b>"
-            . "<a href=\"mailto:support@powerscripts.org\">Support</a>"
+            . '<a href="https://www.powerscripts.org/" target="_new">'
+            . 'www.powerscripts.org</a><b class="red">[/url]</b><br>
+                    <b class="red">[url=https://www.powerscripts.org/]</b>'
+            . '<a href="https://www.powerscripts.org/">PowerScripts</a>'
+            . '<b class="red">[/url]</b><br>
+                    <b class="red">[email]</b>'
+            . '<a href="mailto:support@powerscripts.org">support@powerscripts.org</a>'
+            . '<b class="red">[/email]</b><br>
+                    <b class="red">[email=support@powerscripts.org]</b>'
+            . '<a href="mailto:support@powerscripts.org">Support</a>'
             . "<b class=\"red\">[/email]</b><br>
                     <br>
                     Enter f&uuml;r Zeilenumbruch
@@ -140,12 +140,12 @@ function insertBBCode(tag) {
         <tr>
             <td colspan=\"2\" align=\"center\" bgcolor=\"{$admin_tbl1}\">
                 <input type=\"submit\" value=\"News hinzuf&uuml;gen\"> "
-            . "<input type=\"reset\" value=\"Daten zur&uuml;cksetzen\">
+            . '<input type="reset" value="Daten zur&uuml;cksetzen">
             </td>
         </tr>
     </table>
 </form>
-</center>";
+</center>';
     }
 } else {
     echo '<center>Du hast keine Zugang zu dieser Funktion!</center>';

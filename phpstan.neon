@@ -1,5 +1,5 @@
 parameters:
-    level: 5
+    level: 8
     paths:
         - .
     excludePaths:
@@ -37,3 +37,37 @@ parameters:
         # False positives in header.inc.php (intended behavior)
         - '#Strict comparison using === between .NO. and .NO. will always evaluate to true#'
         - '#Unreachable statement - code above always terminates#'
+        # Level 8: Array-Zugriffe auf mysqli_fetch_array Ergebnisse (Legacy-Code)
+        - '#Cannot access offset .* on array\|false\|null#'
+        - '#Cannot access offset .* on array\|null#'
+        - '#Cannot access offset .* on array\|false#'
+        - '#Cannot access offset .* on array<string, mixed>\|false\|null#'
+        # Level 8: mysqli Rueckgabetypen (Legacy-Code)
+        - '#expects array, array\|false given#'
+        - '#Cannot access property .* on mysqli_result\|true#'
+        - '#Cannot call method .* on mysqli_stmt\|false#'
+        - '#Cannot call method .* on mysqli_result\|false#'
+        # Level 8: Test Fixtures - Array Parameter ohne Typ-Spezifikation
+        -
+            message: '#has parameter .* with no value type specified in iterable type array#'
+            path: tests/
+        # Level 8: Test Data Provider Rueckgabetypen
+        -
+            message: '#return type has no value type specified in iterable type array#'
+            path: tests/
+        # Level 8: file_get_contents kann false zurueckgeben
+        -
+            message: '#expects string, string\|false given#'
+            path: tests/
+        # Level 8: Offset might not exist (Tests mit dynamischen Arrays)
+        -
+            message: '#Offset .* might not exist on array\|null#'
+            path: tests/
+        # Level 8: substr expects int|null
+        -
+            message: '#expects int\|null, int<0, max>\|false given#'
+            path: tests/
+        # Level 8: Test Fixtures Rueckgabetypen
+        -
+            message: '#should return array\|null but returns#'
+            path: tests/

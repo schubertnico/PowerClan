@@ -47,8 +47,8 @@ if (($pcadmin['wars_add'] ?? '') === 'YES' || ($pcadmin['superadmin'] ?? '') ===
             $playtime = mktime($time_hour, $time_minute, 0, $time_month, $time_day, $time_year);
 
             // Use prepared statement to prevent SQL injection
-            $sql = "INSERT INTO pc_wars (enemy, enemy_tag, homepage, league, map1, map2, map3, "
-                . "time, report, res1, res2, res3, screen1, screen2, screen3) "
+            $sql = 'INSERT INTO pc_wars (enemy, enemy_tag, homepage, league, map1, map2, map3, '
+                . 'time, report, res1, res2, res3, screen1, screen2, screen3) '
                 . "VALUES (?, ?, ?, ?, ?, ?, ?, ?, '', '', '', '', '', '', '')";
             $stmt = $conn->prepare($sql);
             $stmt->bind_param(

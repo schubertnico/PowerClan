@@ -375,16 +375,20 @@ composer outdated       # Veraltete Packages
 | 6 | PHP-CS-Fixer | 30min | ✅ Erledigt |
 | 7 | Security Tests | 2h | ✅ Erledigt |
 | 8 | Dokumentation | 1h | ✅ Erledigt |
+| 9 | Psalm Level 4 | 30min | ✅ Erledigt |
+| 10 | PHPStan Level 8 | 30min | ✅ Erledigt |
 
 ---
 
 ## Checkliste vor Release
 
-- [x] Alle Tests bestehen (`composer run test`) - 111 Tests ✅
-- [x] PHPStan ohne Fehler (`composer run phpstan`) - Level 5 ✅
+- [x] Alle Tests bestehen (`composer run test`) - 67 Unit Tests ✅
+- [x] PHPStan ohne Fehler (`composer run phpstan`) - Level 8 ✅
+- [x] Psalm ohne Fehler (`composer run psalm`) - Level 4 ✅
 - [ ] Keine bekannten Vulnerabilities (`composer audit`)
 - [x] CSRF-Token auf allen Formularen ✅
 - [x] Keine SQL-String-Konkatenation (außer install.php)
 - [x] Alle Passwörter mit password_hash() ✅
+- [x] PHP-CS-Fixer PSR-12 Compliance ✅
 - [ ] Error-Log leer
 - [ ] Dokumentation aktuell

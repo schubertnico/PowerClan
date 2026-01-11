@@ -68,7 +68,7 @@ switch ($pcpage) {
               </td></tr>
             ";
 
-            $warnumber = $num;
+            $warnumber = (int) $num;
             $bgnum = 0;
 
             while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {

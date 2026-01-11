@@ -69,9 +69,9 @@ if (($pcadmin['member_add'] ?? '') === 'YES' || ($pcadmin['superadmin'] ?? '') =
         $passwordHash = password_hash($generatedPassword, PASSWORD_DEFAULT);
 
         // Insert member using prepared statement
-        $sql = "INSERT INTO pc_members (nick, email, password, work, member_add, member_edit, "
-            . "member_del, news_add, news_edit, news_del, wars_add, wars_edit, wars_del, "
-            . "superadmin, realname, homepage, hardware, info, pic) "
+        $sql = 'INSERT INTO pc_members (nick, email, password, work, member_add, member_edit, '
+            . 'member_del, news_add, news_edit, news_del, wars_add, wars_edit, wars_del, '
+            . 'superadmin, realname, homepage, hardware, info, pic) '
             . "VALUES (?, ?, ?, 'Fighter', ?, ?, ?, ?, ?, ?, ?, ?, ?, 'NO', '', '', '', '', '')";
         $insertStmt = $conn->prepare($sql);
         $insertStmt->bind_param(
