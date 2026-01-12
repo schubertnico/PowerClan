@@ -29,7 +29,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "PowerClan\Tests\\": "tests/"
+            "PowerClan\\Tests\\": "tests/"
         }
     },
     "scripts": {

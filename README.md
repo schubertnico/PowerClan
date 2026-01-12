@@ -181,7 +181,7 @@ composer run phpcbf        # Automatisch beheben
 ```
 tests/
 ├── bootstrap.php           # Test-Initialisierung
-├── Unit/                   # Unit Tests
+├── Unit/                   # Unit Tests (67+ Tests)
 │   ├── FunctionsTest.php
 │   ├── AdminFunctionsTest.php
 │   └── ValidationTest.php
@@ -191,7 +191,7 @@ tests/
 │   ├── MemberTest.php
 │   ├── NewsTest.php
 │   └── WarTest.php
-├── Security/               # Security Tests
+├── Security/               # Security Tests (28 Tests)
 │   ├── CSRFProtectionTest.php
 │   ├── SQLInjectionTest.php
 │   └── XSSProtectionTest.php
@@ -236,7 +236,7 @@ Siehe [SECURITY.md](SECURITY.md) fuer Details.
 **Qualitaetssicherung:**
 - PHPStan auf Level 8 erhoeht
 - Psalm Level 4 hinzugefuegt
-- Infection Mutation Testing integriert
+- Infection Mutation Testing konfiguriert
 - 67+ Unit Tests, 28 Security Tests
 - GitHub Actions CI/CD Pipeline
 

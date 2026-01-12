@@ -91,4 +91,4 @@ VALUES('PowerClan', 'PC', 'https://www.powerscripts.org/', '', 'header.pc', 'foo
 -- Default admin user (password: admin123 - CHANGE THIS!)
 -- Password hash generated with password_hash('admin123', PASSWORD_DEFAULT)
 INSERT INTO pc_members (nick, email, password, work, realname, icq, homepage, age, hardware, info, pic, member_add, member_edit, member_del, news_add, news_edit, news_del, wars_add, wars_edit, wars_del, superadmin)
-VALUES('Admin', 'admin@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'Webmaster', '', 0, '', 0, '', '', '', 'YES', 'YES', 'YES', 'YES', 'YES', 'YES', 'YES', 'YES', 'YES', 'YES');
+VALUES('Admin', 'admin@example.com', '$2y$12$Y1vPCUVZpvst3iXStuedLO3iz1otWPBgb8mk/01udu9VtqCaCC9oS', 'Webmaster', '', 0, '', 0, '', '', '', 'YES', 'YES', 'YES', 'YES', 'YES', 'YES', 'YES', 'YES', 'YES', 'YES');

@@ -4,7 +4,9 @@
          bootstrap="tests/bootstrap.php"
          colors="true"
          stopOnFailure="false"
-         cacheDirectory=".phpunit.cache">
+         cacheDirectory=".phpunit.cache"
+         executionOrder="default"
+         resolveDependencies="true">
     <testsuites>
         <testsuite name="Unit">
             <directory>tests/Unit</directory>
