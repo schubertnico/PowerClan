@@ -11,6 +11,13 @@ declare(strict_types=1);
  * @link      https://github.com/schubertnico/PowerClan.git
  */
 
+/** @var mysqli $conn */
+/** @var string $admin_tbl1 */
+/** @var string $admin_tbl2 */
+/** @var string $admin_tbl3 */
+/** @var array<string, mixed> $settings */
+/** @var array<string, mixed> $pcadmin */
+
 include __DIR__ . '/header.inc.php';
 ?>
 <!--MAINPAGE-->
@@ -21,9 +28,12 @@ include __DIR__ . '/header.inc.php';
 csrf_check();
 
 if (($pcadmin['superadmin'] ?? '') === 'YES') {
-    $stmt = $conn->prepare('SELECT * FROM pc_config WHERE id = 1');
+    $stmt = db_prepare($conn, 'SELECT * FROM pc_config WHERE id = 1');
     $stmt->execute();
     $result = $stmt->get_result();
+    if ($result === false) {
+        throw new RuntimeException('Failed to get result');
+    }
     $num = mysqli_num_rows($result);
 
     if ($num === 1) {
@@ -59,7 +69,7 @@ if (($pcadmin['superadmin'] ?? '') === 'YES') {
                 echo '<center><a href="javascript:history.back()">Bitte f&uuml;lle alle Felder aus!</a></center>';
             } else {
                 // Use prepared statement to prevent SQL injection
-                $updateStmt = $conn->prepare('UPDATE pc_config SET
+                $updateStmt = db_prepare($conn,'UPDATE pc_config SET
                     clanname = ?, clantag = ?, url = ?, serverpath = ?,
                     header = ?, footer = ?, tablebg1 = ?, tablebg2 = ?,
                     tablebg3 = ?, clrwon = ?, clrdraw = ?, clrlost = ?,

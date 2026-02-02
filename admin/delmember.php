@@ -11,6 +11,13 @@ declare(strict_types=1);
  * @link      https://github.com/schubertnico/PowerClan.git
  */
 
+/** @var mysqli $conn */
+/** @var string $admin_tbl1 */
+/** @var string $admin_tbl2 */
+/** @var string $admin_tbl3 */
+/** @var array<string, mixed> $settings */
+/** @var array<string, mixed> $pcadmin */
+
 include __DIR__ . '/header.inc.php';
 ?>
 <!--MAINPAGE-->
@@ -24,16 +31,22 @@ if (($pcadmin['member_del'] ?? '') === 'YES' || ($pcadmin['superadmin'] ?? '') =
     $memberid = $_GET['memberid'] ?? $_POST['memberid'] ?? '';
 
     if (!empty($memberid)) {
-        $stmt = $conn->prepare('SELECT * FROM pc_members WHERE id = ?');
+        $stmt = db_prepare($conn, 'SELECT * FROM pc_members WHERE id = ?');
         $memberidInt = (int) $memberid;
         $stmt->bind_param('i', $memberidInt);
         $stmt->execute();
         $result = $stmt->get_result();
+        if ($result === false) {
+            throw new RuntimeException('Failed to get result');
+        }
         $num = mysqli_num_rows($result);
 
         if ($num === 1) {
             $row = mysqli_fetch_array($result, MYSQLI_ASSOC);
             $stmt->close();
+            if (!is_array($row)) {
+                throw new RuntimeException('Failed to fetch member data');
+            }
 
             // Prevent self-deletion
             if ((int) $row['id'] === (int) ($pcadmin['id'] ?? 0)) {
@@ -50,7 +63,7 @@ if (($pcadmin['member_del'] ?? '') === 'YES' || ($pcadmin['superadmin'] ?? '') =
             $delmember = $_POST['delmember'] ?? '';
 
             if ($delmember === 'YES' && $_SERVER['REQUEST_METHOD'] === 'POST') {
-                $delStmt = $conn->prepare('DELETE FROM pc_members WHERE id = ?');
+                $delStmt = db_prepare($conn, 'DELETE FROM pc_members WHERE id = ?');
                 $delStmt->bind_param('i', $memberidInt);
                 $delStmt->execute();
                 $delStmt->close();

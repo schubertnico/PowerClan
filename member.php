@@ -11,6 +11,9 @@ declare(strict_types=1);
  * @link      https://github.com/schubertnico/PowerClan.git
  */
 
+/** @var mysqli $conn */
+/** @var array<string, mixed> $settings */
+
 ?>
 <!--HEADER FILE-->
 <?php include __DIR__ . '/header.inc.php'; ?>
@@ -31,11 +34,7 @@ switch ($pcpage) {
           </td></tr>
         ";
 
-        $result = $conn->query('SELECT * FROM pc_members ORDER BY nick');
-        if ($result === false) {
-            echo '<tr><td colspan="2" align="center" bgcolor="' . $bg1 . '"><br><b>Die Datenbank konnte nicht ausgelesen werden!</b><br><br></td></tr>';
-            break;
-        }
+        $result = db_query($conn, 'SELECT * FROM pc_members ORDER BY nick');
 
         $num = mysqli_num_rows($result);
         if ($num === 0) {
@@ -73,11 +72,14 @@ switch ($pcpage) {
         if (empty($memberid)) {
             default_error('member.php', 'Bitte w&auml;hle einen Member aus!');
         } else {
-            $stmt = $conn->prepare('SELECT * FROM pc_members WHERE id = ?');
+            $stmt = db_prepare($conn, 'SELECT * FROM pc_members WHERE id = ?');
             $memberIdInt = (int) $memberid;
             $stmt->bind_param('i', $memberIdInt);
             $stmt->execute();
             $result = $stmt->get_result();
+            if ($result === false) {
+                throw new RuntimeException('Failed to get result');
+            }
             $num = mysqli_num_rows($result);
 
             if ($num === 1) {

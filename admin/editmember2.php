@@ -11,6 +11,13 @@ declare(strict_types=1);
  * @link      https://github.com/schubertnico/PowerClan.git
  */
 
+/** @var mysqli $conn */
+/** @var string $admin_tbl1 */
+/** @var string $admin_tbl2 */
+/** @var string $admin_tbl3 */
+/** @var array<string, mixed> $settings */
+/** @var array<string, mixed> $pcadmin */
+
 include __DIR__ . '/header.inc.php';
 ?>
 <!--MAINPAGE-->
@@ -27,15 +34,21 @@ csrf_check();
 if (($pcadmin['member_edit'] ?? '') === 'YES' || ($pcadmin['superadmin'] ?? '') === 'YES') {
     if ($memberid > 0) {
         // Use prepared statement to prevent SQL injection
-        $stmt = $conn->prepare('SELECT * FROM pc_members WHERE id = ?');
+        $stmt = db_prepare($conn, 'SELECT * FROM pc_members WHERE id = ?');
         $stmt->bind_param('i', $memberid);
         $stmt->execute();
         $result = $stmt->get_result();
+        if ($result === false) {
+            throw new RuntimeException('Failed to get result');
+        }
         $num = mysqli_num_rows($result);
 
         if ($num === 1) {
             $row = mysqli_fetch_array($result, MYSQLI_ASSOC);
             $stmt->close();
+            if (!is_array($row)) {
+                throw new RuntimeException('Failed to fetch member data');
+            }
             $rowId = (int) $row['id'];
 
             if ($editmember === 'YES' && $_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -72,10 +85,13 @@ if (($pcadmin['member_edit'] ?? '') === 'YES' || ($pcadmin['superadmin'] ?? '') 
                 }
 
                 // Check for duplicate email/nick using prepared statement
-                $checkStmt = $conn->prepare('SELECT id FROM pc_members WHERE (email = ? OR nick = ?) AND id != ?');
+                $checkStmt = db_prepare($conn, 'SELECT id FROM pc_members WHERE (email = ? OR nick = ?) AND id != ?');
                 $checkStmt->bind_param('ssi', $email, $nick, $rowId);
                 $checkStmt->execute();
                 $checkResult = $checkStmt->get_result();
+                if ($checkResult === false) {
+                    throw new RuntimeException('Failed to get result');
+                }
 
                 if (mysqli_num_rows($checkResult) !== 0) {
                     $checkStmt->close();
@@ -115,7 +131,7 @@ if (($pcadmin['member_edit'] ?? '') === 'YES' || ($pcadmin['superadmin'] ?? '') 
                 }
 
                 // Update member using prepared statement
-                $updateStmt = $conn->prepare('UPDATE pc_members SET
+                $updateStmt = db_prepare($conn,'UPDATE pc_members SET
                     nick = ?, email = ?, work = ?, icq = ?, homepage = ?,
                     realname = ?, age = ?, hardware = ?, info = ?, pic = ?,
                     member_add = ?, member_edit = ?, member_del = ?,
@@ -157,7 +173,7 @@ if (($pcadmin['member_edit'] ?? '') === 'YES' || ($pcadmin['superadmin'] ?? '') 
                     // Use secure password hashing (NOT base64!)
                     $newPasswordHash = password_hash($password1, PASSWORD_DEFAULT);
 
-                    $pwStmt = $conn->prepare('UPDATE pc_members SET password = ? WHERE id = ?');
+                    $pwStmt = db_prepare($conn,'UPDATE pc_members SET password = ? WHERE id = ?');
                     $pwStmt->bind_param('si', $newPasswordHash, $rowId);
                     $pwStmt->execute();
                     $pwStmt->close();

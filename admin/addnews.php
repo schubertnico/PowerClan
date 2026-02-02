@@ -11,6 +11,13 @@ declare(strict_types=1);
  * @link      https://github.com/schubertnico/PowerClan.git
  */
 
+/** @var mysqli $conn */
+/** @var string $admin_tbl1 */
+/** @var string $admin_tbl2 */
+/** @var string $admin_tbl3 */
+/** @var array<string, mixed> $settings */
+/** @var array<string, mixed> $pcadmin */
+
 include __DIR__ . '/header.inc.php';
 ?>
 <!--MAINPAGE-->
@@ -39,7 +46,7 @@ if (($pcadmin['news_add'] ?? '') === 'YES' || ($pcadmin['superadmin'] ?? '') ===
             // Use prepared statement to prevent SQL injection
             $sql = 'INSERT INTO pc_news (userid, time, nick, email, title, text) '
                 . 'VALUES (?, ?, ?, ?, ?, ?)';
-            $stmt = $conn->prepare($sql);
+            $stmt = db_prepare($conn,$sql);
             $stmt->bind_param('iissss', $userId, $now, $nick, $email, $title, $text);
             $stmt->execute();
             $stmt->close();

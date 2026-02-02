@@ -11,6 +11,13 @@ declare(strict_types=1);
  * @link      https://github.com/schubertnico/PowerClan.git
  */
 
+/** @var mysqli $conn */
+/** @var string $admin_tbl1 */
+/** @var string $admin_tbl2 */
+/** @var string $admin_tbl3 */
+/** @var array<string, mixed> $settings */
+/** @var array<string, mixed> $pcadmin */
+
 include __DIR__ . '/header.inc.php';
 ?>
 <!--MAINPAGE-->
@@ -25,12 +32,12 @@ $row = null;
 
 // Get news data if newsid provided
 if (!empty($newsid)) {
-    $stmt = $conn->prepare('SELECT * FROM pc_news WHERE id = ?');
+    $stmt = db_prepare($conn, 'SELECT * FROM pc_news WHERE id = ?');
     $newsidInt = (int) $newsid;
     $stmt->bind_param('i', $newsidInt);
     $stmt->execute();
     $result = $stmt->get_result();
-    if (mysqli_num_rows($result) === 1) {
+    if ($result !== false && mysqli_num_rows($result) === 1) {
         $row = mysqli_fetch_array($result, MYSQLI_ASSOC);
     }
     $stmt->close();
@@ -42,7 +49,7 @@ $hasAccess = ($pcadmin['news_edit'] ?? '') === 'YES'
     || ($pcadmin['superadmin'] ?? '') === 'YES';
 
 if ($hasAccess) {
-    if ($row !== null) {
+    if (is_array($row)) {
         $editnews = $_GET['editnews'] ?? '';
 
         if ($editnews === 'YES' && $_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -56,7 +63,7 @@ if ($hasAccess) {
                 $newsIdForUpdate = (int) $row['id'];
 
                 // Use prepared statement
-                $updateStmt = $conn->prepare('UPDATE pc_news SET title = ?, text = ? WHERE id = ?');
+                $updateStmt = db_prepare($conn,'UPDATE pc_news SET title = ?, text = ? WHERE id = ?');
                 $updateStmt->bind_param('ssi', $title, $text, $newsIdForUpdate);
                 $updateStmt->execute();
                 $updateStmt->close();

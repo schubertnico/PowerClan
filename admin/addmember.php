@@ -11,6 +11,13 @@ declare(strict_types=1);
  * @link      https://github.com/schubertnico/PowerClan.git
  */
 
+/** @var mysqli $conn */
+/** @var string $admin_tbl1 */
+/** @var string $admin_tbl2 */
+/** @var string $admin_tbl3 */
+/** @var array<string, mixed> $settings */
+/** @var array<string, mixed> $pcadmin */
+
 include __DIR__ . '/header.inc.php';
 ?>
 <!--MAINPAGE-->
@@ -44,10 +51,14 @@ if (($pcadmin['member_add'] ?? '') === 'YES' || ($pcadmin['superadmin'] ?? '') =
         }
 
         // Check for existing member using prepared statement
-        $checkStmt = $conn->prepare('SELECT id FROM pc_members WHERE email = ? OR nick = ?');
+        $checkStmt = db_prepare($conn, 'SELECT id FROM pc_members WHERE email = ? OR nick = ?');
         $checkStmt->bind_param('ss', $email, $nickname);
         $checkStmt->execute();
         $checkResult = $checkStmt->get_result();
+        if ($checkResult === false) {
+            $checkStmt->close();
+            throw new RuntimeException('Failed to get result');
+        }
 
         if (mysqli_num_rows($checkResult) !== 0) {
             echo '<center><a href="javascript:history.back()">'
@@ -73,7 +84,7 @@ if (($pcadmin['member_add'] ?? '') === 'YES' || ($pcadmin['superadmin'] ?? '') =
             . 'member_del, news_add, news_edit, news_del, wars_add, wars_edit, wars_del, '
             . 'superadmin, realname, homepage, hardware, info, pic) '
             . "VALUES (?, ?, ?, 'Fighter', ?, ?, ?, ?, ?, ?, ?, ?, ?, 'NO', '', '', '', '', '')";
-        $insertStmt = $conn->prepare($sql);
+        $insertStmt = db_prepare($conn, $sql);
         $insertStmt->bind_param(
             'ssssssssssss',
             $nickname,

@@ -11,6 +11,10 @@ declare(strict_types=1);
  * @link      https://github.com/schubertnico/PowerClan.git
  */
 
+/** @var mysqli $conn */
+/** @var array{host: string, user: string, password: string, database: string, port: int} $mysql */
+/** @var array<string, mixed> $settings */
+
 // Start session for CSRF protection (must be before any output)
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
@@ -41,10 +45,11 @@ $login = $_GET['login'] ?? '';
 $logout = $_GET['logout'] ?? '';
 
 // Initialize variables
+/** @var 'YES'|'NO' $loggedin */
 $loggedin = 'NO';
 $pcadmin = [];
 
-// Check existing session
+// Check existing session - may set $loggedin to 'YES'
 checklogin($pcadmin_id, $pcadmin_password);
 
 // Handle login
@@ -54,14 +59,23 @@ if ($login === 'YES' && $_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (!empty($loginpassword) && !empty($loginemail)) {
         // Use prepared statement for login query
-        $stmt = $conn->prepare('SELECT * FROM pc_members WHERE email = ?');
+        $stmt = db_prepare($conn, 'SELECT * FROM pc_members WHERE email = ?');
         $stmt->bind_param('s', $loginemail);
         $stmt->execute();
         $result = $stmt->get_result();
+        if ($result === false) {
+            throw new RuntimeException('Failed to get result');
+        }
         $num = mysqli_num_rows($result);
 
         if ($num === 1) {
-            $pcadmin = mysqli_fetch_array($result, MYSQLI_ASSOC);
+            $fetchedAdmin = mysqli_fetch_array($result, MYSQLI_ASSOC);
+            if (!is_array($fetchedAdmin)) {
+                $stmt->close();
+                $pcadmin = [];
+            } else {
+                $pcadmin = $fetchedAdmin;
+            }
             $storedPassword = $pcadmin['password'] ?? '';
             $authenticated = false;
 
@@ -73,7 +87,7 @@ if ($login === 'YES' && $_SERVER['REQUEST_METHOD'] === 'POST') {
                     // Rehash if needed
                     if (password_needs_rehash($storedPassword, PASSWORD_DEFAULT)) {
                         $newHash = password_hash((string) $loginpassword, PASSWORD_DEFAULT);
-                        $updateStmt = $conn->prepare('UPDATE pc_members SET password = ? WHERE id = ?');
+                        $updateStmt = db_prepare($conn,'UPDATE pc_members SET password = ? WHERE id = ?');
                         $updateStmt->bind_param('si', $newHash, $pcadmin['id']);
                         $updateStmt->execute();
                         $updateStmt->close();
@@ -87,7 +101,7 @@ if ($login === 'YES' && $_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 // Migrate to secure hash
                 $newHash = password_hash((string) $loginpassword, PASSWORD_DEFAULT);
-                $updateStmt = $conn->prepare('UPDATE pc_members SET password = ? WHERE id = ?');
+                $updateStmt = db_prepare($conn,'UPDATE pc_members SET password = ? WHERE id = ?');
                 $updateStmt->bind_param('si', $newHash, $pcadmin['id']);
                 $updateStmt->execute();
                 $updateStmt->close();

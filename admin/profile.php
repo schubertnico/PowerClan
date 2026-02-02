@@ -11,6 +11,13 @@ declare(strict_types=1);
  * @link      https://github.com/schubertnico/PowerClan.git
  */
 
+/** @var mysqli $conn */
+/** @var string $admin_tbl1 */
+/** @var string $admin_tbl2 */
+/** @var string $admin_tbl3 */
+/** @var array<string, mixed> $settings */
+/** @var array<string, mixed> $pcadmin */
+
 include __DIR__ . '/header.inc.php';
 ?>
 <!--MAINPAGE-->
@@ -19,11 +26,14 @@ include __DIR__ . '/header.inc.php';
 <?php
 
 // Get current member data using prepared statement
-$stmt = $conn->prepare('SELECT * FROM pc_members WHERE id = ?');
+$stmt = db_prepare($conn, 'SELECT * FROM pc_members WHERE id = ?');
 $memberId = (int) ($pcadmin['id'] ?? 0);
 $stmt->bind_param('i', $memberId);
 $stmt->execute();
 $result = $stmt->get_result();
+if ($result === false) {
+    throw new RuntimeException('Failed to get result');
+}
 $num = mysqli_num_rows($result);
 
 // CSRF protection
@@ -56,10 +66,13 @@ if ($num === 1) {
         }
 
         // Check for duplicate email/nick using prepared statement
-        $checkStmt = $conn->prepare('SELECT id FROM pc_members WHERE (email = ? OR nick = ?) AND id != ?');
+        $checkStmt = db_prepare($conn, 'SELECT id FROM pc_members WHERE (email = ? OR nick = ?) AND id != ?');
         $checkStmt->bind_param('ssi', $email, $nick, $memberId);
         $checkStmt->execute();
         $checkResult = $checkStmt->get_result();
+        if ($checkResult === false) {
+            throw new RuntimeException('Failed to get result');
+        }
         if (mysqli_num_rows($checkResult) !== 0) {
             echo '<center><a href="javascript:history.back()">'
                 . 'Es gibt schon einen Member mit dieser E-Mail Adresse oder diesem Nickname!'
@@ -105,7 +118,7 @@ if ($num === 1) {
         // Update profile using prepared statement
         $sql = 'UPDATE pc_members SET nick = ?, email = ?, realname = ?, icq = ?, '
             . 'homepage = ?, age = ?, hardware = ?, info = ?, pic = ? WHERE id = ?';
-        $updateStmt = $conn->prepare($sql);
+        $updateStmt = db_prepare($conn,$sql);
         $updateStmt->bind_param(
             'sssssssssi',
             $nick,
@@ -127,7 +140,7 @@ if ($num === 1) {
         // Update password if changed
         if ($password1 !== '' && $password2 !== '' && $password1 === $password2) {
             $newPassword = password_hash(trim($password1), PASSWORD_DEFAULT);
-            $pwStmt = $conn->prepare('UPDATE pc_members SET password = ? WHERE id = ?');
+            $pwStmt = db_prepare($conn,'UPDATE pc_members SET password = ? WHERE id = ?');
             $pwStmt->bind_param('si', $newPassword, $memberId);
             $pwStmt->execute();
             $pwStmt->close();

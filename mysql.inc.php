@@ -11,6 +11,8 @@ declare(strict_types=1);
  * @link      https://github.com/schubertnico/PowerClan.git
  */
 
+/** @var array{host: string, user: string, password: string, database: string, port: int} $mysql */
+
 if (!isset($conn)) {
     try {
         $conn = mysqli_connect(

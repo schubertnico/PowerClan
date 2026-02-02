@@ -109,7 +109,7 @@ function getsettings(): void
         $num = mysqli_num_rows($result);
         if ($num === 1) {
             $dbSettings = mysqli_fetch_array($result, MYSQLI_ASSOC);
-            if ($dbSettings !== null) {
+            if (is_array($dbSettings)) {
                 $settings = array_merge($settings, $dbSettings);
             }
         } else {
@@ -306,4 +306,36 @@ function csrf_regenerate(): void
     }
 
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
+// =============================================================================
+// Database Helper Functions
+// =============================================================================
+
+/**
+ * Prepare a SQL statement with error handling
+ *
+ * @throws RuntimeException if prepare fails
+ */
+function db_prepare(mysqli $conn, string $query): mysqli_stmt
+{
+    $stmt = $conn->prepare($query);
+    if ($stmt === false) {
+        throw new RuntimeException('Failed to prepare statement: ' . $conn->error);
+    }
+    return $stmt;
+}
+
+/**
+ * Execute a query and return the result with error handling
+ *
+ * @throws RuntimeException if query fails
+ */
+function db_query(mysqli $conn, string $query): mysqli_result
+{
+    $result = $conn->query($query);
+    if (!$result instanceof mysqli_result) {
+        throw new RuntimeException('Query failed: ' . $conn->error);
+    }
+    return $result;
 }

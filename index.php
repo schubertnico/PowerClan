@@ -11,6 +11,9 @@ declare(strict_types=1);
  * @link      https://github.com/schubertnico/PowerClan.git
  */
 
+/** @var mysqli $conn */
+/** @var array<string, mixed> $settings */
+
 ?>
 <!--HEADER FILE-->
 <?php include __DIR__ . '/header.inc.php'; ?>
@@ -26,10 +29,13 @@ declare(strict_types=1);
   <tr><td valign="top" bgcolor="<?php echo e($settings['tablebg2'] ?? ''); ?>">
 <?php
 $newsLimit = (int) ($settings['newslimit'] ?? 5);
-$stmt = $conn->prepare('SELECT * FROM pc_news ORDER BY id DESC LIMIT ?');
+$stmt = db_prepare($conn, 'SELECT * FROM pc_news ORDER BY id DESC LIMIT ?');
 $stmt->bind_param('i', $newsLimit);
 $stmt->execute();
 $result = $stmt->get_result();
+if ($result === false) {
+    throw new RuntimeException('Failed to get result');
+}
 $num = mysqli_num_rows($result);
 
 if ($num !== 0) {
@@ -45,10 +51,13 @@ $stmt->close();
   </td><td valign="top" bgcolor="<?php echo e($settings['tablebg2'] ?? ''); ?>">
 <?php
 $warLimit = (int) ($settings['warlimit'] ?? 5);
-$stmt = $conn->prepare("SELECT * FROM pc_wars WHERE res1 != '' AND res2 != '' ORDER BY time DESC LIMIT ?");
+$stmt = db_prepare($conn, "SELECT * FROM pc_wars WHERE res1 != '' AND res2 != '' ORDER BY time DESC LIMIT ?");
 $stmt->bind_param('i', $warLimit);
 $stmt->execute();
 $result = $stmt->get_result();
+if ($result === false) {
+    throw new RuntimeException('Failed to get result');
+}
 $num = mysqli_num_rows($result);
 
 if ($num !== 0) {
@@ -94,10 +103,13 @@ $stmt->close();
 </table>
 <table border="0" cellpadding="3" cellspacing="2" width="100%">
 <?php
-$stmt = $conn->prepare('SELECT * FROM pc_news ORDER BY id DESC LIMIT ?');
+$stmt = db_prepare($conn, 'SELECT * FROM pc_news ORDER BY id DESC LIMIT ?');
 $stmt->bind_param('i', $newsLimit);
 $stmt->execute();
 $result = $stmt->get_result();
+if ($result === false) {
+    throw new RuntimeException('Failed to get result');
+}
 $num = mysqli_num_rows($result);
 
 if ($num !== 0) {

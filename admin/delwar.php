@@ -11,6 +11,13 @@ declare(strict_types=1);
  * @link      https://github.com/schubertnico/PowerClan.git
  */
 
+/** @var mysqli $conn */
+/** @var string $admin_tbl1 */
+/** @var string $admin_tbl2 */
+/** @var string $admin_tbl3 */
+/** @var array<string, mixed> $settings */
+/** @var array<string, mixed> $pcadmin */
+
 include __DIR__ . '/header.inc.php';
 ?>
 <!--MAINPAGE-->
@@ -24,21 +31,27 @@ if (($pcadmin['wars_del'] ?? '') === 'YES' || ($pcadmin['superadmin'] ?? '') ===
     $warid = $_GET['warid'] ?? $_POST['warid'] ?? '';
 
     if (!empty($warid)) {
-        $stmt = $conn->prepare('SELECT * FROM pc_wars WHERE id = ?');
+        $stmt = db_prepare($conn, 'SELECT * FROM pc_wars WHERE id = ?');
         $waridInt = (int) $warid;
         $stmt->bind_param('i', $waridInt);
         $stmt->execute();
         $result = $stmt->get_result();
+        if ($result === false) {
+            throw new RuntimeException('Failed to get result');
+        }
         $num = mysqli_num_rows($result);
 
         if ($num === 1) {
             $row = mysqli_fetch_array($result, MYSQLI_ASSOC);
             $stmt->close();
+            if (!is_array($row)) {
+                throw new RuntimeException('Failed to fetch war data');
+            }
 
             $delwar = $_POST['delwar'] ?? '';
 
             if ($delwar === 'YES' && $_SERVER['REQUEST_METHOD'] === 'POST') {
-                $delStmt = $conn->prepare('DELETE FROM pc_wars WHERE id = ?');
+                $delStmt = db_prepare($conn, 'DELETE FROM pc_wars WHERE id = ?');
                 $delStmt->bind_param('i', $waridInt);
                 $delStmt->execute();
                 $delStmt->close();

@@ -25,11 +25,14 @@ function checklogin(string $id, string $password): void
     }
 
     // Use prepared statement to prevent SQL injection
-    $stmt = $conn->prepare('SELECT * FROM pc_members WHERE id = ?');
+    $stmt = db_prepare($conn, 'SELECT * FROM pc_members WHERE id = ?');
     $idInt = (int) $id;
     $stmt->bind_param('i', $idInt);
     $stmt->execute();
     $result = $stmt->get_result();
+    if ($result === false) {
+        throw new RuntimeException('Failed to get result');
+    }
     $num = mysqli_num_rows($result);
 
     if ($num === 1) {
@@ -49,7 +52,7 @@ function checklogin(string $id, string $password): void
                 // Rehash if needed (algorithm update)
                 if (password_needs_rehash($storedPassword, PASSWORD_DEFAULT)) {
                     $newHash = password_hash($password, PASSWORD_DEFAULT);
-                    $updateStmt = $conn->prepare('UPDATE pc_members SET password = ? WHERE id = ?');
+                    $updateStmt = db_prepare($conn,'UPDATE pc_members SET password = ? WHERE id = ?');
                     $updateStmt->bind_param('si', $newHash, $idInt);
                     $updateStmt->execute();
                     $updateStmt->close();
@@ -62,7 +65,7 @@ function checklogin(string $id, string $password): void
 
             // Migrate to secure password hash
             $newHash = password_hash($password, PASSWORD_DEFAULT);
-            $updateStmt = $conn->prepare('UPDATE pc_members SET password = ? WHERE id = ?');
+            $updateStmt = db_prepare($conn,'UPDATE pc_members SET password = ? WHERE id = ?');
             $updateStmt->bind_param('si', $newHash, $idInt);
             $updateStmt->execute();
             $updateStmt->close();
@@ -93,7 +96,7 @@ if (!function_exists('getsettings')) {
         $num = mysqli_num_rows($result);
         if ($num === 1) {
             $dbSettings = mysqli_fetch_array($result, MYSQLI_ASSOC);
-            if ($dbSettings !== null) {
+            if (is_array($dbSettings)) {
                 $settings = array_merge($settings ?? [], $dbSettings);
             }
         } else {

@@ -1,4 +1,5 @@
 <?php
+/** @var float $version */
 
 /************************************************************************/
 
@@ -370,7 +371,7 @@ switch ($type) {
                     $query = "SHOW COLUMNS FROM $tableName LIKE '$fieldName'";
                     $result = $conn->query($query);
 
-                    if ($result && $result->num_rows > 0) {
+                    if ($result instanceof mysqli_result && $result->num_rows > 0) {
                         echo "Das Feld $fieldName existiert bereits in der Tabelle $tableName.";
                     } else {
                         // Das Feld existiert nicht, daher können Sie es hinzufügen.

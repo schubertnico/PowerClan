@@ -11,6 +11,14 @@ declare(strict_types=1);
  * @link      https://github.com/schubertnico/PowerClan.git
  */
 
+/** @var mysqli $conn */
+/** @var string $admin_tbl1 */
+/** @var string $admin_tbl2 */
+/** @var string $admin_tbl3 */
+/** @var array<string, mixed> $settings */
+/** @var array<string, mixed> $pcadmin */
+/** @var array<int, string> $leagues */
+
 include __DIR__ . '/header.inc.php';
 ?>
 <!--MAINPAGE-->
@@ -50,7 +58,7 @@ if (($pcadmin['wars_add'] ?? '') === 'YES' || ($pcadmin['superadmin'] ?? '') ===
             $sql = 'INSERT INTO pc_wars (enemy, enemy_tag, homepage, league, map1, map2, map3, '
                 . 'time, report, res1, res2, res3, screen1, screen2, screen3) '
                 . "VALUES (?, ?, ?, ?, ?, ?, ?, ?, '', '', '', '', '', '', '')";
-            $stmt = $conn->prepare($sql);
+            $stmt = db_prepare($conn,$sql);
             $stmt->bind_param(
                 'sssssssi',
                 $enemy,

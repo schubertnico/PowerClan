@@ -11,6 +11,13 @@ declare(strict_types=1);
  * @link      https://github.com/schubertnico/PowerClan.git
  */
 
+/** @var mysqli $conn */
+/** @var string $admin_tbl1 */
+/** @var string $admin_tbl2 */
+/** @var string $admin_tbl3 */
+/** @var array<string, mixed> $settings */
+/** @var array<string, mixed> $pcadmin */
+
 include __DIR__ . '/header.inc.php';
 ?>
 <!--MAINPAGE-->
@@ -21,16 +28,22 @@ if (($pcadmin['member_edit'] ?? '') === 'YES' || ($pcadmin['superadmin'] ?? '') 
     $memberid = $_GET['memberid'] ?? '';
 
     if (!empty($memberid)) {
-        $stmt = $conn->prepare('SELECT * FROM pc_members WHERE id = ?');
+        $stmt = db_prepare($conn, 'SELECT * FROM pc_members WHERE id = ?');
         $memberidInt = (int) $memberid;
         $stmt->bind_param('i', $memberidInt);
         $stmt->execute();
         $result = $stmt->get_result();
+        if ($result === false) {
+            throw new RuntimeException('Failed to get result');
+        }
         $num = mysqli_num_rows($result);
 
         if ($num === 1) {
             $row = mysqli_fetch_array($result, MYSQLI_ASSOC);
             $stmt->close();
+            if (!is_array($row)) {
+                throw new RuntimeException('Failed to fetch member data');
+            }
             $rowId = (int) $row['id'];
 
             $editmember = $_GET['editmember'] ?? '';
@@ -68,10 +81,13 @@ if (($pcadmin['member_edit'] ?? '') === 'YES' || ($pcadmin['superadmin'] ?? '') 
                 }
 
                 // Check for duplicate
-                $checkStmt = $conn->prepare('SELECT id FROM pc_members WHERE (email = ? OR nick = ?) AND id != ?');
+                $checkStmt = db_prepare($conn, 'SELECT id FROM pc_members WHERE (email = ? OR nick = ?) AND id != ?');
                 $checkStmt->bind_param('ssi', $email, $nick, $rowId);
                 $checkStmt->execute();
                 $checkResult = $checkStmt->get_result();
+                if ($checkResult === false) {
+                    throw new RuntimeException('Failed to get result');
+                }
                 if (mysqli_num_rows($checkResult) !== 0) {
                     echo '<center><a href="javascript:history.back()">'
                         . 'Es gibt schon einen Member mit dieser E-Mail oder diesem Nickname!'
@@ -111,7 +127,7 @@ if (($pcadmin['member_edit'] ?? '') === 'YES' || ($pcadmin['superadmin'] ?? '') 
                     . 'member_add = ?, member_edit = ?, member_del = ?, news_add = ?, '
                     . 'news_edit = ?, news_del = ?, wars_add = ?, wars_edit = ?, wars_del = ? '
                     . 'WHERE id = ?';
-                $updateStmt = $conn->prepare($sql);
+                $updateStmt = db_prepare($conn,$sql);
                 $updateStmt->bind_param(
                     'sssssssssssssssssssi',
                     $nick,
@@ -145,7 +161,7 @@ if (($pcadmin['member_edit'] ?? '') === 'YES' || ($pcadmin['superadmin'] ?? '') 
                 // Update password if changed
                 if ($password1 !== '' && $password2 !== '' && $password1 === $password2) {
                     $newPassword = password_hash(trim($password1), PASSWORD_DEFAULT);
-                    $pwStmt = $conn->prepare('UPDATE pc_members SET password = ? WHERE id = ?');
+                    $pwStmt = db_prepare($conn,'UPDATE pc_members SET password = ? WHERE id = ?');
                     $pwStmt->bind_param('si', $newPassword, $rowId);
                     $pwStmt->execute();
                     $pwStmt->close();
