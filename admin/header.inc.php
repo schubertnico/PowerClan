@@ -24,10 +24,10 @@ if (session_status() === PHP_SESSION_NONE) {
 $leagues = ['Friendly', 'Training', 'ESPL', 'Clanbase'];
 
 if (file_exists(__DIR__ . '/../config.inc.php') && file_exists(__DIR__ . '/../mysql.inc.php') && file_exists(__DIR__ . '/functions.inc.php')) {
-    include __DIR__ . '/../config.inc.php';
-    include __DIR__ . '/../mysql.inc.php';
-    include __DIR__ . '/../functions.inc.php'; // Main functions (CSRF, etc.)
-    include __DIR__ . '/functions.inc.php';    // Admin functions
+    require_once __DIR__ . '/../config.inc.php';
+    require_once __DIR__ . '/../mysql.inc.php';
+    require_once __DIR__ . '/../functions.inc.php'; // Main functions (CSRF, etc.)
+    require_once __DIR__ . '/functions.inc.php';    // Admin functions
 } else {
     echo '<center><b>Es fehlen wichtige Dateien!</b></center>';
     exit;

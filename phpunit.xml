@@ -29,6 +29,11 @@
             <directory>logs</directory>
             <directory>images</directory>
             <directory>screenshots</directory>
+            <file>.php-cs-fixer.php</file>
+            <file>rector.php</file>
+            <file>phpstan-bootstrap.php</file>
+            <file>install.php</file>
+            <directory>coverage-report</directory>
         </exclude>
     </source>
 </phpunit>
