@@ -62,6 +62,7 @@ yarn-error.log*
 # Test Coverage & Reports
 # -------------------------------------------
 /coverage/
+/coverage-report/
 /.phpunit.cache/
 /.phpunit.result.cache
 /phpunit.xml.bak
@@ -131,6 +132,11 @@ docker-compose.override.yml
 # -------------------------------------------
 /gnulicense.txt
 /Installationsguide/
+
+# -------------------------------------------
+# Claude Code
+# -------------------------------------------
+/.claude/
 
 # -------------------------------------------
 # User-specific
