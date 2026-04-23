@@ -24,6 +24,9 @@ include __DIR__ . '/header.inc.php';
 
 <center>
 <?php
+// CSRF-Schutz (BUG-017)
+csrf_check();
+
 if (($pcadmin['member_edit'] ?? '') === 'YES' || ($pcadmin['superadmin'] ?? '') === 'YES') {
     $memberid = $_GET['memberid'] ?? '';
 
@@ -55,13 +58,18 @@ if (($pcadmin['member_edit'] ?? '') === 'YES' || ($pcadmin['superadmin'] ?? '') 
                 $password1 = $_POST['password1'] ?? '';
                 $password2 = $_POST['password2'] ?? '';
                 $work = trim($_POST['work'] ?? '');
-                $icq = trim($_POST['icq'] ?? '');
+                $icq = (int) ($_POST['icq'] ?? 0);              // BUG-018: int statt string
                 $homepage = trim($_POST['homepage'] ?? '');
                 $realname = trim($_POST['realname'] ?? '');
-                $age = trim($_POST['age'] ?? '');
+                $age = (int) ($_POST['age'] ?? 0);              // BUG-018: int statt string
                 $hardware = strip_tags(trim($_POST['hardware'] ?? ''));
                 $info = strip_tags(trim($_POST['info'] ?? ''));
                 $pic = trim($_POST['pic'] ?? '');
+
+                if ($age < 0 || $age > 99) {
+                    echo '<center><a href="javascript:history.back()">Alter muss zwischen 0 und 99 liegen.</a></center>';
+                    exit;
+                }
 
                 // Get permission checkboxes
                 $member_add = ($_POST['member_add'] ?? '') === 'YES' ? 'YES' : 'NO';
@@ -122,37 +130,45 @@ if (($pcadmin['member_edit'] ?? '') === 'YES' || ($pcadmin['superadmin'] ?? '') 
                 }
 
                 // Update member using prepared statement
+                // Typen-Signatur: nick s, email s, work s, realname s, icq i, homepage s, age i,
+                // hardware s, info s, pic s, 9x permission s, id i
                 $sql = 'UPDATE pc_members SET nick = ?, email = ?, work = ?, realname = ?, '
                     . 'icq = ?, homepage = ?, age = ?, hardware = ?, info = ?, pic = ?, '
                     . 'member_add = ?, member_edit = ?, member_del = ?, news_add = ?, '
                     . 'news_edit = ?, news_del = ?, wars_add = ?, wars_edit = ?, wars_del = ? '
                     . 'WHERE id = ?';
-                $updateStmt = db_prepare($conn,$sql);
-                $updateStmt->bind_param(
-                    'sssssssssssssssssssi',
-                    $nick,
-                    $email,
-                    $work,
-                    $realname,
-                    $icq,
-                    $homepage,
-                    $age,
-                    $hardware,
-                    $info,
-                    $pic,
-                    $member_add,
-                    $member_edit,
-                    $member_del,
-                    $news_add,
-                    $news_edit,
-                    $news_del,
-                    $wars_add,
-                    $wars_edit,
-                    $wars_del,
-                    $rowId
-                );
-                $updateStmt->execute();
-                $updateStmt->close();
+                try {
+                    $updateStmt = db_prepare($conn, $sql);
+                    $updateStmt->bind_param(
+                        'ssssisissssssssssssi',
+                        $nick,
+                        $email,
+                        $work,
+                        $realname,
+                        $icq,
+                        $homepage,
+                        $age,
+                        $hardware,
+                        $info,
+                        $pic,
+                        $member_add,
+                        $member_edit,
+                        $member_del,
+                        $news_add,
+                        $news_edit,
+                        $news_del,
+                        $wars_add,
+                        $wars_edit,
+                        $wars_del,
+                        $rowId
+                    );
+                    $updateStmt->execute();
+                    $updateStmt->close();
+                } catch (Throwable $e) {
+                    error_log('editmember.php update failed: ' . $e->getMessage());
+                    echo '<center><b>Fehler beim Speichern: ' . e($e->getMessage()) . '</b></center>';
+                    exit;
+                }
 
                 $nickEsc = e($row['nick'] ?? '');
                 echo '<center><a href="choosemember.php">'
@@ -206,6 +222,7 @@ Du kannst Deine Daten jederzeit aendern!
 
                 echo "<center>
 <form action=\"{$phpSelf}?memberid={$rowId}&editmember=YES\" method=\"post\">
+" . csrf_field() . "
 <table border=\"0\" cellpadding=\"3\" cellspacing=\"2\" width=\"100%\">
 <tr><td colspan=\"2\" align=\"center\">
 <b>Member editieren</b>
@@ -226,8 +243,8 @@ Du kannst Deine Daten jederzeit aendern!
 <b>Passwort</b><br>
 <small>Das neue Passwort f&uuml;r den Member (mit Best&auml;tigung)</small>
 </td><td valign=\"top\" bgcolor=\"{$admin_tbl1}\">
-<input name=\"password1\" size=\"25\" maxlength=\"25\" type=\"password\"><br>
-<input name=\"password2\" size=\"25\" maxlength=\"25\" type=\"password\">
+<input name=\"password1\" size=\"25\" maxlength=\"72\" type=\"password\"><br>
+<input name=\"password2\" size=\"25\" maxlength=\"72\" type=\"password\">
 </td></tr>
 <tr><td valign=\"top\">
 <b>Aufgabe</b><br>
@@ -303,7 +320,7 @@ Du kannst Deine Daten jederzeit aendern!
                 echo "
 </td></tr>
 <tr><td colspan=\"2\" align=\"center\" bgcolor=\"{$admin_tbl1}\">
-<input type=\"submit\" value=\"Member editieren\"> <input type=\"reset\" value=\"Daten zur&uuml;cksetzten\">
+<input type=\"submit\" value=\"Member editieren\"> <input type=\"reset\" value=\"Daten zur&uuml;cksetzen\">
 </td></tr>
 </table>
 </form>
@@ -317,7 +334,7 @@ Du kannst Deine Daten jederzeit aendern!
         echo '<center><a href="choosemember.php">Bitte w&auml;hle einen Member aus!</a></center>';
     }
 } else {
-    echo '<center>Du hast keine Zugang zu dieser Funktion!</center>';
+    echo '<center>Du hast keinen Zugang zu dieser Funktion!</center>';
 }
 ?>
 </center>

@@ -7,7 +7,7 @@ namespace PowerClan\Tests\Integration;
 use PHPUnit\Framework\Attributes\Test;
 
 /**
- * Integration tests for authentication system
+ * Integration tests for authentication system (session-based, BUG-011 fix)
  */
 class AuthenticationTest extends IntegrationTestCase
 {
@@ -15,137 +15,113 @@ class AuthenticationTest extends IntegrationTestCase
     {
         parent::setUp();
         require_once __DIR__ . '/../../admin/functions.inc.php';
+        // Ensure a session is already active so pc_session_start() becomes a no-op
+        // and does not overwrite the $_SESSION values set by the test.
+        if (session_status() === PHP_SESSION_NONE) {
+            @session_start();
+        }
+        $_SESSION = [];
+    }
+
+    protected function tearDown(): void
+    {
+        $_SESSION = [];
+        parent::tearDown();
     }
 
     // =========================================================================
-    // checklogin() Tests
+    // checklogin() – session-based
     // =========================================================================
 
     #[Test]
-    public function checkloginSucceedsWithValidBcryptPassword(): void
+    public function checkloginSucceedsWithValidSession(): void
     {
         global $loggedin, $pcadmin;
-
-        $password = 'TestPassword123';
-        $hash = password_hash($password, PASSWORD_DEFAULT);
 
         $memberId = $this->createMember([
             'nick' => 'TestUser',
             'email' => 'test@example.com',
-            'password' => $hash,
+            'password' => password_hash('TestPassword123', PASSWORD_DEFAULT),
         ]);
 
-        checklogin((string) $memberId, $password);
+        $_SESSION['member_id'] = $memberId;
+
+        checklogin();
 
         $this->assertSame('YES', $loggedin);
         $this->assertSame('TestUser', $pcadmin['nick']);
     }
 
     #[Test]
-    public function checkloginSucceedsWithStoredHash(): void
-    {
-        global $loggedin, $pcadmin;
-
-        $password = 'TestPassword123';
-        $hash = password_hash($password, PASSWORD_DEFAULT);
-
-        $memberId = $this->createMember([
-            'nick' => 'CookieUser',
-            'email' => 'cookie@example.com',
-            'password' => $hash,
-        ]);
-
-        // Simulate cookie-based login (hash as password)
-        checklogin((string) $memberId, $hash);
-
-        $this->assertSame('YES', $loggedin);
-        $this->assertSame('CookieUser', $pcadmin['nick']);
-    }
-
-    #[Test]
-    public function checkloginFailsWithWrongPassword(): void
+    public function checkloginFailsWithoutSession(): void
     {
         global $loggedin;
 
-        $memberId = $this->createMember([
-            'nick' => 'WrongPassUser',
-            'email' => 'wrong@example.com',
-            'password' => password_hash('correct', PASSWORD_DEFAULT),
-        ]);
+        $_SESSION = [];
 
-        checklogin((string) $memberId, 'incorrect');
+        checklogin();
 
         $this->assertSame('NO', $loggedin);
     }
 
     #[Test]
-    public function checkloginFailsWithEmptyId(): void
+    public function checkloginFailsWithNonExistentMember(): void
     {
         global $loggedin;
 
-        checklogin('', 'anypassword');
+        $_SESSION['member_id'] = 99999;
+
+        checklogin();
 
         $this->assertSame('NO', $loggedin);
     }
 
     #[Test]
-    public function checkloginFailsWithEmptyPassword(): void
+    public function checkloginFailsWithZeroMemberId(): void
     {
         global $loggedin;
 
-        $memberId = $this->createMember([
-            'nick' => 'EmptyPassUser',
-            'email' => 'empty@example.com',
-        ]);
+        $_SESSION['member_id'] = 0;
 
-        checklogin((string) $memberId, '');
+        checklogin();
 
         $this->assertSame('NO', $loggedin);
-    }
-
-    #[Test]
-    public function checkloginFailsWithNonExistentUser(): void
-    {
-        global $loggedin;
-
-        checklogin('99999', 'anypassword');
-
-        $this->assertSame('NO', $loggedin);
-    }
-
-    #[Test]
-    public function checkloginMigratesLegacyBase64Password(): void
-    {
-        global $loggedin, $conn;
-
-        $password = 'LegacyPassword';
-        $legacyHash = base64_encode($password);
-
-        $memberId = $this->createMember([
-            'nick' => 'LegacyUser',
-            'email' => 'legacy@example.com',
-            'password' => $legacyHash,
-        ]);
-
-        checklogin((string) $memberId, $password);
-
-        $this->assertSame('YES', $loggedin);
-
-        // Check that password was migrated
-        $stmt = $conn->prepare('SELECT password FROM pc_members WHERE id = ?');
-        $stmt->bind_param('i', $memberId);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        $row = $result->fetch_assoc();
-        $stmt->close();
-
-        // Should now be bcrypt
-        $this->assertTrue(str_starts_with($row['password'], '$2y$'));
-        $this->assertTrue(password_verify($password, $row['password']));
     }
 
     // =========================================================================
-    // Permission Tests
+    // pc_can() permission helper
+    // =========================================================================
+
+    #[Test]
+    public function pcCanReturnsTrueForSuperadmin(): void
+    {
+        global $pcadmin;
+
+        $pcadmin = ['superadmin' => 'YES'];
+
+        $this->assertTrue(pc_can('member_add'));
+        $this->assertTrue(pc_can('news_del'));
+        $this->assertTrue(pc_can('wars_edit'));
+    }
+
+    #[Test]
+    public function pcCanReturnsTrueOnlyForGrantedPermissions(): void
+    {
+        global $pcadmin;
+
+        $pcadmin = [
+            'superadmin' => 'NO',
+            'news_add' => 'YES',
+            'news_edit' => 'NO',
+        ];
+
+        $this->assertTrue(pc_can('news_add'));
+        $this->assertFalse(pc_can('news_edit'));
+        $this->assertFalse(pc_can('wars_del'));
+    }
+
+    // =========================================================================
+    // Permission stored values
     // =========================================================================
 
     #[Test]

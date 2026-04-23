@@ -288,12 +288,20 @@ function csrf_validate(): bool
  */
 function csrf_check(): void
 {
-    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        if (!csrf_validate()) {
-            http_response_code(403);
-            die('<center><b>Sicherheitsfehler: Ungültiges CSRF-Token. Bitte lade die Seite neu.</b></center>');
-        }
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        return;
     }
+    if (!csrf_validate()) {
+        if (PHP_SAPI === 'cli') {
+            throw new RuntimeException('CSRF validation failed');
+        }
+        if (ob_get_level() > 0) {
+            ob_end_clean();
+        }
+        http_response_code(403);
+        die('<center><b>Sicherheitsfehler: Ungültiges CSRF-Token. Bitte lade die Seite neu.</b></center>');
+    }
+    csrf_regenerate();
 }
 
 /**
@@ -306,6 +314,34 @@ function csrf_regenerate(): void
     }
 
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
+/**
+ * Login-CSRF-Token (separat vom normalen CSRF, damit ein Logout den normalen Token rotieren kann,
+ * ohne die Login-Seite zu invalidieren).
+ */
+function login_csrf_token(): string
+{
+    if (session_status() === PHP_SESSION_NONE) {
+        session_start();
+    }
+    if (empty($_SESSION['login_csrf'])) {
+        $_SESSION['login_csrf'] = bin2hex(random_bytes(32));
+    }
+    return (string) $_SESSION['login_csrf'];
+}
+
+function login_csrf_validate(): bool
+{
+    if (session_status() === PHP_SESSION_NONE) {
+        session_start();
+    }
+    $postToken = $_POST['login_csrf'] ?? '';
+    $sessionToken = $_SESSION['login_csrf'] ?? '';
+    if (!is_string($postToken) || $postToken === '' || !is_string($sessionToken) || $sessionToken === '') {
+        return false;
+    }
+    return hash_equals($sessionToken, $postToken);
 }
 
 // =============================================================================

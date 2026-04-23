@@ -51,6 +51,13 @@ if (($pcadmin['wars_add'] ?? '') === 'YES' || ($pcadmin['superadmin'] ?? '') ===
         ) {
             echo '<center><a href="javascript:history.back()">'
                 . 'Bitte f&uuml;lle alle nicht optionalen Felder aus!</a></center>';
+        } elseif (
+            !checkdate($time_month, $time_day, $time_year)
+            || $time_hour < 0 || $time_hour > 23
+            || $time_minute < 0 || $time_minute > 59
+        ) {
+            echo '<center><a href="javascript:history.back()">'
+                . 'Ung&uuml;ltiges Datum oder Uhrzeit!</a></center>';
         } else {
             $playtime = mktime($time_hour, $time_minute, 0, $time_month, $time_day, $time_year);
 
@@ -183,14 +190,14 @@ if (($pcadmin['wars_add'] ?? '') === 'YES' || ($pcadmin['superadmin'] ?? '') ===
 </select>
 </td></tr>
 <tr><td colspan=\"2\" align=\"center\" bgcolor=\"{$admin_tbl1}\">
-<input type=\"submit\" value=\"War hinzuf&uuml;gen\"> <input type=\"reset\" value=\"Daten zur&uuml;cksetzten\">
+<input type=\"submit\" value=\"War hinzuf&uuml;gen\"> <input type=\"reset\" value=\"Daten zur&uuml;cksetzen\">
 </td></tr>
 </table>
 </form>
 </center>";
     }
 } else {
-    echo '<center>Du hast keine Zugang zu dieser Funktion!</center>';
+    echo '<center>Du hast keinen Zugang zu dieser Funktion!</center>';
 }
 ?>
 </center>

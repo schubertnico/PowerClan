@@ -35,6 +35,7 @@ abstract class PageTestCase extends IntegrationTestCase
         $_GET = [];
         $_POST = [];
         $_COOKIE = [];
+        $_SESSION = [];
         $_SERVER['REQUEST_METHOD'] = 'GET';
         parent::tearDown();
     }
@@ -100,9 +101,12 @@ abstract class PageTestCase extends IntegrationTestCase
             $pcadmin = $admin;
             $loggedin = 'YES';
 
-            // Set cookies so checklogin() in header.inc.php succeeds
-            $_COOKIE['pcadmin_id'] = (string) $admin['id'];
-            $_COOKIE['pcadmin_password'] = (string) $admin['password'];
+            // Set up server-side session so checklogin() finds the member
+            if (session_status() === PHP_SESSION_NONE) {
+                @session_start();
+            }
+            $_SESSION['member_id'] = (int) $admin['id'];
+            $_SESSION['logged_in_at'] = time();
         }
 
         $_GET = $get;

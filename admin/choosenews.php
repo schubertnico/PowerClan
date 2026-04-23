@@ -52,6 +52,17 @@ if ($num === 0) {
         $nick = e($row['nick'] ?? '');
         $email = e($row['email'] ?? '');
         $newsId = (int) $row['id'];
+        $authorId = (int) ($row['userid'] ?? 0);
+
+        // BUG-021: Aktionslinks nur bei tatsächlicher Berechtigung
+        $actions = [];
+        if (pc_can('news_edit') || $authorId === (int) ($pcadmin['id'] ?? 0)) {
+            $actions[] = "<a href=\"editnews.php?newsid={$newsId}\">editieren</a>";
+        }
+        if (pc_can('news_del')) {
+            $actions[] = "<a href=\"delnews.php?newsid={$newsId}\">l&ouml;schen</a>";
+        }
+        $actionHtml = $actions === [] ? '&mdash;' : '[ ' . implode(' | ', $actions) . ' ]';
 
         echo "
 <tr><td align=\"center\" bgcolor=\"{$bgcolor}\">
@@ -61,7 +72,7 @@ if ($num === 0) {
 </td><td bgcolor=\"{$bgcolor}\">
 <a href=\"mailto:{$email}\">{$nick}</a>
 </td><td align=\"center\" bgcolor=\"{$bgcolor}\">
-<small>[ <a href=\"editnews.php?newsid={$newsId}\">editieren</a> | <a href=\"delnews.php?newsid={$newsId}\">l&ouml;schen</a> ]</small>
+<small>{$actionHtml}</small>
 </td></tr>";
     }
     echo '</table>';

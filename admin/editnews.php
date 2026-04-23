@@ -59,7 +59,7 @@ if ($hasAccess) {
             if (empty($title) || empty($text)) {
                 echo '<center><a href="javascript:history.back()">Bitte f&uuml;lle alle Felder aus!</a></center>';
             } else {
-                $title = strip_tags($title);
+                // BUG-025: kein strip_tags, Output-Escaping reicht
                 $newsIdForUpdate = (int) $row['id'];
 
                 // Use prepared statement
@@ -160,7 +160,7 @@ Enter f&uuml;r Zeilenumbruch
         echo '<center><a href="choosenews.php">Bitte w&auml;hle einen Newseintrag aus!</a></center>';
     }
 } else {
-    echo '<center>Du hast keine Zugang zu dieser Funktion!</center>';
+    echo '<center>Du hast keinen Zugang zu dieser Funktion!</center>';
 }
 ?>
 </center>

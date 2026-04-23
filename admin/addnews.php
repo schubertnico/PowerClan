@@ -37,7 +37,7 @@ if (($pcadmin['news_add'] ?? '') === 'YES' || ($pcadmin['superadmin'] ?? '') ===
         if (empty($title) || empty($text)) {
             echo '<center><a href="javascript:history.back()">Bitte f&uuml;lle alle Felder aus!</a></center>';
         } else {
-            $title = strip_tags($title);
+            // BUG-025: strip_tags entfernt, Ausgabe wird stattdessen via e()/htmlspecialchars escaped
             $now = time();
             $userId = (int) ($pcadmin['id'] ?? 0);
             $nick = $pcadmin['nick'] ?? '';
@@ -155,7 +155,7 @@ function insertBBCode(tag) {
 </center>';
     }
 } else {
-    echo '<center>Du hast keine Zugang zu dieser Funktion!</center>';
+    echo '<center>Du hast keinen Zugang zu dieser Funktion!</center>';
 }
 ?>
 </center>

@@ -231,7 +231,7 @@ if (($pcadmin['superadmin'] ?? '') === 'YES') {
         echo '<center>Fehler beim Laden der Konfiguration!</center>';
     }
 } else {
-    echo '<center>Du hast keine Zugang zu dieser Funktion!</center>';
+    echo '<center>Du hast keinen Zugang zu dieser Funktion!</center>';
 }
 ?>
 </center>

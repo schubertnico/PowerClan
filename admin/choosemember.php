@@ -34,7 +34,18 @@ if ($num === 0) {
     while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
         $nick = e($row['nick'] ?? '');
         $memberId = (int) $row['id'];
-        echo "<li><b>{$nick}</b> <small>[ <a href=\"editmember.php?memberid={$memberId}\">editieren</a> | <a href=\"delmember.php?memberid={$memberId}\">l&ouml;schen</a> ]</small></li>\n";
+
+        // BUG-021: Aktionslinks nur bei Berechtigung
+        $actions = [];
+        if (pc_can('member_edit')) {
+            $actions[] = "<a href=\"editmember.php?memberid={$memberId}\">editieren</a>";
+        }
+        if (pc_can('member_del')) {
+            $actions[] = "<a href=\"delmember.php?memberid={$memberId}\">l&ouml;schen</a>";
+        }
+        $actionHtml = $actions === [] ? '&mdash;' : '[ ' . implode(' | ', $actions) . ' ]';
+
+        echo "<li><b>{$nick}</b> <small>{$actionHtml}</small></li>\n";
     }
     echo '</ul>';
 }

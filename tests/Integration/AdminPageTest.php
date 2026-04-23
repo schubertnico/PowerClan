@@ -110,7 +110,7 @@ class AdminPageTest extends PageTestCase
 
         $html = $this->renderAdminPage($this->adminPath . 'addmember.php', $memberId);
 
-        $this->assertStringContainsString('keine Zugang', $html);
+        $this->assertStringContainsString('keinen Zugang', $html);
     }
 
     // =========================================================================
@@ -299,7 +299,7 @@ class AdminPageTest extends PageTestCase
 
         $html = $this->renderAdminPage($this->adminPath . 'editconfig.php', $memberId);
 
-        $this->assertStringContainsString('keine Zugang', $html);
+        $this->assertStringContainsString('keinen Zugang', $html);
     }
 
     // =========================================================================
@@ -482,12 +482,14 @@ class AdminPageTest extends PageTestCase
             'email' => 'toedit@test.com',
             'password' => password_hash('pass', PASSWORD_DEFAULT),
         ]);
+        $token = $this->setupCsrfToken();
 
         $html = $this->renderAdminPage(
             $this->adminPath . 'editmember.php',
             $this->adminId,
             ['memberid' => (string) $memberId, 'editmember' => 'YES'],
             [
+                'csrf_token' => $token,
                 'nick' => 'Edited',
                 'email' => 'edited@test.com',
                 'password1' => '',
@@ -844,112 +846,7 @@ class AdminPageTest extends PageTestCase
     }
 
     // =========================================================================
-    // admin/editmember2.php Tests
+    // admin/editmember2.php wurde entfernt (BUG-028 Fix) - Tests gelöscht.
+    // Der aktive Edit-Flow wird durch die editmember*-Tests oben abgedeckt.
     // =========================================================================
-
-    #[Test]
-    public function editmember2ShowsForm(): void
-    {
-        $memberId = $this->createMember([
-            'nick' => 'EditMe2',
-            'email' => 'editme2@test.com',
-            'password' => password_hash('pass', PASSWORD_DEFAULT),
-            'work' => 'Medic',
-        ]);
-
-        $html = $this->renderAdminPage(
-            $this->adminPath . 'editmember2.php',
-            $this->adminId,
-            ['memberid' => (string) $memberId]
-        );
-
-        $this->assertStringContainsString('Member editieren', $html);
-        $this->assertStringContainsString('EditMe2', $html);
-        $this->assertStringContainsString('editme2@test.com', $html);
-        $this->assertStringContainsString('Medic', $html);
-        $this->assertStringContainsString('Adminrechte', $html);
-    }
-
-    #[Test]
-    public function editmember2UpdatesSuccessfully(): void
-    {
-        $memberId = $this->createMember([
-            'nick' => 'ToEdit2',
-            'email' => 'toedit2@test.com',
-            'password' => password_hash('pass', PASSWORD_DEFAULT),
-        ]);
-        $token = $this->setupCsrfToken();
-
-        $html = $this->renderAdminPage(
-            $this->adminPath . 'editmember2.php',
-            $this->adminId,
-            ['memberid' => (string) $memberId, 'editmember' => 'YES'],
-            [
-                'memberid' => (string) $memberId,
-                'nick' => 'Edited2',
-                'email' => 'edited2@test.com',
-                'password1' => '',
-                'password2' => '',
-                'work' => 'Leader',
-                'icq' => '0',
-                'homepage' => '',
-                'realname' => 'Real Name 2',
-                'age' => '28',
-                'hardware' => 'Good PC',
-                'info' => 'Some info',
-                'pic' => '',
-                'member_add' => 'YES',
-                'news_add' => 'YES',
-                'csrf_token' => $token,
-            ]
-        );
-
-        $this->assertStringContainsString('erfolgreich', $html);
-
-        $member = $this->getMember($memberId);
-        $this->assertSame('Edited2', $member['nick']);
-        $this->assertSame('edited2@test.com', $member['email']);
-        $this->assertSame('YES', $member['member_add']);
-    }
-
-    #[Test]
-    public function editmember2ShowsErrorForMissingMember(): void
-    {
-        $html = $this->renderAdminPage(
-            $this->adminPath . 'editmember2.php',
-            $this->adminId,
-            ['memberid' => '99999']
-        );
-
-        $this->assertStringContainsString('existiert nicht', $html);
-    }
-
-    #[Test]
-    public function editmember2ShowsErrorForEmptyMemberId(): void
-    {
-        $html = $this->renderAdminPage(
-            $this->adminPath . 'editmember2.php',
-            $this->adminId
-        );
-
-        $this->assertStringContainsString('Member aus', $html);
-    }
-
-    #[Test]
-    public function editmember2DeniesAccessWithoutPermission(): void
-    {
-        $memberId = $this->createMember([
-            'nick' => 'NoPerm2',
-            'email' => 'noperm2@test.com',
-            'password' => password_hash('pass', PASSWORD_DEFAULT),
-        ]);
-
-        $html = $this->renderAdminPage(
-            $this->adminPath . 'editmember2.php',
-            $memberId,
-            ['memberid' => (string) $memberId]
-        );
-
-        $this->assertStringContainsString('keine Zugang', $html);
-    }
 }

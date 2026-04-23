@@ -139,12 +139,18 @@ if ($num === 1) {
 
         // Update password if changed
         if ($password1 !== '' && $password2 !== '' && $password1 === $password2) {
-            $newPassword = password_hash(trim($password1), PASSWORD_DEFAULT);
-            $pwStmt = db_prepare($conn,'UPDATE pc_members SET password = ? WHERE id = ?');
-            $pwStmt->bind_param('si', $newPassword, $memberId);
-            $pwStmt->execute();
-            $pwStmt->close();
-            echo '<br><br><center>Da Du Dein Passwort ge&auml;ndert hast musst Du Dich nun neu einloggen!</center>';
+            if (strlen($password1) < 8) {
+                echo '<br><br><center>Das Passwort muss mindestens 8 Zeichen haben. Andere Profildaten wurden gespeichert.</center>';
+            } else {
+                $newPassword = password_hash(trim($password1), PASSWORD_DEFAULT);
+                $pwStmt = db_prepare($conn,'UPDATE pc_members SET password = ? WHERE id = ?');
+                $pwStmt->bind_param('si', $newPassword, $memberId);
+                $pwStmt->execute();
+                $pwStmt->close();
+
+                pc_session_logout();
+                echo '<br><br><center>Da Du Dein Passwort ge&auml;ndert hast, wurdest Du abgemeldet. Bitte neu einloggen.</center>';
+            }
         }
     } else {
         // Display edit form with escaped values
@@ -183,8 +189,8 @@ if ($num === 1) {
         <b>Passwort</b><br>
         <small>Dein neues Passwort(mit Best&auml;tigung)</small>
         </td><td valign=\"top\" bgcolor=\"{$admin_tbl1}\">
-        <input name=\"password1\" size=\"25\" maxlength=\"25\" type=\"password\"><br>
-        <input name=\"password2\" size=\"25\" maxlength=\"25\" type=\"password\">
+        <input name=\"password1\" size=\"25\" maxlength=\"72\" type=\"password\"><br>
+        <input name=\"password2\" size=\"25\" maxlength=\"72\" type=\"password\">
         </td></tr>
         <tr><td valign=\"top\">
         <b>ICQ Nummer</b><br>
@@ -229,7 +235,7 @@ if ($num === 1) {
         <input name=\"pic\" size=\"25\" maxlength=\"250\" value=\"{$picValue}\" type=\"url\">
         </td></tr>
         <tr><td colspan=\"2\" align=\"center\">
-        <input type=\"submit\" value=\"Profil editieren\"> <input type=\"reset\" value=\"Daten zur&uuml;cksetzten\">
+        <input type=\"submit\" value=\"Profil editieren\"> <input type=\"reset\" value=\"Daten zur&uuml;cksetzen\">
         </td></tr>
         </table>
         </form>

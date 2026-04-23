@@ -19,7 +19,7 @@
         <a href="index.php">Home</a> |
         <a href="member.php">Members</a> |
         <a href="wars.php">Wars</a> |
-        <a href="admin/">Admin</a>
+        <a href="admin/">Mitglieder-Login</a>
     </td>
 </tr>
 <tr>

@@ -11,70 +11,48 @@ declare(strict_types=1);
  * @link      https://github.com/schubertnico/PowerClan.git
  */
 
+require_once __DIR__ . '/session.inc.php';
+
 /**
- * Check login credentials with automatic password migration
- * Supports both new password_hash() format and legacy base64 format
+ * Load current admin from serverside session.
+ * Sets $loggedin and $pcadmin globals.
  */
-function checklogin(string $id, string $password): void
+function checklogin(): void
 {
     global $loggedin, $pcadmin, $conn;
     $loggedin = 'NO';
+    $pcadmin = [];
 
-    if ($id === '' || $id === '0' || ($password === '' || $password === '0')) {
+    $memberId = pc_session_current_member_id();
+    if ($memberId <= 0) {
         return;
     }
 
-    // Use prepared statement to prevent SQL injection
     $stmt = db_prepare($conn, 'SELECT * FROM pc_members WHERE id = ?');
-    $idInt = (int) $id;
-    $stmt->bind_param('i', $idInt);
+    $stmt->bind_param('i', $memberId);
     $stmt->execute();
     $result = $stmt->get_result();
-    if ($result === false) {
-        throw new RuntimeException('Failed to get result');
-    }
-    $num = mysqli_num_rows($result);
-
-    if ($num === 1) {
-        $pcadmin = mysqli_fetch_array($result, MYSQLI_ASSOC);
-        $storedPassword = $pcadmin['password'] ?? '';
-
-        // Check for bcrypt/argon2 hash format
-        if (str_starts_with($storedPassword, '$2y$') || str_starts_with($storedPassword, '$argon2')) {
-            // FIRST: Check if cookie-password matches stored hash (cookie-based session)
-            if ($storedPassword === $password) {
-                $loggedin = 'YES';
-            }
-            // SECOND: Try password_verify for plain-text login
-            elseif (password_verify($password, $storedPassword)) {
-                $loggedin = 'YES';
-
-                // Rehash if needed (algorithm update)
-                if (password_needs_rehash($storedPassword, PASSWORD_DEFAULT)) {
-                    $newHash = password_hash($password, PASSWORD_DEFAULT);
-                    $updateStmt = db_prepare($conn,'UPDATE pc_members SET password = ? WHERE id = ?');
-                    $updateStmt->bind_param('si', $newHash, $idInt);
-                    $updateStmt->execute();
-                    $updateStmt->close();
-                }
-            }
-        }
-        // Fallback: Try legacy base64 format and migrate
-        elseif ($storedPassword === base64_encode($password)) {
+    if ($result instanceof mysqli_result && mysqli_num_rows($result) === 1) {
+        $row = mysqli_fetch_array($result, MYSQLI_ASSOC);
+        if (is_array($row)) {
+            $pcadmin = $row;
             $loggedin = 'YES';
-
-            // Migrate to secure password hash
-            $newHash = password_hash($password, PASSWORD_DEFAULT);
-            $updateStmt = db_prepare($conn,'UPDATE pc_members SET password = ? WHERE id = ?');
-            $updateStmt->bind_param('si', $newHash, $idInt);
-            $updateStmt->execute();
-            $updateStmt->close();
-
-            error_log("Password migrated to secure hash for user ID: {$idInt}");
         }
     }
-
     $stmt->close();
+}
+
+/**
+ * Check whether the current admin has a specific permission.
+ * Superadmins always return true.
+ */
+function pc_can(string $perm): bool
+{
+    global $pcadmin;
+    if (($pcadmin['superadmin'] ?? 'NO') === 'YES') {
+        return true;
+    }
+    return ($pcadmin[$perm] ?? 'NO') === 'YES';
 }
 
 /**

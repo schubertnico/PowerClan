@@ -83,7 +83,7 @@ Soll der War gegen <b>{$enemy}</b> am <b>{$date}</b> um <b>{$time}</b> wirklich 
         echo '<center><a href="choosewar.php">Bitte w&auml;hle einen War aus!</a></center>';
     }
 } else {
-    echo '<center>Du hast keine Zugang zu dieser Funktion!</center>';
+    echo '<center>Du hast keinen Zugang zu dieser Funktion!</center>';
 }
 ?>
 </center>

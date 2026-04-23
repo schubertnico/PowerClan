@@ -54,6 +54,7 @@ if (($pcadmin['news_edit'] ?? '') === 'YES') {
 }
 if (($pcadmin['news_del'] ?? '') === 'YES') {
     echo "<li>News l&ouml;schen</li>\n";
+    $i++;
 }
 if (($pcadmin['wars_add'] ?? '') === 'YES') {
     echo "<li>Wars hinzuf&uuml;gen</li>\n";

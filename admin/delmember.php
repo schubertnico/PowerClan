@@ -94,7 +94,7 @@ Soll der Member <b>{$nick}</b> ({$work}) wirklich gel&ouml;scht werden?<br>
         echo '<center><a href="choosemember.php">Bitte w&auml;hle einen Member aus!</a></center>';
     }
 } else {
-    echo '<center>Du hast keine Zugang zu dieser Funktion!</center>';
+    echo '<center>Du hast keinen Zugang zu dieser Funktion!</center>';
 }
 ?>
 </center>

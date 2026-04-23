@@ -15,11 +15,6 @@ declare(strict_types=1);
 /** @var array{host: string, user: string, password: string, database: string, port: int} $mysql */
 /** @var array<string, mixed> $settings */
 
-// Start session for CSRF protection (must be before any output)
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-
 // League array
 $leagues = ['Friendly', 'Training', 'ESPL', 'Clanbase'];
 
@@ -27,100 +22,103 @@ if (file_exists(__DIR__ . '/../config.inc.php') && file_exists(__DIR__ . '/../my
     require_once __DIR__ . '/../config.inc.php';
     require_once __DIR__ . '/../mysql.inc.php';
     require_once __DIR__ . '/../functions.inc.php'; // Main functions (CSRF, etc.)
-    require_once __DIR__ . '/functions.inc.php';    // Admin functions
+    require_once __DIR__ . '/functions.inc.php';    // Admin functions + session helper
 } else {
     echo '<center><b>Es fehlen wichtige Dateien!</b></center>';
     exit;
 }
 
+// HTTP-Security-Header
+header('X-Content-Type-Options: nosniff');
+header('X-Frame-Options: SAMEORIGIN');
+header('Referrer-Policy: same-origin');
+
+// Output-Buffering, damit csrf_check() im Fehlerfall HTTP 403 setzen kann
+if (ob_get_level() === 0) {
+    ob_start();
+}
+
+pc_session_start();
+
 $admin_tbl1 = '#B0B0B0';
 $admin_tbl2 = '#E0E0E0';
 $admin_tbl3 = '#F0F0F0';
 
-// Get cookie values safely
-$pcadmin_id = $_COOKIE['pcadmin_id'] ?? '';
-$pcadmin_password = $_COOKIE['pcadmin_password'] ?? '';
-
 $login = $_GET['login'] ?? '';
 $logout = $_GET['logout'] ?? '';
 
-// Initialize variables
 /** @var 'YES'|'NO' $loggedin */
 $loggedin = 'NO';
 $pcadmin = [];
 
-// Check existing session - may set $loggedin to 'YES'
-checklogin($pcadmin_id, $pcadmin_password);
+// Log current user out before anything else if requested
+if ($logout === 'YES') {
+    pc_session_logout();
+    header('Location: ' . $_SERVER['PHP_SELF']);
+    exit;
+}
 
-// Handle login
+// Populate $pcadmin / $loggedin from session
+checklogin();
+
+// Handle login POST
 if ($login === 'YES' && $_SERVER['REQUEST_METHOD'] === 'POST') {
-    $loginemail = $_POST['loginemail'] ?? '';
-    $loginpassword = $_POST['loginpassword'] ?? '';
+    // Login-CSRF prüfen
+    if (!login_csrf_validate()) {
+        http_response_code(403);
+        die('<center><b>Sicherheitsfehler: Ungültiges CSRF-Token. Bitte lade die Seite neu.</b></center>');
+    }
 
-    if (!empty($loginpassword) && !empty($loginemail)) {
-        // Use prepared statement for login query
+    // Brute-Force-Drossel (max. 10 Versuche pro 60s pro Session)
+    $now = time();
+    $_SESSION['login_attempts'] = array_filter(
+        $_SESSION['login_attempts'] ?? [],
+        static fn ($t) => (int) $t > $now - 60
+    );
+    if (count($_SESSION['login_attempts']) >= 10) {
+        http_response_code(429);
+        die('<center><b>Zu viele Login-Versuche. Bitte warte eine Minute.</b></center>');
+    }
+
+    $loginemail = trim((string) ($_POST['loginemail'] ?? ''));
+    $loginpassword = (string) ($_POST['loginpassword'] ?? '');
+
+    $authenticated = false;
+
+    if ($loginemail !== '' && $loginpassword !== '' && filter_var($loginemail, FILTER_VALIDATE_EMAIL)) {
         $stmt = db_prepare($conn, 'SELECT * FROM pc_members WHERE email = ?');
         $stmt->bind_param('s', $loginemail);
         $stmt->execute();
         $result = $stmt->get_result();
-        if ($result === false) {
-            throw new RuntimeException('Failed to get result');
-        }
-        $num = mysqli_num_rows($result);
+        if ($result instanceof mysqli_result && mysqli_num_rows($result) === 1) {
+            $candidate = mysqli_fetch_array($result, MYSQLI_ASSOC) ?: [];
+            $storedPassword = (string) ($candidate['password'] ?? '');
 
-        if ($num === 1) {
-            $fetchedAdmin = mysqli_fetch_array($result, MYSQLI_ASSOC);
-            if (!is_array($fetchedAdmin)) {
-                $stmt->close();
-                $pcadmin = [];
-            } else {
-                $pcadmin = $fetchedAdmin;
-            }
-            $storedPassword = $pcadmin['password'] ?? '';
-            $authenticated = false;
-
-            // Try new password_hash format first
             if (str_starts_with($storedPassword, '$2y$') || str_starts_with($storedPassword, '$argon2')) {
-                if (password_verify((string) $loginpassword, $storedPassword)) {
+                if (password_verify($loginpassword, $storedPassword)) {
                     $authenticated = true;
-
-                    // Rehash if needed
                     if (password_needs_rehash($storedPassword, PASSWORD_DEFAULT)) {
-                        $newHash = password_hash((string) $loginpassword, PASSWORD_DEFAULT);
-                        $updateStmt = db_prepare($conn,'UPDATE pc_members SET password = ? WHERE id = ?');
-                        $updateStmt->bind_param('si', $newHash, $pcadmin['id']);
+                        $newHash = password_hash($loginpassword, PASSWORD_DEFAULT);
+                        $updateStmt = db_prepare($conn, 'UPDATE pc_members SET password = ? WHERE id = ?');
+                        $cid = (int) $candidate['id'];
+                        $updateStmt->bind_param('si', $newHash, $cid);
                         $updateStmt->execute();
                         $updateStmt->close();
-                        $storedPassword = $newHash;
                     }
                 }
-            }
-            // Fallback: Legacy base64 format with migration
-            elseif ($storedPassword === base64_encode((string) $loginpassword)) {
+            } elseif ($storedPassword === base64_encode($loginpassword)) {
                 $authenticated = true;
-
-                // Migrate to secure hash
-                $newHash = password_hash((string) $loginpassword, PASSWORD_DEFAULT);
-                $updateStmt = db_prepare($conn,'UPDATE pc_members SET password = ? WHERE id = ?');
-                $updateStmt->bind_param('si', $newHash, $pcadmin['id']);
+                $newHash = password_hash($loginpassword, PASSWORD_DEFAULT);
+                $updateStmt = db_prepare($conn, 'UPDATE pc_members SET password = ? WHERE id = ?');
+                $cid = (int) $candidate['id'];
+                $updateStmt->bind_param('si', $newHash, $cid);
                 $updateStmt->execute();
                 $updateStmt->close();
-                $storedPassword = $newHash;
             }
 
             if ($authenticated) {
-                // Set secure cookies (HttpOnly for security)
-                $cookieOptions = [
-                    'expires' => time() + 3600 * 24 * 30, // 30 days
-                    'path' => '/',
-                    'httponly' => true,
-                    'samesite' => 'Lax'
-                ];
-                setcookie('pcadmin_id', (string) $pcadmin['id'], $cookieOptions);
-                setcookie('pcadmin_password', (string) $storedPassword, $cookieOptions);
-                $loggedin = 'YES';
-
-                // Redirect to make cookies available immediately
+                unset($_SESSION['login_attempts']);
+                pc_session_login((int) $candidate['id']);
                 $stmt->close();
                 header('Location: ' . $_SERVER['PHP_SELF']);
                 exit;
@@ -128,20 +126,11 @@ if ($login === 'YES' && $_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         $stmt->close();
     }
-}
 
-// Handle logout
-if ($logout === 'YES') {
-    $cookieOptions = [
-        'expires' => time() - 3600,
-        'path' => '/',
-        'httponly' => true,
-        'samesite' => 'Lax'
-    ];
-    setcookie('pcadmin_id', '', $cookieOptions);
-    setcookie('pcadmin_password', '', $cookieOptions);
-    $loggedin = 'NO';
-    $pcadmin = [];
+    $_SESSION['login_attempts'][] = $now;
+    $_SESSION['login_error'] = 'Login fehlgeschlagen.';
+    header('Location: ' . $_SERVER['PHP_SELF']);
+    exit;
 }
 
 getsettings();
@@ -163,14 +152,21 @@ getsettings();
   <table border="0" width="100%" cellpadding="2" cellspacing="1">
 <?php
 if ($loggedin === 'NO') {
-    // Use htmlspecialchars for PHP_SELF to prevent XSS
     $formAction = e($_SERVER['PHP_SELF']) . '?login=YES';
+    $loginError = (string) ($_SESSION['login_error'] ?? '');
+    unset($_SESSION['login_error']);
+    $csrfLogin = e(login_csrf_token());
     echo "
       <tr><td bgcolor=\"{$admin_tbl1}\">
       <b>Login</b>
-      </td></tr>
+      </td></tr>";
+    if ($loginError !== '') {
+        echo "<tr><td bgcolor=\"#FFCCCC\" align=\"center\"><b>" . e($loginError) . "</b></td></tr>";
+    }
+    echo "
       <tr><td bgcolor=\"{$admin_tbl2}\" align=\"center\">
         <form action=\"{$formAction}\" method=\"post\">
+        <input type=\"hidden\" name=\"login_csrf\" value=\"{$csrfLogin}\">
         <table border=\"0\" cellpadding=\"3\" cellspacing=\"0\">
         <tr><td>
         <b>Deine E-Mail</b>
@@ -192,7 +188,9 @@ if ($loggedin === 'NO') {
     exit;
 }
 
-$nickDisplay = e($pcadmin['nick'] ?? 'Unknown');
+/** @var array<string, mixed>|array{} $pcadmin */
+$nickValue = $pcadmin['nick'] ?? 'Unknown'; // @phpstan-ignore-line
+$nickDisplay = e($nickValue);
 $phpSelf = e($_SERVER['PHP_SELF']);
 ?>
   <tr><td bgcolor="<?php echo $admin_tbl2; ?>" width="125" valign="top">

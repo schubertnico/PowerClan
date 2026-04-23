@@ -80,9 +80,19 @@ if ($num === 0) {
             echo " | {$map3}";
         }
 
+        // BUG-021: Aktionslinks nur bei Berechtigung
+        $actions = [];
+        if (pc_can('wars_edit')) {
+            $actions[] = "<a href=\"editwar.php?warid={$warId}\">editieren</a>";
+        }
+        if (pc_can('wars_del')) {
+            $actions[] = "<a href=\"delwar.php?warid={$warId}\">l&ouml;schen</a>";
+        }
+        $actionHtml = $actions === [] ? '&mdash;' : '[ ' . implode(' | ', $actions) . ' ]';
+
         echo "
 </td><td align=\"center\" bgcolor=\"{$bgcolor}\">
-<small>[ <a href=\"editwar.php?warid={$warId}\">editieren</a> | <a href=\"delwar.php?warid={$warId}\">l&ouml;schen</a> ]</small>
+<small>{$actionHtml}</small>
 </td></tr>";
     }
     echo '</table>';

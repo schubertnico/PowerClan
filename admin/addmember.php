@@ -172,7 +172,7 @@ Das Passwort und Deine anderen Daten kannst Du jederzeit aendern.
 </form>";
     }
 } else {
-    echo '<center>Du hast keine Zugang zu dieser Funktion!</center>';
+    echo '<center>Du hast keinen Zugang zu dieser Funktion!</center>';
 }
 ?>
 </center>
