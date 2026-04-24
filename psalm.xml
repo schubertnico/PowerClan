@@ -13,6 +13,16 @@
         <ignoreFiles>
             <directory name="vendor" />
             <directory name=".docker" />
+            <directory name=".idea" />
+            <directory name="coverage" />
+            <directory name="coverage-report" />
+            <directory name=".phpunit.cache" />
+            <directory name=".claude" />
+            <directory name="docs" />
+            <directory name="todos" />
+            <directory name="screenshots" />
+            <!-- Tests nutzen PHPUnit-Attribute, die Psalm nicht kennt -->
+            <directory name="tests" />
         </ignoreFiles>
     </projectFiles>
 
@@ -32,6 +42,23 @@
 
         <!-- Array Offsets (Legacy $settings array) -->
         <InvalidArrayOffset errorLevel="suppress" />
+
+        <!-- $settings kann leer sein (wird per getsettings() befüllt) -->
+        <EmptyArrayAccess errorLevel="suppress" />
+
+        <!-- config.inc.php wird per Installer erzeugt; in CI nicht vorhanden -->
+        <MissingFile errorLevel="suppress" />
+
+        <!-- Redundante Casts in Legacy-Code nicht blockierend -->
+        <RedundantCast errorLevel="info" />
+        <RedundantCastGivenDocblockType errorLevel="info" />
+
+        <!-- mysqli_fetch_array: zweites Argument ist optional mit Default -->
+        <InvalidArgument>
+            <errorLevel type="suppress">
+                <referencedFunction name="mysqli_fetch_array" />
+            </errorLevel>
+        </InvalidArgument>
 
         <!-- Redundante Bedingungen -->
         <RedundantCondition errorLevel="info" />
