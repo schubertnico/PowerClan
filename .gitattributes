@@ -1,0 +1,104 @@
+# ============================================================================
+# PowerClan - .gitattributes
+#
+# Steuert zwei Dinge:
+#   1. Zeilenenden (EOL) — verhindert CRLF-Chaos zwischen Windows/Unix.
+#   2. `export-ignore` — welche Dateien werden NICHT in ein Release-Archiv
+#      (`git archive`) aufgenommen. Wer das Live-System per Archiv deployed,
+#      bekommt automatisch nur die Produktions-relevanten Dateien.
+#      Für FTP/rsync-Deploys bitte zusätzlich die hier markierten Pfade in
+#      einem `.rsyncignore`/`--exclude` mitgeben.
+# ============================================================================
+
+# ----------------------------------------------------------------------------
+# Zeilenenden (EOL Normalization)
+# ----------------------------------------------------------------------------
+* text=auto eol=lf
+
+# Quellcode / Text
+*.php       text eol=lf
+*.inc       text eol=lf
+*.pc        text eol=lf
+*.html      text eol=lf
+*.htm       text eol=lf
+*.css       text eol=lf
+*.js        text eol=lf
+*.json      text eol=lf
+*.json5     text eol=lf
+*.md        text eol=lf
+*.markdown  text eol=lf
+*.neon      text eol=lf
+*.sql       text eol=lf
+*.xml       text eol=lf
+*.yml       text eol=lf
+*.yaml      text eol=lf
+*.ini       text eol=lf
+*.sh        text eol=lf
+*.txt       text eol=lf
+Dockerfile  text eol=lf
+.gitignore       text eol=lf
+.gitattributes   text eol=lf
+
+# Windows-Scripts
+*.bat       text eol=crlf
+*.cmd       text eol=crlf
+*.ps1       text eol=crlf
+
+# Binäre Dateien (nicht normalisieren)
+*.png       binary
+*.jpg       binary
+*.jpeg      binary
+*.gif       binary
+*.webp      binary
+*.ico       binary
+*.pdf       binary
+*.zip       binary
+*.tar       binary
+*.gz        binary
+*.phar      binary
+
+# ----------------------------------------------------------------------------
+# export-ignore:  Dateien/Verzeichnisse, die NICHT in Produktions-Archive
+#                 einfließen sollen ( git archive --format=zip HEAD ).
+# ----------------------------------------------------------------------------
+
+# Entwicklungs-Toolkonfiguration
+/.github              export-ignore
+/.docker              export-ignore
+/.idea                export-ignore
+/.vscode              export-ignore
+/.claude              export-ignore
+/phpunit.xml          export-ignore
+/phpstan.neon         export-ignore
+/phpstan-bootstrap.php export-ignore
+/psalm.xml            export-ignore
+/rector.php           export-ignore
+/.php-cs-fixer.php    export-ignore
+/infection.json5      export-ignore
+/composer.lock        export-ignore
+
+# Tests & QA-Material
+/tests                export-ignore
+/todos                export-ignore
+/coverage             export-ignore
+/coverage-report      export-ignore
+
+# Entwickler-/Projektdokumentation, die auf dem Live-System nicht nötig ist
+/CONTRIBUTING.md      export-ignore
+/SECURITY.md          export-ignore
+/docs                 export-ignore
+/screenshots          export-ignore
+
+# Installer-Lockfile (niemals im Release, wird beim Install erzeugt)
+/install.lock         export-ignore
+
+# Git-Metadaten (werden von git archive ohnehin ausgelassen, dokumentiert)
+/.gitignore           export-ignore
+/.gitattributes       export-ignore
+
+# ----------------------------------------------------------------------------
+# linguist-generated:  z.B. Lock-Dateien aus Sprachstatistik ausnehmen
+# ----------------------------------------------------------------------------
+composer.lock         linguist-generated
+package-lock.json     linguist-generated
+yarn.lock             linguist-generated
