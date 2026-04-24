@@ -147,7 +147,7 @@
 - **Bereich:** Installer
 - **URL / Route:** `install.php` Footer
 - **Reproduktionsschritte:** `GET /install.php` → Quelltext enthält "Copyright 2001-20023".
-- **Erwartet:** "2001-2025" (konsistent mit restlichem Projekt).
+- **Erwartet:** "2001-2026" (konsistent mit restlichem Projekt).
 - **Tatsächlich:** "Copyright 2001-**20023**".
 - **Fehlerart:** UI / Text
 - **Schweregrad:** Niedrig

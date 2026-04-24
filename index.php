@@ -6,7 +6,7 @@ declare(strict_types=1);
  * PowerClan - PHP/MySQL Clan Portal
  * Main Index Page
  *
- * @copyright 2001-2025 PowerScripts
+ * @copyright 2001-2026 PowerScripts
  * @license   MIT License
  * @link      https://github.com/schubertnico/PowerClan.git
  */
@@ -147,7 +147,7 @@ $stmt->close();
 </center>
 <br>
 <center>
-<small><a href="https://www.powerscripts.org" target="_blank" rel="noopener noreferrer">PowerClan</a> &copy; Copyright 2001-2025 by <a href="mailto:info@powerscripts.org?subject=PowerClan Copyright">PowerScripts</a></small>
+<small><a href="https://www.powerscripts.org" target="_blank" rel="noopener noreferrer">PowerClan</a> &copy; Copyright 2001-2026 by <a href="mailto:info@powerscripts.org?subject=PowerClan Copyright">PowerScripts</a></small>
 </center>
 
 <!--FOOTER FILE-->

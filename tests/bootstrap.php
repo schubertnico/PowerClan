@@ -5,7 +5,7 @@ declare(strict_types=1);
 /**
  * PowerClan - PHPUnit Bootstrap
  *
- * @copyright 2001-2025 PowerScripts
+ * @copyright 2001-2026 PowerScripts
  * @license   MIT License
  */
 

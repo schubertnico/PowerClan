@@ -7,7 +7,7 @@ declare(strict_types=1);
  *
  * Serverseitige PHP-Session statt Passwort-Hash im Cookie.
  *
- * @copyright 2001-2025 PowerScripts
+ * @copyright 2001-2026 PowerScripts
  * @license   MIT License
  */
 

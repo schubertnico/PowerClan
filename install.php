@@ -7,7 +7,7 @@ declare(strict_types=1);
  *
  * Wird nach dem ersten erfolgreichen Lauf per `install.lock` deaktiviert.
  *
- * @copyright 2001-2025 PowerScripts
+ * @copyright 2001-2026 PowerScripts
  * @license   MIT License
  */
 
@@ -295,7 +295,7 @@ switch ($type) {
 ?>
 </td></tr></table></td></tr></table>
 <br>
-<small>PowerClan &copy; Copyright 2001-2025 by PowerScripts</small>
+<small>PowerClan &copy; Copyright 2001-2026 by PowerScripts</small>
 </center>
 </body>
 </html>

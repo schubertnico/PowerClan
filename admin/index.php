@@ -6,7 +6,7 @@ declare(strict_types=1);
  * PowerClan - PHP/MySQL Clan Portal
  * Admin Dashboard
  *
- * @copyright 2001-2025 PowerScripts
+ * @copyright 2001-2026 PowerScripts
  * @license   MIT License
  * @link      https://github.com/schubertnico/PowerClan.git
  */
