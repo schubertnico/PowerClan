@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PowerClan - Dokumentation</title>
+    <title>PowerClan &ndash; Dokumentation</title>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
             line-height: 1.6;
-            max-width: 900px;
+            max-width: 960px;
             margin: 0 auto;
             padding: 20px;
             background-color: #f5f5f5;
@@ -31,6 +31,7 @@
             padding: 2px 6px;
             border-radius: 3px;
             font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.95em;
         }
         pre {
             background-color: #2d2d2d;
@@ -48,11 +49,13 @@
             border-collapse: collapse;
             width: 100%;
             margin: 15px 0;
+            background-color: #fff;
         }
         th, td {
             border: 1px solid #ccc;
             padding: 10px;
             text-align: left;
+            vertical-align: top;
         }
         th {
             background-color: #000080;
@@ -79,6 +82,12 @@
             padding: 15px;
             margin: 15px 0;
         }
+        .success-box {
+            background-color: #e8f5e9;
+            border-left: 4px solid #2e7d32;
+            padding: 15px;
+            margin: 15px 0;
+        }
         a {
             color: #000080;
         }
@@ -88,10 +97,26 @@
             border-radius: 5px;
             margin-bottom: 20px;
         }
+        .contact-box {
+            background-color: #fff;
+            border: 2px solid #000080;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .contact-box h3 {
+            margin-top: 0;
+        }
         hr {
             border: none;
             border-top: 2px solid #000080;
             margin: 30px 0;
+        }
+        .toc {
+            background-color: #fff;
+            border: 1px solid #ccc;
+            padding: 15px 25px;
+            border-radius: 5px;
         }
     </style>
 </head>
@@ -100,97 +125,127 @@
 <h1>PowerClan</h1>
 
 <div class="header-info">
-    <p><strong>Ein PHP/MySQL basiertes Clan-Portal-Management-System.</strong></p>
+    <p><strong>Ein PHP/MySQL-basiertes Clan-Portal-Management-System.</strong></p>
     <p>
-        <strong>Version:</strong> 2.1 (PHP 8.4)<br>
+        <strong>Version:</strong> 2.2 (PHP 8.4)<br>
         <strong>Lizenz:</strong> MIT<br>
-        <strong>Repository:</strong> <a href="https://github.com/schubertnico/PowerClan.git">https://github.com/schubertnico/PowerClan.git</a>
+        <strong>Repository:</strong> <a href="https://github.com/schubertnico/PowerClan">github.com/schubertnico/PowerClan</a><br>
+        <strong>Projektseite:</strong> <a href="https://www.powerscripts.org/projects-4.html">powerscripts.org/projects-4.html</a>
     </p>
 </div>
 
-<h2>Beschreibung</h2>
+<div class="success-box">
+    <strong>Schnellstart &ndash; in unter 5 Minuten einsatzbereit:</strong>
 
-<p>PowerClan ist ein klassisches Clan-Portal für Gaming-Communities. Es ermöglicht die Verwaltung von:</p>
+<pre><code># 1. Repository klonen
+git clone https://github.com/schubertnico/PowerClan.git
+cd PowerClan
 
+# 2. PHP-Dependencies installieren
+composer install
+
+# 3. Docker-Container starten (Web, MySQL, phpMyAdmin, Mailpit)
+docker compose -f .docker/docker-compose.yml up -d
+
+# 4. Im Browser Installation abschlie&szlig;en
+#    http://localhost:8086/install.php
+#    Hostname: db  User: powerclan  PW: powerclan_secure_2024
+#    Datenbank: powerclan_v2.0  Port: 3306
+
+# 5. Admin-Passwort aus Mailpit-UI holen
+#    http://localhost:8034
+
+# 6. Einloggen
+#    http://localhost:8086/admin/
+</code></pre>
+    Nach erfolgreicher Installation sperrt sich der Installer per <code>install.lock</code> selbst.
+</div>
+
+<h2>Inhaltsverzeichnis</h2>
+<div class="toc">
 <ul>
-    <li><strong>Mitgliedern</strong> - Profilverwaltung, Kontaktdaten, Hardware-Infos</li>
-    <li><strong>News</strong> - Nachrichten und Ankündigungen</li>
-    <li><strong>Clanwars</strong> - War-Ergebnisse, Berichte, Screenshots</li>
+    <li><a href="#features">Features</a></li>
+    <li><a href="#systemanforderungen">Systemanforderungen</a></li>
+    <li><a href="#installation-docker">Installation mit Docker</a></li>
+    <li><a href="#installation-standalone">Installation ohne Docker</a></li>
+    <li><a href="#nutzung">Nutzung</a></li>
+    <li><a href="#entwicklung">Entwicklung &amp; Qualit&auml;tssicherung</a></li>
+    <li><a href="#sicherheit">Sicherheit</a></li>
+    <li><a href="#changelog">Changelog</a></li>
+    <li><a href="#dokumentation">Weitere Dokumentation</a></li>
+    <li><a href="#kontakt">Kontakt &amp; Impressum</a></li>
+</ul>
+</div>
+
+<h2 id="features">Features</h2>
+<ul>
+    <li><strong>Mitgliederverwaltung</strong> &ndash; Profil, Kontaktdaten, Hardware-Infos, Avatar</li>
+    <li><strong>News-System</strong> &ndash; BBCode-Editor, Autoren-Attribution</li>
+    <li><strong>Clanwar-Verwaltung</strong> &ndash; Ergebnisse, Berichte, Screenshots, Ligen</li>
+    <li><strong>Rollenbasierte Rechte</strong> &ndash; <code>member_*</code>, <code>news_*</code>, <code>wars_*</code>, <code>superadmin</code></li>
+    <li><strong>CSRF-Schutz</strong> auf allen Formularen inkl. Login</li>
+    <li><strong>Serverseitige Sessions</strong> (kein Passwort-Hash im Cookie)</li>
+    <li><strong>Brute-Force-Drossel</strong> am Login (10 Versuche / Minute / Session)</li>
+    <li><strong>HTTP-Security-Header</strong> (X-Frame-Options, X-Content-Type-Options, Referrer-Policy)</li>
+    <li><strong>Mailpit-Integration</strong> f&uuml;r lokale Mail-Zustellung</li>
+    <li><strong>Installer-Lockfile</strong> &ndash; verhindert versehentliche Re-Installation</li>
 </ul>
 
-<h2>Systemanforderungen</h2>
-
-<ul>
-    <li>PHP 8.4 oder höher</li>
-    <li>MySQL 8.0 oder höher</li>
-    <li>Apache mit mod_rewrite (optional)</li>
-    <li>Docker &amp; Docker Compose (empfohlen)</li>
-</ul>
-
-<h2>Setup mit Docker (Empfohlen)</h2>
-
-<h3>1. Repository klonen</h3>
-
-<pre><code>git clone https://github.com/schubertnico/PowerClan.git
-cd PowerClan</code></pre>
-
-<h3>2. Docker-Container starten</h3>
-
-<pre><code>cd .docker
-docker compose build
-docker compose up -d</code></pre>
-
-<h3>3. Verwendete Ports</h3>
-
+<h2 id="systemanforderungen">Systemanforderungen</h2>
 <table>
-    <tr>
-        <th>Service</th>
-        <th>Port</th>
-        <th>URL</th>
-    </tr>
-    <tr>
-        <td>Web (PHP)</td>
-        <td>8086</td>
-        <td><a href="http://localhost:8086">http://localhost:8086</a></td>
-    </tr>
-    <tr>
-        <td>MySQL</td>
-        <td>3316</td>
-        <td>localhost:3316</td>
-    </tr>
-    <tr>
-        <td>phpMyAdmin</td>
-        <td>8089</td>
-        <td><a href="http://localhost:8089">http://localhost:8089</a></td>
-    </tr>
+    <tr><th>Komponente</th><th>Version</th><th>Hinweis</th></tr>
+    <tr><td>PHP</td><td>8.4+</td><td>Mit <code>mysqli</code>-Extension</td></tr>
+    <tr><td>MySQL</td><td>8.0+</td><td>Oder MariaDB 10.6+</td></tr>
+    <tr><td>Composer</td><td>2.x</td><td>F&uuml;r Entwicklung / Dependencies</td></tr>
+    <tr><td>Docker</td><td>24.x</td><td>Optional, empfohlen</td></tr>
 </table>
 
-<h3>4. Prüfen ob alles läuft</h3>
+<h2 id="installation-docker">Installation mit Docker (empfohlen)</h2>
 
-<pre><code># Container-Status prüfen
-docker compose ps
+<h3>1. Repository klonen und Dependencies installieren</h3>
+<pre><code>git clone https://github.com/schubertnico/PowerClan.git
+cd PowerClan
+composer install</code></pre>
 
-# Logs anzeigen
-docker compose logs -f
+<h3>2. Container starten</h3>
+<pre><code>docker compose -f .docker/docker-compose.yml up -d
 
-# PHP Error-Log prüfen
-cat ../logs/php-error.log</code></pre>
+# Status pr&uuml;fen (alle Container sollten 'healthy' sein)
+docker compose -f .docker/docker-compose.yml ps</code></pre>
 
-<h3>5. Installation abschließen</h3>
+<h3>3. Dienste &amp; Ports</h3>
+<table>
+    <tr><th>Service</th><th>Container</th><th>Port</th><th>URL</th></tr>
+    <tr><td>Web (PHP 8.4)</td><td><code>powerclan_web</code></td><td>8086</td><td><a href="http://localhost:8086">http://localhost:8086</a></td></tr>
+    <tr><td>MySQL 8.0</td><td><code>powerclan_db</code></td><td>3316</td><td><code>localhost:3316</code></td></tr>
+    <tr><td>phpMyAdmin</td><td><code>powerclan_phpmyadmin</code></td><td>8089</td><td><a href="http://localhost:8089">http://localhost:8089</a></td></tr>
+    <tr><td>Mailpit (SMTP)</td><td><code>powerclan_mailpit</code></td><td>1034</td><td><code>localhost:1034</code></td></tr>
+    <tr><td>Mailpit (Web-UI)</td><td><code>powerclan_mailpit</code></td><td>8034</td><td><a href="http://localhost:8034">http://localhost:8034</a></td></tr>
+</table>
 
+<h3>4. Installation abschlie&szlig;en</h3>
 <ol>
-    <li>Öffne <a href="http://localhost:8086/install.php">http://localhost:8086/install.php</a></li>
-    <li>Folge dem Installationsassistenten</li>
-    <li><strong>Wichtig:</strong> Lösche <code>install.php</code> nach der Installation!</li>
+    <li>Aufruf: <a href="http://localhost:8086/install.php">http://localhost:8086/install.php</a></li>
+    <li>Schritt&nbsp;2 &ndash; MySQL-Host: <code>db</code>, User: <code>powerclan</code>,
+        Passwort: <code>powerclan_secure_2024</code>, Datenbank: <code>powerclan_v2.0</code>, Port: <code>3306</code></li>
+    <li>Schritt&nbsp;3/4 &ndash; Nickname + E-Mail des ersten Superadmins eingeben</li>
+    <li>Generiertes Passwort aus Mailpit abrufen: <a href="http://localhost:8034">http://localhost:8034</a></li>
+    <li>Einloggen: <a href="http://localhost:8086/admin/">http://localhost:8086/admin/</a></li>
 </ol>
 
-<h2>Setup ohne Docker</h2>
+<div class="info-box">
+    <strong>Installer-Sperre:</strong> Nach erfolgreichem Abschluss wird <code>install.lock</code>
+    im Projekt-Root angelegt &ndash; <code>install.php</code> antwortet dann automatisch mit HTTP&nbsp;403.
+    Zum erneuten Ausf&uuml;hren die Datei l&ouml;schen.
+</div>
 
-<h3>1. Konfiguration anpassen</h3>
+<h2 id="installation-standalone">Installation ohne Docker</h2>
 
-<p>Bearbeite <code>config.inc.php</code>:</p>
-
-<pre><code>$mysql = [
+<h3>1. Konfiguration anlegen</h3>
+<pre><code>cp config.inc.php.example config.inc.php</code></pre>
+<p>Datei bearbeiten:</p>
+<pre><code>&lt;?php
+$mysql = [
     'host'     =&gt; 'localhost',
     'user'     =&gt; 'dein_user',
     'password' =&gt; 'dein_passwort',
@@ -198,162 +253,196 @@ cat ../logs/php-error.log</code></pre>
     'port'     =&gt; 3306,
 ];</code></pre>
 
-<h3>2. Datenbank importieren</h3>
+<h3>2. Installation per Web-Browser</h3>
+<pre><code># http://&lt;dein-host&gt;/install.php aufrufen
+# Fallback: Wird mail() nicht lokal zugestellt, bekommt der Admin
+# das generierte Passwort zur Absicherung im Browser angezeigt.</code></pre>
 
-<pre><code>mysql -u root -p powerclan &lt; powerclan.sql</code></pre>
-
-<h3>3. Berechtigungen setzen</h3>
-
+<h3>3. Berechtigungen (Linux/macOS)</h3>
 <pre><code>chmod 755 logs/
 chmod 644 config.inc.php</code></pre>
 
-<h2>Nutzung</h2>
+<h2 id="nutzung">Nutzung</h2>
 
-<h3>Öffentliche Seiten</h3>
-
-<ul>
-    <li><strong>Startseite:</strong> <code>index.php</code> - News und aktuelle Wars</li>
-    <li><strong>Mitglieder:</strong> <code>member.php</code> - Mitgliederliste und Profile</li>
-    <li><strong>Wars:</strong> <code>wars.php</code> - Clanwar-Übersicht und Berichte</li>
-</ul>
-
-<h3>Admin-Bereich</h3>
-
-<ul>
-    <li><strong>Login:</strong> <code>admin/index.php</code></li>
-    <li><strong>Funktionen:</strong>
-        <ul>
-            <li>Mitglieder verwalten (hinzufügen, bearbeiten, löschen)</li>
-            <li>News verwalten</li>
-            <li>Clanwars verwalten</li>
-            <li>Konfiguration bearbeiten (nur Superadmin)</li>
-        </ul>
-    </li>
-</ul>
-
-<h2>Entwicklung</h2>
-
-<h3>PHPStan ausführen</h3>
-
-<pre><code>composer install
-composer run phpstan</code></pre>
-
-<h3>Rector ausführen</h3>
-
-<pre><code># Vorschau der Änderungen
-composer run rector:dry
-
-# Änderungen anwenden
-composer run rector</code></pre>
-
-<h2>Lizenz</h2>
-
-<p>MIT License - siehe <a href="LICENSE">LICENSE</a></p>
-
-<p>Copyright (c) 2001-2025 PowerScripts</p>
-
-<hr>
-
-<h2>Änderungen / Migration auf PHP 8.4</h2>
-
-<p>Diese Version wurde umfassend auf PHP 8.4 aktualisiert und enthält wichtige Sicherheitsfixes:</p>
-
-<h3>PHP 8.4 Kompatibilität</h3>
-
-<ul>
-    <li><code>declare(strict_types=1)</code> in allen PHP-Dateien aktiviert</li>
-    <li><code>eregi()</code> durch <code>preg_match()</code> mit <code>/i</code> Flag ersetzt</li>
-    <li><code>stripslashes()</code> entfernt (Magic Quotes seit PHP 7.0 nicht mehr vorhanden)</li>
-    <li>Array-Zugriffe mit Quotes korrigiert (<code>$row["key"]</code> statt <code>$row[key]</code>)</li>
-    <li>Null-Coalescing-Operator (<code>??</code>) für sichere Variable-Zugriffe</li>
-    <li>Type Declarations für Funktionsparameter und Rückgabewerte</li>
-</ul>
-
-<h3>Sicherheitsfixes</h3>
-
-<ul>
-    <li><strong>SQL Injection Prevention:</strong> Prepared Statements mit <code>mysqli_prepare()</code> und <code>bind_param()</code></li>
-    <li><strong>XSS-Schutz:</strong> <code>htmlspecialchars()</code> für alle Ausgaben über <code>e()</code> Helper-Funktion</li>
-    <li><strong>Passwort-Hashing:</strong> <code>password_hash()</code> mit PASSWORD_DEFAULT statt base64</li>
-    <li><strong>Automatische Passwort-Migration:</strong> Bestehende base64-Passwörter werden beim Login automatisch auf sichere Hashes migriert</li>
-    <li><strong>Path Traversal Fix:</strong> <code>showpic.php</code> validiert jetzt Pfade gegen Whitelist</li>
-    <li><strong>Cookie-Sicherheit:</strong> HttpOnly und SameSite-Attribute für Session-Cookies</li>
-    <li><strong>Include-Sicherheit:</strong> Dynamische Includes auf <code>basename()</code> beschränkt</li>
-    <li><strong>Cookie-Typo behoben:</strong> <code>setcookie("pcadmin_password]"</code> &rarr; <code>setcookie("pcadmin_password"</code></li>
-</ul>
-
-<h3>Version 2.1 - Umfassende Sicherheitsüberarbeitung (Januar 2026)</h3>
-
-<p><strong>Komplett neu geschriebene Admin-Dateien:</strong></p>
-
-<p>Alle Admin-Dateien wurden komplett überarbeitet mit:</p>
-<ul>
-    <li>Prepared Statements für alle SQL-Abfragen</li>
-    <li>XSS-Schutz durch <code>e()</code> Helper für alle Ausgaben</li>
-    <li>Sichere Variablen-Initialisierung mit Null-Coalescing (<code>??</code>)</li>
-    <li>Strikte Typisierung (<code>declare(strict_types=1)</code>)</li>
-</ul>
-
+<h3>&Ouml;ffentliche Seiten</h3>
 <table>
-    <tr>
-        <th>Kategorie</th>
-        <th>Dateien</th>
-    </tr>
-    <tr>
-        <td>Mitglieder</td>
-        <td><code>addmember.php</code>, <code>editmember.php</code>, <code>delmember.php</code>, <code>choosemember.php</code></td>
-    </tr>
-    <tr>
-        <td>News</td>
-        <td><code>addnews.php</code>, <code>editnews.php</code>, <code>delnews.php</code>, <code>choosenews.php</code></td>
-    </tr>
-    <tr>
-        <td>Wars</td>
-        <td><code>addwar.php</code>, <code>editwar.php</code>, <code>delwar.php</code>, <code>choosewar.php</code></td>
-    </tr>
-    <tr>
-        <td>Sonstige</td>
-        <td><code>profile.php</code>, <code>header.inc.php</code>, <code>functions.inc.php</code></td>
-    </tr>
+    <tr><th>Seite</th><th>Route</th><th>Inhalt</th></tr>
+    <tr><td>Startseite</td><td><code>/index.php</code></td><td>News-&Uuml;bersicht + letzte Wars</td></tr>
+    <tr><td>Mitglieder</td><td><code>/member.php</code></td><td>Mitgliederliste + Detailprofile</td></tr>
+    <tr><td>Wars</td><td><code>/wars.php</code></td><td>Clanwar-&Uuml;bersicht + Berichte</td></tr>
 </table>
 
-<p><strong>Cookie/Session-Fix:</strong></p>
+<h3>Admin-Bereich</h3>
+<table>
+    <tr><th>Funktion</th><th>Route</th><th>Ben&ouml;tigte Rolle</th></tr>
+    <tr><td>Login</td><td><code>/admin/</code></td><td>Mitglied</td></tr>
+    <tr><td>Eigenes Profil</td><td><code>/admin/profile.php</code></td><td>Mitglied</td></tr>
+    <tr><td>News anlegen</td><td><code>/admin/addnews.php</code></td><td><code>news_add</code></td></tr>
+    <tr><td>News editieren/l&ouml;schen</td><td><code>/admin/choosenews.php</code></td><td><code>news_edit</code>/<code>news_del</code></td></tr>
+    <tr><td>Wars anlegen</td><td><code>/admin/addwar.php</code></td><td><code>wars_add</code></td></tr>
+    <tr><td>Wars editieren/l&ouml;schen</td><td><code>/admin/choosewar.php</code></td><td><code>wars_edit</code>/<code>wars_del</code></td></tr>
+    <tr><td>Mitglieder anlegen</td><td><code>/admin/addmember.php</code></td><td><code>member_add</code></td></tr>
+    <tr><td>Mitglieder editieren/l&ouml;schen</td><td><code>/admin/choosemember.php</code></td><td><code>member_edit</code>/<code>member_del</code></td></tr>
+    <tr><td>Konfiguration</td><td><code>/admin/editconfig.php</code></td><td><code>superadmin</code></td></tr>
+</table>
+
+<h2 id="entwicklung">Entwicklung &amp; Qualit&auml;tssicherung</h2>
+<table>
+    <tr><th>Tool</th><th>Version</th><th>Einstellung</th><th>Zweck</th></tr>
+    <tr><td>PHPStan</td><td>2.x</td><td>Level 8</td><td>Statische Analyse</td></tr>
+    <tr><td>Psalm</td><td>6.x</td><td>Level 4</td><td>Typ-Analyse</td></tr>
+    <tr><td>PHP-CS-Fixer</td><td>3.x</td><td>PSR-12</td><td>Code Style</td></tr>
+    <tr><td>PHPUnit</td><td>11.x</td><td>&mdash;</td><td>237 Tests</td></tr>
+    <tr><td>Infection</td><td>0.32.x</td><td>&mdash;</td><td>Mutation Testing</td></tr>
+    <tr><td>Rector</td><td>2.x</td><td>PHP 8.4</td><td>Refactoring</td></tr>
+    <tr><td>PHPCS</td><td>4.x</td><td>PSR-12</td><td>Code Sniffer</td></tr>
+</table>
+
+<h3>Wichtige Composer-Scripts</h3>
+<pre><code>composer run check               # Komplett-Check (CS + PHPStan + Psalm + Tests)
+composer run phpstan             # PHPStan Level 8
+composer run psalm               # Psalm Level 4
+composer run test                # Alle PHPUnit-Tests
+composer run test:unit           # Nur Unit-Tests
+composer run test:integration    # Nur Integration-Tests
+composer run test:security       # Nur Security-Tests
+composer run test:coverage       # Tests mit HTML-Coverage-Report
+composer run infection           # Mutation Testing (ben&ouml;tigt Xdebug)
+composer run rector:dry          # Rector-Vorschau
+composer run rector              # Rector anwenden
+composer run cs-fix              # Code Style automatisch fixen</code></pre>
+
+<h3>CI/CD (GitHub Actions)</h3>
+<p>Bei jedem Push und Pull-Request laufen automatisch:</p>
+<ol>
+    <li>PHP-Syntax-Check aller <code>*.php</code>-Dateien</li>
+    <li>PHPStan Level 8</li>
+    <li>Psalm Level 4</li>
+    <li>PHPUnit mit Coverage</li>
+    <li>Infection Mutation Testing</li>
+    <li>Composer Audit (bekannte Sicherheitsl&uuml;cken)</li>
+    <li>PHP-CS-Fixer (Code-Style)</li>
+</ol>
+
+<h2 id="sicherheit">Sicherheit</h2>
 <ul>
-    <li>Login-Persistenz behoben - Benutzer bleiben nach Navigation eingeloggt</li>
-    <li><code>checklogin()</code> Funktion in <code>functions.inc.php</code> korrigiert</li>
-    <li>Hash-Vergleich erfolgt jetzt vor <code>password_verify()</code> für Cookie-Authentifizierung</li>
+    <li><strong>SQL-Injection:</strong> ausschlie&szlig;lich Prepared Statements</li>
+    <li><strong>XSS:</strong> Output-Escaping via <code>e()</code>/<code>htmlspecialchars()</code></li>
+    <li><strong>CSRF:</strong> Token auf allen POST-Formularen, Rotation nach jedem erfolgreichen Submit</li>
+    <li><strong>Session-Management:</strong> serverseitige PHP-Sessions, <code>session_regenerate_id()</code>
+        nach Login, Invalidierung bei Passwortwechsel</li>
+    <li><strong>Passwort-Hashing:</strong> <code>password_hash(..., PASSWORD_DEFAULT)</code> (bcrypt cost 12)</li>
+    <li><strong>Legacy-Migration:</strong> base64-Passw&ouml;rter werden beim ersten Login automatisch auf bcrypt umgestellt</li>
+    <li><strong>Brute-Force-Drossel:</strong> 10 Fehlversuche/Minute/Session &rarr; HTTP&nbsp;429</li>
+    <li><strong>HTTP-Security-Header:</strong> <code>X-Content-Type-Options</code>,
+        <code>X-Frame-Options</code>, <code>Referrer-Policy</code></li>
+    <li><strong>Cookie-Flags:</strong> <code>HttpOnly</code>, <code>SameSite=Lax</code>,
+        <code>Secure</code> unter HTTPS</li>
+    <li><strong>Path-Traversal-Schutz</strong> in <code>showpic.php</code></li>
+    <li><strong>Installer-Lockfile:</strong> <code>install.php</code> sperrt sich nach Abschluss</li>
+</ul>
+<p>Details: <a href="SECURITY.md">SECURITY.md</a>.
+   Sicherheitsl&uuml;cke melden: <a href="mailto:security@powerscripts.org">security@powerscripts.org</a>.</p>
+
+<h2 id="changelog">Changelog</h2>
+
+<h3>Version 2.2 (April 2026)</h3>
+<p><strong>Audit-Fixes &ndash; 33 Befunde aus dem Userbereichs-Audit:</strong></p>
+<ul>
+    <li>Installer hart abgesichert: Lockfile, Prepared Statements, bcrypt statt base64, CSRF, 16-Zeichen-Passwort, Klartext-Hinweis</li>
+    <li>Serverseitige PHP-Sessions statt Passwort-Hash im Cookie</li>
+    <li>Login-CSRF-Token, Fehlermeldung, serverseitige E-Mail-Format-Pr&uuml;fung</li>
+    <li>Brute-Force-Drossel am Login</li>
+    <li>HTTP-Security-Header in <code>admin/</code> und <code>install.php</code></li>
+    <li><code>editmember.php</code>: CSRF-Schutz, Integer-Bindung f&uuml;r <code>icq</code>/<code>age</code>,
+        <code>try/catch</code> mit sichtbarer Fehlermeldung</li>
+    <li>CSRF-Token-Rotation nach jedem erfolgreichen Submit</li>
+    <li><code>addwar</code>/<code>editwar</code>: <code>checkdate()</code>-Validierung + Stunden/Minuten-Range</li>
+    <li>News-Titel: kein <code>strip_tags</code> mehr (Output-Escaping reicht)</li>
+    <li><code>choose*.php</code>: Aktionslinks nur bei Berechtigung</li>
+    <li>Mailpit-Container integriert (<code>powerclan_mailpit</code>), <code>msmtp</code> im Web-Container</li>
+    <li>UI-Warnung bei fehlgeschlagenem Mailversand in <code>addmember</code>/<code>editmember</code></li>
+    <li>Zahlreiche UX- und Grammatik-Korrekturen</li>
+    <li>Dead-Code entfernt (<code>admin/editmember2.php</code>)</li>
+    <li>Dokumentation: <code>docs/2026-04-23-Userbereichs-*.md</code></li>
+</ul>
+<p><strong>Regressionspr&uuml;fung:</strong> 237 PHPUnit-Tests, 460 Assertions, alle gr&uuml;n;
+   PHPStan Level 8 sauber.</p>
+
+<h3>Version 2.1 (Januar 2026)</h3>
+<ul>
+    <li>PHPStan Level 8, Psalm Level 4, Infection, PHPCS</li>
+    <li>67+ Unit-Tests, 28 Security-Tests, CI/CD-Pipeline</li>
+    <li>CSRF-Schutz auf allen Admin-Formularen</li>
+    <li>SQL-Injection-Fixes mit Prepared Statements</li>
+    <li>XSS-Schutz via <code>e()</code>-Helper</li>
+    <li>Passwort-Migration base64 &rarr; bcrypt</li>
 </ul>
 
-<p><strong>PHPStan:</strong></p>
+<h3>Version 2.0 (2025)</h3>
 <ul>
-    <li>0 Fehler bei Level 5 Analyse</li>
-    <li>Bootstrap-Datei für globale Variablen</li>
-    <li>Konfigurierte ignoreErrors für Legacy-Patterns</li>
+    <li>PHP 8.4-Kompatibilit&auml;t</li>
+    <li><code>declare(strict_types=1)</code> in allen Dateien</li>
+    <li>Docker-Entwicklungsumgebung</li>
+    <li>Umstellung von GNU GPL v2 auf MIT-Lizenz</li>
 </ul>
 
-<h3>Neue Dateien</h3>
+<h2 id="dokumentation">Weitere Dokumentation</h2>
+<table>
+    <tr><th>Datei</th><th>Inhalt</th></tr>
+    <tr><td><code>README.md</code></td><td>Markdown-Version dieser Seite</td></tr>
+    <tr><td><code>SECURITY.md</code></td><td>Security-Policy + Meldewege</td></tr>
+    <tr><td><code>CONTRIBUTING.md</code></td><td>Mitwirken am Projekt</td></tr>
+    <tr><td><code>docs/2026-04-23-Userbereichs-bugs.md</code></td><td>Audit-Report: 33 Bugs (alle behoben)</td></tr>
+    <tr><td><code>docs/2026-04-23-Userbereichs-improvements.md</code></td><td>32 UX/Workflow-Vorschl&auml;ge</td></tr>
+    <tr><td><code>docs/2026-04-23-Userbereichs-test-coverage.md</code></td><td>Vollst&auml;ndige Testmatrix</td></tr>
+    <tr><td><code>docs/superpowers/plans/2026-04-23-userbereichs-bugs-fixen.md</code></td><td>Fix-Plan zu den Audit-Findings</td></tr>
+</table>
 
+<h3>Online-Ressourcen</h3>
 <ul>
-    <li><code>LICENSE</code> - MIT-Lizenztext</li>
-    <li><code>README.md</code> - Markdown-Dokumentation</li>
-    <li><code>readme.html</code> - Diese HTML-Dokumentation</li>
-    <li><code>composer.json</code> - Composer-Setup mit PHPStan und Rector</li>
-    <li><code>phpstan.neon</code> - PHPStan-Konfiguration (Level 5)</li>
-    <li><code>rector.php</code> - Rector-Konfiguration für PHP 8.4</li>
-    <li><code>.docker/</code> - Docker-Konfiguration (Dockerfile, docker-compose.yml, php.ini)</li>
-    <li><code>logs/</code> - Verzeichnis für PHP Error-Logs</li>
+    <li>Projekt-Portal: <a href="https://www.powerscripts.org">powerscripts.org</a></li>
+    <li>Projektseite: <a href="https://www.powerscripts.org/projects-4.html">powerscripts.org/projects-4.html</a></li>
+    <li>Quellcode: <a href="https://github.com/schubertnico/PowerClan">github.com/schubertnico/PowerClan</a></li>
+    <li>Bugs &amp; Features: <a href="https://github.com/schubertnico/PowerClan/issues">Issues auf GitHub</a></li>
 </ul>
 
-<h3>Lizenz-Änderung</h3>
+<h2 id="kontakt">Kontakt &amp; Impressum</h2>
 
+<div class="contact-box">
+    <h3>Entwicklung &amp; Vertrieb</h3>
+    <p>
+        <strong>SchubertMedia</strong><br>
+        Inhaber: Nico Schubert<br>
+        Stauffenbergallee 57<br>
+        99085 Erfurt<br>
+        Deutschland
+    </p>
+    <p>
+        <strong>Telefon:</strong> +49 (0) 3612 3002247 &nbsp;
+        <small>(Mo.&ndash;Fr. 9&ndash;12 Uhr und 13&ndash;18 Uhr)</small><br>
+        <strong>Telefax:</strong> +49 (0) 3612 3004636<br>
+        <strong>E-Mail:</strong> <a href="mailto:info@schubertmedia.de">info@schubertmedia.de</a><br>
+        <strong>Web:</strong> <a href="https://www.powerscripts.org">www.powerscripts.org</a>
+    </p>
+</div>
+
+<h3>Support-Kan&auml;le</h3>
 <ul>
-    <li>Von GNU GPL v2 auf MIT-Lizenz umgestellt</li>
-    <li>Alle PHP-Dateien enthalten den neuen MIT-Lizenz-Header</li>
+    <li>Allgemeine Anfragen: <a href="mailto:info@schubertmedia.de">info@schubertmedia.de</a></li>
+    <li>Sicherheitshinweise: <a href="mailto:security@powerscripts.org">security@powerscripts.org</a></li>
+    <li>Bugs &amp; Features: <a href="https://github.com/schubertnico/PowerClan/issues">GitHub Issues</a></li>
 </ul>
 
 <hr>
 
-<p><em>PowerClan &copy; 2001-2025 PowerScripts</em></p>
+<h2>Lizenz</h2>
+<p>MIT License &ndash; siehe <a href="LICENSE">LICENSE</a>.</p>
+<p>Copyright &copy; 2001&ndash;2026 PowerScripts / SchubertMedia</p>
+
+<hr>
+
+<p style="text-align:center;"><em>PowerClan &ndash; <a href="https://www.powerscripts.org/projects-4.html">powerscripts.org/projects-4.html</a></em></p>
 
 </body>
 </html>
