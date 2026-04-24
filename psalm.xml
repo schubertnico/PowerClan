@@ -11,13 +11,13 @@
     <projectFiles>
         <directory name="." />
         <ignoreFiles>
+            <!-- Nur Verzeichnisse auflisten, die IMMER existieren. Psalm kann
+                 keine optionalen Pfade. Lokal existierende Artefakte wie
+                 .idea, coverage, .phpunit.cache, .claude werden zur Psalm-
+                 Laufzeit im CI nicht mitanalysiert, weil sie dort nicht
+                 existieren. -->
             <directory name="vendor" />
             <directory name=".docker" />
-            <directory name=".idea" />
-            <directory name="coverage" />
-            <directory name="coverage-report" />
-            <directory name=".phpunit.cache" />
-            <directory name=".claude" />
             <directory name="docs" />
             <directory name="todos" />
             <directory name="screenshots" />
