@@ -1,0 +1,51 @@
+# =============================================================================
+# PowerClan – admin/.htaccess
+# Zusätzliche Härtung für den eingeloggten Bereich.
+# =============================================================================
+
+# Directory-Listing verbieten
+Options -Indexes -MultiViews
+
+# -----------------------------------------------------------------------------
+# Include-Dateien (header.inc.php, footer.inc.php, functions.inc.php,
+# session.inc.php, evtl. hochgeladene config.inc.php) dürfen nie direkt
+# aufgerufen werden.
+# -----------------------------------------------------------------------------
+<FilesMatch "\.(inc\.php|inc|tpl|tpl\.php|ini|neon|xml|sql|yml|yaml|json|json5|lock|log|md|bak|backup|old|orig|swp|tmp|cache|dist|example|sample|local)$">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+    </IfModule>
+</FilesMatch>
+
+# Direkte config.inc.php (falls sie hier landen sollte)
+<Files "config.inc.php">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+    </IfModule>
+</Files>
+
+# -----------------------------------------------------------------------------
+# Optionaler HTTP-Basic-Auth-Layer vor dem Login-Formular.
+# Aktivierung: Kommentar entfernen und .htpasswd (außerhalb docroot!) anlegen.
+# -----------------------------------------------------------------------------
+# AuthType Basic
+# AuthName "PowerClan Admin"
+# AuthUserFile "/absolute/path/off-docroot/.htpasswd"
+# Require valid-user
+
+# -----------------------------------------------------------------------------
+# Zusätzliche Security-Header speziell für den Admin-Bereich
+# -----------------------------------------------------------------------------
+<IfModule mod_headers.c>
+    Header always set X-Frame-Options "DENY"
+    Header always set Cache-Control "no-store, no-cache, must-revalidate, private"
+    Header always set Pragma "no-cache"
+</IfModule>

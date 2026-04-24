@@ -1,0 +1,194 @@
+# =============================================================================
+# PowerClan - Root .htaccess
+# =============================================================================
+# Apache-Konfiguration für das Produktions-Webroot.
+# Ziel: Absicherung gegen direkten Zugriff auf sensible Dateien und Verzeichnisse
+# – auch wenn sie versehentlich auf den Live-Server hochgeladen wurden.
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# Grundabsicherung
+# -----------------------------------------------------------------------------
+
+# Directory-Listing deaktivieren
+Options -Indexes -MultiViews
+
+# Symlinks nur auf Ziele mit demselben Owner erlauben
+Options +SymLinksIfOwnerMatch
+
+# Apache-Server-Signatur in Responses ausblenden
+ServerSignature Off
+
+# UTF-8 als Default-Charset
+AddDefaultCharset UTF-8
+
+# -----------------------------------------------------------------------------
+# Dotfiles / versteckte Dateien und Ordner blockieren
+# Schützt .git, .env, .htpasswd, .idea, .vscode, .docker, .github, .claude, …
+# -----------------------------------------------------------------------------
+<FilesMatch "^\.">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+    </IfModule>
+</FilesMatch>
+
+# Nicht über die Filesystem-Regeln erreichbare .git/.idea/.docker/…-Pfade
+# per RewriteRule zusätzlich blockieren
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Zugriff auf .git, .github, .docker, .idea, .vscode, .claude, .history, .cursor
+    RewriteRule "(^|/)\.(git|github|docker|idea|vscode|claude|history|cursor|fleet|zed|serena|aider)(/|$)" - [F,L]
+
+    # Zugriff auf vendor/, node_modules/
+    RewriteRule "(^|/)(vendor|node_modules)(/|$)" - [F,L]
+
+    # Zugriff auf Entwickler-/Doku-Verzeichnisse
+    RewriteRule "(^|/)(tests|docs|todos|coverage|coverage-report|screenshots|logs|build|dist|storage|cache|sessions|tmp|secrets|uploads)(/|$)" - [F,L]
+</IfModule>
+
+# -----------------------------------------------------------------------------
+# Gefährliche Dateien pauschal blockieren
+# -----------------------------------------------------------------------------
+<FilesMatch "\.(inc\.php|inc|tpl|tpl\.php|pc|phps|phtml\.bak|ini|neon|xml|sql|yml|yaml|json|json5|lock|log|md|markdown|txt\.bak|bak|backup|old|orig|rej|swp|swo|swn|tmp|temp|cache|dist|example|sample|test|local|user)$">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+    </IfModule>
+</FilesMatch>
+
+# Ausnahmen: bestimmte public-Dateien trotzdem erlauben
+# (z. B. readme.html und robots.txt wenn vorhanden)
+<FilesMatch "^(readme\.html|robots\.txt|humans\.txt|sitemap\.xml|favicon\.ico)$">
+    <IfModule mod_authz_core.c>
+        Require all granted
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Allow from all
+    </IfModule>
+</FilesMatch>
+
+# -----------------------------------------------------------------------------
+# Secrets / Zertifikate / Keys explizit blockieren
+# -----------------------------------------------------------------------------
+<FilesMatch "\.(pem|key|p12|pfx|crt|cer|csr|asc|pgp|gpg|ppk)$">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+    </IfModule>
+</FilesMatch>
+
+# -----------------------------------------------------------------------------
+# Archive / DB-Dumps blockieren
+# -----------------------------------------------------------------------------
+<FilesMatch "\.(tar|tar\.gz|tgz|tar\.bz2|tar\.xz|zip|rar|7z|gz|bz2|xz|sql\.gz|sql\.bz2|dump)$">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+    </IfModule>
+</FilesMatch>
+
+# -----------------------------------------------------------------------------
+# Spezifische bekannte Dateien sperren
+# -----------------------------------------------------------------------------
+<FilesMatch "^(composer\.(json|lock|phar)|package(-lock)?\.json|yarn\.lock|pnpm-lock\.yaml|phpunit\.xml(\.dist)?|phpstan\.neon|phpstan-bootstrap\.php|psalm\.xml|rector\.php|infection\.json5?|phpcs\.xml(\.dist)?|\.php-cs-fixer\.(php|dist\.php|cache)|LICENSE|CONTRIBUTING\.md|SECURITY\.md|README\.md|readme\.md|CHANGELOG(\.md)?|Dockerfile|docker-compose\.ya?ml|install\.lock|auth\.json|config\.inc\.php|mysql\.inc\.php|functions\.inc\.php|header\.inc\.php|footer\.inc\.php|session\.inc\.php|phpstan-bootstrap\.php|error_log|debug\.log|php_errorlog|\.htpasswd|\.htaccess)$">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+    </IfModule>
+</FilesMatch>
+
+# README.md: zwar gesperrt (sensible Infos möglich), README.html bleibt öffentlich
+
+# -----------------------------------------------------------------------------
+# HTTP-Security-Header (ergänzen die PHP-Header, damit auch statische Assets geschützt sind)
+# -----------------------------------------------------------------------------
+<IfModule mod_headers.c>
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set X-Frame-Options "SAMEORIGIN"
+    Header always set Referrer-Policy "same-origin"
+    Header always set X-XSS-Protection "0"
+    Header always set Permissions-Policy "camera=(), microphone=(), geolocation=(), interest-cohort=()"
+
+    # HSTS nur aktivieren, wenn Seite durchgehend über HTTPS erreichbar ist
+    # Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
+
+    # Keine PHP/Server-Version preisgeben (falls sie dennoch via Response-Header kommt)
+    Header unset X-Powered-By
+    Header unset Server
+</IfModule>
+
+# -----------------------------------------------------------------------------
+# PHP-Hardening (nur wirksam, wenn mod_php aktiv ist bzw. PHP-FPM die Direktiven akzeptiert)
+# -----------------------------------------------------------------------------
+<IfModule mod_php.c>
+    php_flag expose_php Off
+    php_flag display_errors Off
+    php_flag display_startup_errors Off
+    php_flag log_errors On
+    php_flag allow_url_fopen Off
+    php_flag allow_url_include Off
+    php_flag session.cookie_httponly On
+    php_value session.cookie_samesite "Lax"
+</IfModule>
+
+# -----------------------------------------------------------------------------
+# Rewrite: install.php nach Installation sperren (Lockfile-Check)
+# -----------------------------------------------------------------------------
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Wenn install.lock vorhanden ist, liefert der Installer selbst schon HTTP 403.
+    # Wir sperren die Datei zusätzlich hier, damit selbst der PHP-Interpreter nicht
+    # mehr erreicht wird.
+    RewriteCond "%{DOCUMENT_ROOT}/install.lock" -f
+    RewriteRule "^install\.php$" - [F,L]
+</IfModule>
+
+# -----------------------------------------------------------------------------
+# Trace-/Track-Methoden sperren
+# -----------------------------------------------------------------------------
+<IfModule mod_rewrite.c>
+    RewriteCond %{REQUEST_METHOD} ^(TRACE|TRACK|DEBUG) [NC]
+    RewriteRule .* - [F,L]
+</IfModule>
+
+# -----------------------------------------------------------------------------
+# MIME-Typen (Sicherheit für Downloads)
+# -----------------------------------------------------------------------------
+<IfModule mod_mime.c>
+    # Keine Ausführung von .phtml, .phps, .php[0-9] als PHP (Doppel-Extensions)
+    RemoveType .phtml .phps .php3 .php4 .php5 .php7 .pht .phar .shtml
+    AddType text/plain .phtml .phps .php3 .php4 .php5 .php7 .pht .phar .shtml
+
+    # Korrektes Charset für Text-Dateien
+    AddCharset UTF-8 .html .htm .css .js
+</IfModule>
+
+# -----------------------------------------------------------------------------
+# Upload-/Bilder-Verzeichnis: PHP-Ausführung sperren
+# – siehe /images/.htaccess (in .htaccess sind <Directory>-Blöcke nicht erlaubt)
+# -----------------------------------------------------------------------------
+
+# -----------------------------------------------------------------------------
+# Optional: eigene Fehlerseiten
+# -----------------------------------------------------------------------------
+# ErrorDocument 403 /index.php
+# ErrorDocument 404 /index.php

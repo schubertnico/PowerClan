@@ -1,0 +1,34 @@
+# PowerClan – images/
+# Bilder dürfen ausgeliefert werden, aber hochgeladene PHP-/Script-Dateien
+# dürfen keinesfalls ausgeführt werden.
+
+<FilesMatch "\.(php|phtml|phps|phar|pht|shtml|cgi|pl|py|rb|jsp|asp|aspx|sh|bash|exe|bat|cmd)$">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+    </IfModule>
+</FilesMatch>
+
+# Doppelte Endungen wie picture.php.jpg abfangen
+<FilesMatch "\.(php|phtml|phps|phar|pht|shtml|cgi|pl|py|rb|jsp|asp|aspx|sh|bash)\.(jpe?g|png|gif|webp|svg|ico|pdf|zip|gz|tar|bmp|tiff?)$">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+    </IfModule>
+</FilesMatch>
+
+# PHP-Handler in diesem Verzeichnis deaktivieren
+<IfModule mod_php.c>
+    php_flag engine off
+</IfModule>
+
+# SetHandler als Zusatz-Schutz
+RemoveHandler .php .phtml .phps .phar .pht
+RemoveType .php .phtml .phps .phar .pht
+AddType text/plain .php .phtml .phps .phar .pht
