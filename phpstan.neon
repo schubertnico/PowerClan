@@ -6,9 +6,13 @@ parameters:
         - vendor
         - .docker
         - logs
-        - .idea
-        - coverage
         - tests
+        # Optional – existieren nur lokal, nicht im CI (CI-Runner kennt sie nicht)
+        - .idea (?)
+        - coverage (?)
+        - coverage-report (?)
+        - .phpunit.cache (?)
+        - .claude (?)
     bootstrapFiles:
         - phpstan-bootstrap.php
     treatPhpDocTypesAsCertain: false
