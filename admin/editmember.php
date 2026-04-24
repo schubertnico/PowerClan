@@ -201,10 +201,11 @@ Du kannst Deine Daten jederzeit aendern!
 -BITTE NICHT AUF DIESE AUTOMATISCH GENERIERTE EMAIL ANTWORTEN-";
 
                     $headers = 'From: PowerClan Automailer <powerclan@powerscripts.org>';
-                    @mail($memberEmail, $subject, $message, $headers);
+                    $ok = @mail($memberEmail, $subject, $message, $headers);
 
-                    echo "<center><br><br>Au&szlig;erdem wurde {$nickEsc} "
-                        . 'eine E-Mail mit seinem neuen Passwort zugeschickt!</center>';
+                    echo $ok
+                        ? "<center><br><br>Au&szlig;erdem wurde {$nickEsc} eine E-Mail mit seinem neuen Passwort zugeschickt!</center>"
+                        : "<center><br><br><b>Achtung:</b> Die Passwort-Mail an {$nickEsc} konnte nicht versendet werden &mdash; bitte das neue Passwort manuell &uuml;bermitteln.</center>";
                 }
             } else {
                 // Display edit form

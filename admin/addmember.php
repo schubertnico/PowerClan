@@ -125,10 +125,12 @@ Das Passwort und Deine anderen Daten kannst Du jederzeit aendern.
         $headers = 'From: PowerClan Automailer <powerclan@powerscripts.org>';
 
         // Suppress mail errors if mail server not configured
-        @mail($email, $subject, $message, $headers);
+        $ok = @mail($email, $subject, $message, $headers);
 
-        echo '<center><a href="index.php">'
-            . 'Der Member wurde erfolgreich hinzugef&uuml;gt und per E-Mail benachrichtigt!</a></center>';
+        $successText = $ok
+            ? 'Der Member wurde erfolgreich hinzugef&uuml;gt und per E-Mail benachrichtigt!'
+            : 'Der Member wurde erfolgreich hinzugef&uuml;gt. <b>Achtung:</b> Die E-Mail konnte nicht versendet werden &mdash; bitte das generierte Passwort manuell an <code>' . e($email) . '</code> weiterreichen.';
+        echo '<center><a href="index.php">' . $successText . '</a></center>';
     } else {
         $phpSelf = e($_SERVER['PHP_SELF']);
 

@@ -14,8 +14,8 @@
 > Regressionsprüfung: PHPUnit 237 Tests / 460 Assertions – alle grün.
 >
 > Ausnahmen:
-> - **BUG-022** (Self-Delete des Superadmin): existierte nicht – `admin/delmember.php` hatte bereits Self-Delete- und Superadmin-Schutz.
-> - **BUG-023** (Mailpit): erfordert Infrastruktur-Erweiterung (Docker-Compose + sendmail-Config) und wurde als offen markiert. UI-Hinweis für fehlgeschlagenen Mail-Versand wurde im Installer ergänzt.
+> - **BUG-022** (Self-Delete des Superadmin): Fehldiagnose im Audit – `admin/delmember.php` hatte bereits Self-Delete- und Superadmin-Schutz.
+> - **BUG-023** (Mailpit): am 2026-04-24 nachgezogen – Mailpit-Container `powerclan_mailpit` (SMTP 1034, UI 8034), `msmtp` im Web-Container, `sendmail_path` auf `/usr/bin/msmtp -t`, UI-Warnung bei `addmember.php`/`editmember.php` bei fehlgeschlagenem Mailversand.
 
 ---
 
@@ -44,7 +44,7 @@
 | BUG-019 | editmember | Hoch | Fehler-Output landet nur im PHP-Log; Seite rendert stumm nur `<center>` |
 | BUG-020 | editmember / profile | Mittel | Session/Cookie nicht rotiert nach Passwortwechsel |
 | BUG-021 | choosenews / choosewar / choosemember | Mittel | Edit-/Löschen-Links werden auch Usern ohne entsprechende Rechte angezeigt |
-| BUG-022 | delmember | Mittel | Selbstlöschung des eingeloggten (einzigen) Superadmin möglich |
+| ~~BUG-022~~ | delmember | ~~Mittel~~ | ~~Selbstlöschung des eingeloggten (einzigen) Superadmin möglich~~ – **Fehldiagnose** (Schutz existiert bereits) |
 | BUG-023 | addmember / editmember | Mittel | Erfolgsmeldung "per E-Mail benachrichtigt" obwohl kein Mailserver konfiguriert |
 | BUG-024 | addwar | Hoch | Keine Datums-/Zeit-Validierung (`mktime(25,99,…31.02.2026)` wird stillschweigend normalisiert) |
 | BUG-025 | addnews / editnews | Mittel | `strip_tags` im Titel verschluckt legitime Zeichen (Titel mit `<` wird entstellt) |
@@ -335,15 +335,18 @@
 - **Schweregrad:** Mittel
 - **Status:** Offen – nicht beheben
 
-## BUG-022: Selbstlöschung des eingeloggten Superadmins möglich
+## ~~BUG-022: Selbstlöschung des eingeloggten Superadmins möglich~~
 
-- **Bereich:** delmember
-- **URL / Route:** `POST /admin/delmember.php?memberid=<own-id>` (mit gültigem CSRF)
-- **Reproduktionsschritte:** Code-Review `admin/delmember.php` – es gibt keinen Check `$rowId !== $pcadmin['id']` und keinen "letzter-Superadmin"-Schutz.
-- **Erwartet:** Admin darf sich nicht selbst löschen; letzter Superadmin darf nicht gelöscht werden.
-- **Tatsächlich:** Mit korrektem CSRF-Token würde der Admin sich entfernen – System wäre danach nicht mehr administrierbar.
-- **Schweregrad:** Mittel
-- **Status:** Offen – nicht beheben
+> **Fehldiagnose – kein Bug.** Bei der Nachverifikation am 2026-04-23 wurde festgestellt, dass `admin/delmember.php:51-55` bereits einen Self-Delete-Schutz enthält (`if ((int) $row['id'] === (int) ($pcadmin['id'] ?? 0))`) und `admin/delmember.php:57-61` zusätzlich jede Löschung eines Superadmins blockiert. Der ursprüngliche Befund entstand, weil der CSRF-Token-Test (BUG-017) die Ausführung des POST abbrach, bevor der Self-Delete-Check erreicht wurde. Ursprünglicher Eintrag:
+>
+> - **Bereich:** delmember
+> - **URL / Route:** `POST /admin/delmember.php?memberid=<own-id>` (mit gültigem CSRF)
+> - **Reproduktionsschritte:** Code-Review `admin/delmember.php` – es gibt keinen Check `$rowId !== $pcadmin['id']` und keinen "letzter-Superadmin"-Schutz.
+> - **Erwartet:** Admin darf sich nicht selbst löschen; letzter Superadmin darf nicht gelöscht werden.
+> - **Tatsächlich:** Mit korrektem CSRF-Token würde der Admin sich entfernen – System wäre danach nicht mehr administrierbar.
+> - **Schweregrad:** Mittel
+>
+> **Status: FEHLDIAGNOSE / nicht-Bug – keine Code-Änderung notwendig.**
 
 ## BUG-023: Erfolgsmeldung "per E-Mail benachrichtigt" ohne Mailserver
 
@@ -356,7 +359,7 @@
 - **Erwartet:** Meldung erst nach erfolgreichem `mail()`-Rückgabewert; oder SMTP/Mailpit-Setup in `.docker/docker-compose.yml`.
 - **Tatsächlich:** Admin vertraut auf erfolgreiche Zustellung, der neue User erhält aber weder Passwort noch Notification.
 - **Schweregrad:** Mittel
-- **Status:** Offen – nicht beheben
+- **Status:** **BEHOBEN am 2026-04-24** – Mailpit-Container `powerclan_mailpit` (SMTP 1034, UI 8034) in `.docker/docker-compose.yml` ergänzt; `msmtp` im Web-Container installiert mit Route auf `mailpit:1025`; `sendmail_path = "/usr/bin/msmtp -t"` in `.docker/php.ini`; Rückgabewert von `@mail()` wird in `admin/addmember.php` und `admin/editmember.php` ausgewertet und bei Fehler als sichtbarer Warnhinweis angezeigt.
 
 ## BUG-024: Keine Datums-/Zeit-Validierung in `addwar.php`
 

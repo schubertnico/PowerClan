@@ -9,8 +9,23 @@ RUN apt-get update && apt-get install -y \
     zip \
     unzip \
     curl \
+    msmtp \
+    msmtp-mta \
     linux-headers-generic || true \
     && rm -rf /var/lib/apt/lists/*
+
+# msmtp-Konfiguration: Mails an Mailpit-Container routen
+RUN printf '%s\n' \
+    'defaults' \
+    'auth off' \
+    'tls off' \
+    'account mailpit' \
+    '  host mailpit' \
+    '  port 1025' \
+    '  from noreply@powerclan.local' \
+    'account default : mailpit' \
+    > /etc/msmtprc \
+    && chmod 644 /etc/msmtprc
 
 # PHP-Erweiterungen installieren
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg \

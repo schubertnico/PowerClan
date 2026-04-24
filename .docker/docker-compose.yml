@@ -14,6 +14,8 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      mailpit:
+        condition: service_started
     environment:
       - APACHE_DOCUMENT_ROOT=/var/www/html
     networks:
@@ -24,6 +26,20 @@ services:
       timeout: 10s
       retries: 3
       start_period: 10s
+
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: powerclan_mailpit
+    ports:
+      - "1034:1025"
+      - "8034:8025"
+    networks:
+      - powerclan_network
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8025"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
 
   db:
     image: mysql:8.0
