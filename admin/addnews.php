@@ -46,7 +46,7 @@ if (($pcadmin['news_add'] ?? '') === 'YES' || ($pcadmin['superadmin'] ?? '') ===
             // Use prepared statement to prevent SQL injection
             $sql = 'INSERT INTO pc_news (userid, time, nick, email, title, text) '
                 . 'VALUES (?, ?, ?, ?, ?, ?)';
-            $stmt = db_prepare($conn,$sql);
+            $stmt = db_prepare($conn, $sql);
             $stmt->bind_param('iissss', $userId, $now, $nick, $email, $title, $text);
             $stmt->execute();
             $stmt->close();

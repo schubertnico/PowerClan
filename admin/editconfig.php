@@ -69,7 +69,7 @@ if (($pcadmin['superadmin'] ?? '') === 'YES') {
                 echo '<center><a href="javascript:history.back()">Bitte f&uuml;lle alle Felder aus!</a></center>';
             } else {
                 // Use prepared statement to prevent SQL injection
-                $updateStmt = db_prepare($conn,'UPDATE pc_config SET
+                $updateStmt = db_prepare($conn, 'UPDATE pc_config SET
                     clanname = ?, clantag = ?, url = ?, serverpath = ?,
                     header = ?, footer = ?, tablebg1 = ?, tablebg2 = ?,
                     tablebg3 = ?, clrwon = ?, clrdraw = ?, clrlost = ?,

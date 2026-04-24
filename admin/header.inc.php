@@ -161,7 +161,7 @@ if ($loggedin === 'NO') {
       <b>Login</b>
       </td></tr>";
     if ($loginError !== '') {
-        echo "<tr><td bgcolor=\"#FFCCCC\" align=\"center\"><b>" . e($loginError) . "</b></td></tr>";
+        echo '<tr><td bgcolor="#FFCCCC" align="center"><b>' . e($loginError) . '</b></td></tr>';
     }
     echo "
       <tr><td bgcolor=\"{$admin_tbl2}\" align=\"center\">

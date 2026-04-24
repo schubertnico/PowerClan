@@ -52,7 +52,7 @@ abstract class PageTestCase extends IntegrationTestCase
             . "serverpath = '/var/www/html', header = '', footer = '', "
             . "tablebg1 = '#000000', tablebg2 = '#111111', tablebg3 = '#222222', "
             . "clrwon = '#00FF00', clrdraw = '#FFFF00', clrlost = '#FF0000', "
-            . "newslimit = 10, warlimit = 10 WHERE id = 1");
+            . 'newslimit = 10, warlimit = 10 WHERE id = 1');
 
         $result = $conn->query('SELECT * FROM pc_config WHERE id = 1');
         if ($result && $result->num_rows === 1) {

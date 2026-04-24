@@ -118,7 +118,7 @@ if ($num === 1) {
         // Update profile using prepared statement
         $sql = 'UPDATE pc_members SET nick = ?, email = ?, realname = ?, icq = ?, '
             . 'homepage = ?, age = ?, hardware = ?, info = ?, pic = ? WHERE id = ?';
-        $updateStmt = db_prepare($conn,$sql);
+        $updateStmt = db_prepare($conn, $sql);
         $updateStmt->bind_param(
             'sssssssssi',
             $nick,
@@ -143,7 +143,7 @@ if ($num === 1) {
                 echo '<br><br><center>Das Passwort muss mindestens 8 Zeichen haben. Andere Profildaten wurden gespeichert.</center>';
             } else {
                 $newPassword = password_hash(trim($password1), PASSWORD_DEFAULT);
-                $pwStmt = db_prepare($conn,'UPDATE pc_members SET password = ? WHERE id = ?');
+                $pwStmt = db_prepare($conn, 'UPDATE pc_members SET password = ? WHERE id = ?');
                 $pwStmt->bind_param('si', $newPassword, $memberId);
                 $pwStmt->execute();
                 $pwStmt->close();

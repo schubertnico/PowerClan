@@ -177,7 +177,7 @@ if (($pcadmin['member_edit'] ?? '') === 'YES' || ($pcadmin['superadmin'] ?? '') 
                 // Update password if changed
                 if ($password1 !== '' && $password2 !== '' && $password1 === $password2) {
                     $newPassword = password_hash(trim($password1), PASSWORD_DEFAULT);
-                    $pwStmt = db_prepare($conn,'UPDATE pc_members SET password = ? WHERE id = ?');
+                    $pwStmt = db_prepare($conn, 'UPDATE pc_members SET password = ? WHERE id = ?');
                     $pwStmt->bind_param('si', $newPassword, $rowId);
                     $pwStmt->execute();
                     $pwStmt->close();

@@ -63,7 +63,7 @@ if ($hasAccess) {
                 $newsIdForUpdate = (int) $row['id'];
 
                 // Use prepared statement
-                $updateStmt = db_prepare($conn,'UPDATE pc_news SET title = ?, text = ? WHERE id = ?');
+                $updateStmt = db_prepare($conn, 'UPDATE pc_news SET title = ?, text = ? WHERE id = ?');
                 $updateStmt->bind_param('ssi', $title, $text, $newsIdForUpdate);
                 $updateStmt->execute();
                 $updateStmt->close();

@@ -65,7 +65,7 @@ if (($pcadmin['wars_add'] ?? '') === 'YES' || ($pcadmin['superadmin'] ?? '') ===
             $sql = 'INSERT INTO pc_wars (enemy, enemy_tag, homepage, league, map1, map2, map3, '
                 . 'time, report, res1, res2, res3, screen1, screen2, screen3) '
                 . "VALUES (?, ?, ?, ?, ?, ?, ?, ?, '', '', '', '', '', '', '')";
-            $stmt = db_prepare($conn,$sql);
+            $stmt = db_prepare($conn, $sql);
             $stmt->bind_param(
                 'sssssssi',
                 $enemy,

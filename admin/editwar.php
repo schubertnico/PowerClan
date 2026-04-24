@@ -92,7 +92,7 @@ if (($pcadmin['wars_edit'] ?? '') === 'YES' || ($pcadmin['superadmin'] ?? '') ==
                     $sql = 'UPDATE pc_wars SET enemy = ?, enemy_tag = ?, homepage = ?, '
                         . 'league = ?, map1 = ?, map2 = ?, map3 = ?, time = ?, report = ?, '
                         . 'res1 = ?, res2 = ?, res3 = ? WHERE id = ?';
-                    $updateStmt = db_prepare($conn,$sql);
+                    $updateStmt = db_prepare($conn, $sql);
                     $updateStmt->bind_param(
                         'ssssssssssssi',
                         $enemy,
@@ -128,7 +128,7 @@ if (($pcadmin['wars_edit'] ?? '') === 'YES' || ($pcadmin['superadmin'] ?? '') ==
                             if (is_writable($targetDirectory)) {
                                 if (move_uploaded_file($screen, $targetDirectory . $targetFileName)) {
                                     $screenColumn = 'screen' . $map;
-                                    $updateStmt = db_prepare($conn,"UPDATE pc_wars SET {$screenColumn} = ? WHERE id = ?");
+                                    $updateStmt = db_prepare($conn, "UPDATE pc_wars SET {$screenColumn} = ? WHERE id = ?");
                                     $updateStmt->bind_param('si', $targetFileName, $rowId);
                                     $updateStmt->execute();
                                     $updateStmt->close();
