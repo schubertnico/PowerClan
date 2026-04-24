@@ -64,8 +64,22 @@ jobs:
 
       - name: PHP Syntax Check
         run: |
-          find . -name "*.php" -not -path "./vendor/*" -exec php -l {} \; | grep -v "No syntax errors"
-          echo "Syntax check completed"
+          set -o pipefail
+          # `php -l` gibt pro Datei entweder "No syntax errors …" oder den Fehler aus.
+          # Wir filtern die OK-Zeilen raus und lassen nur Fehler übrig. `grep -v` kehrt
+          # exit 1 bei leerem Output zurück — wir brauchen `|| true` für den OK-Fall.
+          ERRORS=$(find . -name "*.php" \
+            -not -path "./vendor/*" \
+            -not -path "./.phpunit.cache/*" \
+            -not -path "./coverage/*" \
+            -not -path "./coverage-report/*" \
+            -exec php -l {} \; 2>&1 | grep -v "No syntax errors" || true)
+          if [ -n "$ERRORS" ]; then
+            echo "Syntax errors found:"
+            echo "$ERRORS"
+            exit 1
+          fi
+          echo "Syntax check completed (keine Fehler)"
 
       - name: PHPStan Static Analysis (Level 8)
         run: vendor/bin/phpstan analyse --memory-limit=512M --no-progress
