@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><?php echo e($settings['clanname'] ?? 'PowerClan'); ?></title>
+    <link rel="stylesheet" href="powerclan.css">
+</head>
+<body>
+<center>
+<table border="0" cellpadding="5" cellspacing="0" width="750">
+<tr>
+    <td bgcolor="<?php echo e($settings['tablebg1'] ?? '#A0A0A0'); ?>" colspan="2">
+        <b><?php echo e($settings['clanname'] ?? 'PowerClan'); ?> [<?php echo e($settings['clantag'] ?? 'PC'); ?>]</b>
+    </td>
+</tr>
+<tr>
+    <td bgcolor="<?php echo e($settings['tablebg2'] ?? '#F0F0F0'); ?>" colspan="2">
+        <a href="index.php">Home</a> |
+        <a href="member.php">Members</a> |
+        <a href="wars.php">Wars</a> |
+        <a href="admin/">Mitglieder-Login</a>
+    </td>
+</tr>
+<tr>
+    <td bgcolor="<?php echo e($settings['tablebg3'] ?? '#E0E0E0'); ?>" colspan="2">

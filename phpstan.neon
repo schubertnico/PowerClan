@@ -1,0 +1,14 @@
+parameters:
+    level: 8
+    paths:
+        - .
+    excludePaths:
+        - vendor
+        - .docker
+        - logs
+        - .idea
+        - coverage
+        - tests
+    bootstrapFiles:
+        - phpstan-bootstrap.php
+    treatPhpDocTypesAsCertain: false

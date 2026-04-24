@@ -1,0 +1,41 @@
+  /*
+    Diese Datei geh�rt zum PowerScript Clansystem POWERCLAN.
+    Durch die Nutzung dieses Scriptes stimmt der Benutzer den
+    Regelungen der PowerScript Lizenz auf www.powerscripts.org
+    zu.
+    PowerClan (C) Copyright 2023 by Nico Schubert
+  */
+BODY, TABLE, TR, TD {
+  font-family: Verdana;
+  color: #000000;
+  font-size: 12px;
+}
+
+A, A:ACTIVE, A:VISITED {
+  font-family: Verdana;
+  color: #000080;
+  text-decoration: underline;
+}
+
+A:HOVER {
+  font-family: Verdana;
+  color: #000080;
+  text-decoration: none;
+}
+
+SMALL {
+  font-family: Verdana;
+  font-size: 10px;
+}
+
+.RED {
+  font-family: Verdana;
+  color: #FF0000;
+  font-weight: normal;
+}
+
+.GREEN {
+  font-family: Verdana;
+  color: #008000;
+  font-weight: normal;
+}

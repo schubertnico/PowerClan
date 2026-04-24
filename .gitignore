@@ -1,0 +1,161 @@
+# ===========================================
+# PowerClan - .gitignore
+# ===========================================
+
+# -------------------------------------------
+# Installer Lockfile
+# -------------------------------------------
+/install.lock
+
+# -------------------------------------------
+# Dependencies
+# -------------------------------------------
+/vendor/
+/node_modules/
+
+# -------------------------------------------
+# Composer
+# -------------------------------------------
+composer.lock
+composer.phar
+
+# -------------------------------------------
+# IDE & Editors
+# -------------------------------------------
+/.idea/
+/.vscode/
+*.iml
+*.sublime-project
+*.sublime-workspace
+*.code-workspace
+.project
+.settings/
+.buildpath
+*.swp
+*.swo
+*~
+.*.sw?
+
+# -------------------------------------------
+# OS Generated Files
+# -------------------------------------------
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# -------------------------------------------
+# Application Configuration (credentials)
+# -------------------------------------------
+/config.inc.php
+
+# -------------------------------------------
+# Logs & Debug
+# -------------------------------------------
+/logs/*.log
+!/logs/.gitkeep
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# -------------------------------------------
+# Test Coverage & Reports
+# -------------------------------------------
+/coverage/
+/coverage-report/
+/.phpunit.cache/
+/.phpunit.result.cache
+/phpunit.xml.bak
+clover.xml
+coverage.xml
+
+# -------------------------------------------
+# Static Analysis Tools
+# -------------------------------------------
+# PHPStan
+/phpstan-cache/
+phpstan-baseline.neon
+
+# PHP-CS-Fixer
+.php-cs-fixer.cache
+
+# Psalm
+/psalm-cache/
+psalm-baseline.xml
+
+# Rector
+/rector-cache/
+
+# -------------------------------------------
+# Mutation Testing (Infection)
+# -------------------------------------------
+infection.log
+infection.html
+infection-summary.log
+infection-cache/
+
+# -------------------------------------------
+# Build & Dist
+# -------------------------------------------
+/build/
+/dist/
+*.phar
+
+# -------------------------------------------
+# Temporary Files
+# -------------------------------------------
+*.tmp
+*.temp
+*.bak
+*.backup
+*.old
+*.orig
+*.rej
+*.cache
+
+# -------------------------------------------
+# Environment Files
+# -------------------------------------------
+.env
+.env.local
+.env.*.local
+.env.backup
+
+# -------------------------------------------
+# Docker (local overrides)
+# -------------------------------------------
+docker-compose.override.yml
+.docker-sync/
+
+# -------------------------------------------
+# Deprecated / Old Files
+# -------------------------------------------
+/gnulicense.txt
+/Installationsguide/
+
+# -------------------------------------------
+# Claude Code
+# -------------------------------------------
+/.claude/
+
+# -------------------------------------------
+# User-specific
+# -------------------------------------------
+*.local
+*.user
+.user.ini
+
+# -------------------------------------------
+# Screenshots & Uploads (keep structure)
+# -------------------------------------------
+/images/members/*
+!/images/members/.gitkeep
+/images/wars/*
+!/images/wars/.gitkeep
+/screenshots/*
+!/screenshots/.gitkeep
