@@ -1,5 +1,12 @@
 # PowerClan
 
+![PHP](https://img.shields.io/badge/PHP-8.4-777BB4?style=flat-square&logo=php&logoColor=white)
+![Tests](https://img.shields.io/badge/tests-237%20passing-brightgreen?style=flat-square)
+![Coverage](https://img.shields.io/badge/coverage-85%25-brightgreen?style=flat-square)
+![License](https://img.shields.io/badge/license-MIT-yellow?style=flat-square)
+![PHPStan](https://img.shields.io/badge/PHPStan-level%208-1abc9c?style=flat-square)
+![CI](https://img.shields.io/github/actions/workflow/status/schubertnico/PowerClan/ci.yml?branch=main&style=flat-square&label=CI)
+
 Ein PHP/MySQL-basiertes Clan-Portal-Management-System.
 
 **Version:** 2.2 (PHP 8.4)
