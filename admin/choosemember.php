@@ -49,7 +49,7 @@ $num = mysqli_num_rows($result);
                 // BUG-021: Aktionslinks nur bei Berechtigung
                 $canEdit = pc_can('member_edit');
                 $canDel = pc_can('member_del') && !$isSelf && !$isSuperadmin;
-            ?>
+                ?>
                 <li class="list-group-item d-flex flex-wrap justify-content-between align-items-center gap-2">
                     <div>
                         <span class="fw-semibold"><?php echo $nick; ?></span>

@@ -62,7 +62,7 @@ $num = mysqli_num_rows($result);
                         // BUG-021: Aktionslinks nur bei Berechtigung
                         $canEdit = pc_can('wars_edit');
                         $canDel = pc_can('wars_del');
-                    ?>
+                        ?>
                         <tr>
                             <td>
                                 <span class="d-block"><?php echo $date; ?></span>

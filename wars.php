@@ -56,31 +56,31 @@ switch ($pcpage) {
                         <tbody>
                         <?php
                         $warnumber = (int) $num;
-                        while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)):
-                            $endres = [0, 0];
-                            $warId = (int) $row['id'];
-                            $date = date('d.m.Y', (int) $row['time']);
-                            $time = date('H:i', (int) $row['time']);
-                            $enemyTag = e($row['enemy_tag'] ?? '');
-                            $homepage = $row['homepage'] ?? '';
-                            $league = e($row['league'] ?? '');
+                while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)):
+                    $endres = [0, 0];
+                    $warId = (int) $row['id'];
+                    $date = date('d.m.Y', (int) $row['time']);
+                    $time = date('H:i', (int) $row['time']);
+                    $enemyTag = e($row['enemy_tag'] ?? '');
+                    $homepage = $row['homepage'] ?? '';
+                    $league = e($row['league'] ?? '');
 
-                            $map1Cell = pc_render_war_map_cell($row['map1'] ?? '', $row['screen1'] ?? '', $row['res1'] ?? '', $endres);
-                            $map2Cell = pc_render_war_map_cell($row['map2'] ?? '', $row['screen2'] ?? '', $row['res2'] ?? '', $endres);
-                            $map3Cell = pc_render_war_map_cell($row['map3'] ?? '', $row['screen3'] ?? '', $row['res3'] ?? '', $endres);
+                    $map1Cell = pc_render_war_map_cell($row['map1'] ?? '', $row['screen1'] ?? '', $row['res1'] ?? '', $endres);
+                    $map2Cell = pc_render_war_map_cell($row['map2'] ?? '', $row['screen2'] ?? '', $row['res2'] ?? '', $endres);
+                    $map3Cell = pc_render_war_map_cell($row['map3'] ?? '', $row['screen3'] ?? '', $row['res3'] ?? '', $endres);
 
-                            // Total result
-                            if ($endres[0] > $endres[1]) {
-                                $totalCls = 'pc-result pc-result-won';
-                                $totalLabel = 'Gewonnen';
-                            } elseif ($endres[0] === $endres[1]) {
-                                $totalCls = 'pc-result pc-result-draw';
-                                $totalLabel = 'Unentschieden';
-                            } else {
-                                $totalCls = 'pc-result pc-result-lost';
-                                $totalLabel = 'Verloren';
-                            }
-                            ?>
+                    // Total result
+                    if ($endres[0] > $endres[1]) {
+                        $totalCls = 'pc-result pc-result-won';
+                        $totalLabel = 'Gewonnen';
+                    } elseif ($endres[0] === $endres[1]) {
+                        $totalCls = 'pc-result pc-result-draw';
+                        $totalLabel = 'Unentschieden';
+                    } else {
+                        $totalCls = 'pc-result pc-result-lost';
+                        $totalLabel = 'Verloren';
+                    }
+                    ?>
                             <tr id="war<?php echo $warId; ?>">
                                 <th scope="row" class="text-end"><?php echo $warnumber; ?></th>
                                 <td>
@@ -119,9 +119,9 @@ switch ($pcpage) {
                                 </td>
                             </tr>
                             <?php
-                            $warnumber--;
-                        endwhile;
-                        ?>
+                    $warnumber--;
+                endwhile;
+                ?>
                         </tbody>
                     </table>
                 </div>

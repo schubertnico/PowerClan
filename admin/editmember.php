@@ -338,7 +338,7 @@ Du kannst Deine Daten jederzeit aendern!
                                 <div class="col-sm-9">
                                     <?php foreach ($permissions as $key => $label):
                                         $checked = (($row[$key] ?? '') === 'YES') ? ' checked' : '';
-                                    ?>
+                                        ?>
                                         <div class="form-check">
                                             <input class="form-check-input" type="checkbox" id="perm_<?php echo $key; ?>" name="<?php echo $key; ?>" value="YES"<?php echo $checked; ?>>
                                             <label class="form-check-label" for="perm_<?php echo $key; ?>"><?php echo e($label); ?></label>

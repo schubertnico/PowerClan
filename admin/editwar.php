@@ -231,7 +231,7 @@ if (($pcadmin['wars_edit'] ?? '') === 'YES' || ($pcadmin['superadmin'] ?? '') ==
                                     <select id="league" name="league" class="form-select" required>
                                         <?php foreach ($leagues as $leagueOption):
                                             $selected = ($leagueOption === ($row['league'] ?? '')) ? ' selected' : '';
-                                        ?>
+                                            ?>
                                             <option value="<?php echo e($leagueOption); ?>"<?php echo $selected; ?>><?php echo e($leagueOption); ?></option>
                                         <?php endforeach; ?>
                                     </select>
@@ -350,7 +350,7 @@ if (($pcadmin['wars_edit'] ?? '') === 'YES' || ($pcadmin['superadmin'] ?? '') ==
                         <?php for ($mapNum = 1; $mapNum <= 3; $mapNum++):
                             $screenField = 'screen' . $mapNum;
                             $screenValue = $row[$screenField] ?? '';
-                        ?>
+                            ?>
                             <form action="<?php echo $phpSelf; ?>?uploadscreen=YES&warid=<?php echo $rowId; ?>&map=<?php echo $mapNum; ?>" method="post" enctype="multipart/form-data" class="mb-3 pb-3 border-bottom">
                                 <?php echo csrf_field(); ?>
                                 <div class="row align-items-center g-2">

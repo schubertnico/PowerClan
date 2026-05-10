@@ -167,8 +167,8 @@ $pcAdminCurrentScript = basename((string) ($_SERVER['SCRIPT_NAME'] ?? ''));
                 <?php
                 /** @var array<string, mixed>|array{} $pcadmin */
                 $nickValue = $pcadmin['nick'] ?? 'Unknown'; // @phpstan-ignore-line
-                echo 'Eingeloggt als <strong>' . e($nickValue) . '</strong>';
-                ?>
+    echo 'Eingeloggt als <strong>' . e($nickValue) . '</strong>';
+    ?>
             </span>
             <a class="btn btn-outline-warning btn-sm fw-semibold" href="<?php echo e($_SERVER['PHP_SELF']); ?>?logout=YES">Logout</a>
 <?php endif; ?>
@@ -190,9 +190,9 @@ $pcAdminCurrentScript = basename((string) ($_SERVER['SCRIPT_NAME'] ?? ''));
                     </p>
 <?php
 $loginError = (string) ($_SESSION['login_error'] ?? '');
-unset($_SESSION['login_error']);
-if ($loginError !== ''):
-?>
+    unset($_SESSION['login_error']);
+    if ($loginError !== ''):
+        ?>
                     <div class="alert alert-danger" role="alert">
                         <?php echo e($loginError); ?>
                     </div>
@@ -221,7 +221,7 @@ if ($loginError !== ''):
 </body>
 </html>
 <?php
-exit;
+        exit;
 endif;
 ?>
 <div class="container-fluid">
@@ -234,7 +234,7 @@ endif;
                             <?php
                             /** @var array<string, mixed>|array{} $pcadmin */
                             echo e($pcadmin['nick'] ?? 'Unknown'); // @phpstan-ignore-line
-                            ?>
+?>
                         </a>
                         <div class="text-body-secondary small">Mein Profil</div>
                     </div>

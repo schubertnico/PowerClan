@@ -61,7 +61,7 @@ $num = mysqli_num_rows($result);
                         // BUG-021: Aktionslinks nur bei tatsächlicher Berechtigung
                         $canEdit = pc_can('news_edit') || $authorId === (int) ($pcadmin['id'] ?? 0);
                         $canDel = pc_can('news_del');
-                    ?>
+                        ?>
                         <tr>
                             <td><span class="text-body-secondary small"><?php echo $date; ?></span></td>
                             <td><?php echo $title; ?></td>
