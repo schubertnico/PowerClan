@@ -382,7 +382,8 @@ class AdminPageTest extends PageTestCase
 
         $html = $this->renderAdminPage($this->adminPath . 'choosemember.php', $this->adminId);
 
-        $this->assertStringContainsString('Memberliste', $html);
+        // Bootstrap-5-Migration: Memberliste heißt nun "Member verwalten"
+        $this->assertStringContainsString('Member verwalten', $html);
     }
 
     // =========================================================================
@@ -446,7 +447,8 @@ class AdminPageTest extends PageTestCase
 
         $html = $this->renderAdminPage($this->adminPath . 'choosewar.php', $this->adminId);
 
-        $this->assertStringContainsString('green', $html);
+        // Bootstrap-5-Migration: Map mit Ergebnis wird als success-Badge dargestellt
+        $this->assertStringContainsString('text-bg-success', $html);
     }
 
     // =========================================================================

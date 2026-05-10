@@ -12,16 +12,15 @@ declare(strict_types=1);
  */
 
 ?>
-  <br>
-  </td></tr>
-  </table>
-</td></tr>
-</table>
-</center>
-<br>
-<center>
-<small><a href="https://www.powerscripts.org" target="_blank" rel="noopener noreferrer">PowerClan</a> &copy; Copyright 2001-2026 by <a href="mailto:info@powerscripts.org?subject=PowerClan Copyright">PowerScripts</a></small>
-</center>
-
+        </section>
+    </div>
+</div>
+<footer class="border-top bg-body py-3 mt-5">
+    <div class="container-fluid text-center text-body-secondary small">
+        PowerClan &copy; Copyright 2001-2026 by
+        <a class="link-secondary" href="https://www.powerscripts.org" target="_blank" rel="noopener noreferrer">PowerScripts</a>
+    </div>
+</footer>
+<script src="../assets/bootstrap-5.3.3/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

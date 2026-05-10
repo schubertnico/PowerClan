@@ -43,4 +43,4 @@ $leagues = [];
 $bgcolor = '';
 
 /** @var float $version PowerClan version number */
-$version = 2.00;
+$version = 2.30;

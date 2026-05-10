@@ -13,11 +13,13 @@ declare(strict_types=1);
 
 // Safely include footer file if configured and exists
 $footerFile = $settings['footer'] ?? '';
-if (!empty($footerFile) && is_string($footerFile)) {
-    // Security: Only allow files from the current directory
-    $footerFile = basename($footerFile);
-    $footerPath = __DIR__ . '/' . $footerFile;
-    if (file_exists($footerPath) && is_file($footerPath)) {
-        include $footerPath;
-    }
+if (empty($footerFile) || !is_string($footerFile)) {
+    // Fallback auf das Bootstrap-Standardlayout, falls die Konfiguration keinen Footer benennt.
+    $footerFile = 'footer.pc';
+}
+// Security: Only allow files from the current directory
+$footerFile = basename($footerFile);
+$footerPath = __DIR__ . '/' . $footerFile;
+if (file_exists($footerPath) && is_file($footerPath)) {
+    include $footerPath;
 }

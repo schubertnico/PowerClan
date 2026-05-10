@@ -16,9 +16,8 @@ declare(strict_types=1);
 <?php include __DIR__ . '/header.inc.php'; ?>
 <!--MAIN PAGE-->
 
-<center>
-<table border="0" cellpadding="3" cellspacing="0" width="100%">
-<tr><td align="center" width="100%">
+<div class="card shadow-sm mb-4">
+    <div class="card-body text-center">
 <?php
 $path = $_GET['path'] ?? '';
 
@@ -64,19 +63,17 @@ if (empty($path)) {
     // Final validation
     if ($validExtension && $isAllowedPath) {
         $safePath = htmlspecialchars($path, ENT_QUOTES, 'UTF-8');
-        echo '<a href="javascript:history.back()"><img src="' . $safePath . '" border="0" alt="Zur vorherigen Seite"></a>';
+        echo '<a class="d-inline-block" href="javascript:history.back()" title="Zur vorherigen Seite">'
+            . '<img src="' . $safePath . '" class="img-fluid rounded shadow-sm" alt="Zur vorherigen Seite">'
+            . '</a>'
+            . '<div class="mt-3"><a class="btn btn-outline-secondary btn-sm" href="javascript:history.back()">&laquo; Zurück</a></div>';
     } else {
         default_error('index.php', 'Ungültiger Bildpfad!');
     }
 }
 ?>
-</td></tr>
-</table>
-</center>
-<br>
-<center>
-<small><a href="https://www.powerscripts.org" target="_blank" rel="noopener noreferrer">PowerClan</a> &copy; Copyright 2001-2026 by <a href="mailto:info@powerscripts.org?subject=PowerClan Copyright">PowerScripts</a></small>
-</center>
+    </div>
+</div>
 
 <!--FOOTER FILE-->
 <?php include __DIR__ . '/footer.inc.php'; ?>

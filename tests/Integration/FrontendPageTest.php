@@ -39,8 +39,8 @@ class FrontendPageTest extends PageTestCase
 
         $html = $this->renderPage($this->basePath . 'index.php');
 
-        $this->assertStringContainsString('latest news', $html);
-        $this->assertStringContainsString('latest wars', $html);
+        $this->assertStringContainsString('Neueste News', $html);
+        $this->assertStringContainsString('Neueste Wars', $html);
         $this->assertStringContainsString('Test News Title', $html);
         $this->assertStringContainsString('News body text', $html);
         $this->assertStringContainsString('TE', $html);
@@ -51,7 +51,7 @@ class FrontendPageTest extends PageTestCase
     {
         $html = $this->renderPage($this->basePath . 'index.php');
 
-        $this->assertStringContainsString('latest news', $html);
+        $this->assertStringContainsString('Neueste News', $html);
         $this->assertStringContainsString('Keine Wars vorhanden', $html);
     }
 

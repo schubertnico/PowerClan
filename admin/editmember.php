@@ -22,7 +22,6 @@ include __DIR__ . '/header.inc.php';
 ?>
 <!--MAINPAGE-->
 
-<center>
 <?php
 // CSRF-Schutz (BUG-017)
 csrf_check();
@@ -67,7 +66,10 @@ if (($pcadmin['member_edit'] ?? '') === 'YES' || ($pcadmin['superadmin'] ?? '') 
                 $pic = trim($_POST['pic'] ?? '');
 
                 if ($age < 0 || $age > 99) {
-                    echo '<center><a href="javascript:history.back()">Alter muss zwischen 0 und 99 liegen.</a></center>';
+                    echo '<div class="alert alert-danger" role="alert">'
+                        . 'Alter muss zwischen 0 und 99 liegen. '
+                        . '<a class="alert-link" href="javascript:history.back()">Zurück</a></div>';
+                    include __DIR__ . '/footer.inc.php';
                     exit;
                 }
 
@@ -84,7 +86,10 @@ if (($pcadmin['member_edit'] ?? '') === 'YES' || ($pcadmin['superadmin'] ?? '') 
 
                 // Validation
                 if (empty($nick) || empty($email)) {
-                    echo '<center><a href="javascript:history.back()">Bitte gib Nickname und E-Mail an!</a></center>';
+                    echo '<div class="alert alert-danger" role="alert">'
+                        . 'Bitte gib Nickname und E-Mail an! '
+                        . '<a class="alert-link" href="javascript:history.back()">Zurück</a></div>';
+                    include __DIR__ . '/footer.inc.php';
                     exit;
                 }
 
@@ -97,18 +102,21 @@ if (($pcadmin['member_edit'] ?? '') === 'YES' || ($pcadmin['superadmin'] ?? '') 
                     throw new RuntimeException('Failed to get result');
                 }
                 if (mysqli_num_rows($checkResult) !== 0) {
-                    echo '<center><a href="javascript:history.back()">'
-                        . 'Es gibt schon einen Member mit dieser E-Mail oder diesem Nickname!'
-                        . '</a></center>';
+                    echo '<div class="alert alert-danger" role="alert">'
+                        . 'Es gibt schon einen Member mit dieser E-Mail oder diesem Nickname! '
+                        . '<a class="alert-link" href="javascript:history.back()">Zurück</a></div>';
                     $checkStmt->close();
+                    include __DIR__ . '/footer.inc.php';
                     exit;
                 }
                 $checkStmt->close();
 
                 // Validate email
                 if (!validate_email($email)) {
-                    echo '<center><a href="javascript:history.back()">'
-                        . 'Die angegebene E-Mail Adresse ist ung&uuml;ltig!</a></center>';
+                    echo '<div class="alert alert-danger" role="alert">'
+                        . 'Die angegebene E-Mail-Adresse ist ungültig! '
+                        . '<a class="alert-link" href="javascript:history.back()">Zurück</a></div>';
+                    include __DIR__ . '/footer.inc.php';
                     exit;
                 }
 
@@ -118,14 +126,17 @@ if (($pcadmin['member_edit'] ?? '') === 'YES' || ($pcadmin['superadmin'] ?? '') 
                     || ($password1 === '' && $password2 !== '')
                 ) {
                     $nickEsc = e($row['nick'] ?? '');
-                    echo '<center><a href="javascript:history.back()">'
-                        . "Du musst das neue Passwort f&uuml;r {$nickEsc} best&auml;tigen"
-                        . '</a></center>';
+                    echo '<div class="alert alert-danger" role="alert">'
+                        . "Du musst das neue Passwort für {$nickEsc} bestätigen. "
+                        . '<a class="alert-link" href="javascript:history.back()">Zurück</a></div>';
+                    include __DIR__ . '/footer.inc.php';
                     exit;
                 }
                 if ($password1 !== $password2) {
-                    echo '<center><a href="javascript:history.back()">'
-                        . 'Das neue Passwort wurde falsch best&auml;tigt!</a></center>';
+                    echo '<div class="alert alert-danger" role="alert">'
+                        . 'Das neue Passwort wurde falsch bestätigt! '
+                        . '<a class="alert-link" href="javascript:history.back()">Zurück</a></div>';
+                    include __DIR__ . '/footer.inc.php';
                     exit;
                 }
 
@@ -164,15 +175,18 @@ if (($pcadmin['member_edit'] ?? '') === 'YES' || ($pcadmin['superadmin'] ?? '') 
                     );
                     $updateStmt->execute();
                     $updateStmt->close();
-                } catch (Throwable $e) {
-                    error_log('editmember.php update failed: ' . $e->getMessage());
-                    echo '<center><b>Fehler beim Speichern: ' . e($e->getMessage()) . '</b></center>';
+                } catch (Throwable $ex) {
+                    error_log('editmember.php update failed: ' . $ex->getMessage());
+                    echo '<div class="alert alert-danger" role="alert"><strong>Fehler beim Speichern:</strong> '
+                        . e($ex->getMessage()) . '</div>';
+                    include __DIR__ . '/footer.inc.php';
                     exit;
                 }
 
                 $nickEsc = e($row['nick'] ?? '');
-                echo '<center><a href="choosemember.php">'
-                    . "Der Member <b>{$nickEsc}</b> wurde erfolgreich editiert!</a></center>";
+                echo '<div class="alert alert-success" role="alert">'
+                    . "Der Member <strong>{$nickEsc}</strong> wurde erfolgreich editiert. "
+                    . '<a class="alert-link" href="choosemember.php">Zur Übersicht</a></div>';
 
                 // Update password if changed
                 if ($password1 !== '' && $password2 !== '' && $password1 === $password2) {
@@ -203,9 +217,14 @@ Du kannst Deine Daten jederzeit aendern!
                     $headers = 'From: PowerClan Automailer <powerclan@powerscripts.org>';
                     $ok = @mail($memberEmail, $subject, $message, $headers);
 
-                    echo $ok
-                        ? "<center><br><br>Au&szlig;erdem wurde {$nickEsc} eine E-Mail mit seinem neuen Passwort zugeschickt!</center>"
-                        : "<center><br><br><b>Achtung:</b> Die Passwort-Mail an {$nickEsc} konnte nicht versendet werden &mdash; bitte das neue Passwort manuell &uuml;bermitteln.</center>";
+                    if ($ok) {
+                        echo '<div class="alert alert-info" role="alert">'
+                            . "Außerdem wurde {$nickEsc} eine E-Mail mit dem neuen Passwort zugeschickt.</div>";
+                    } else {
+                        echo '<div class="alert alert-warning" role="alert">'
+                            . "<strong>Achtung:</strong> Die Passwort-Mail an {$nickEsc} konnte nicht versendet werden &mdash; "
+                            . 'bitte das neue Passwort manuell übermitteln.</div>';
+                    }
                 }
             } else {
                 // Display edit form
@@ -221,124 +240,138 @@ Du kannst Deine Daten jederzeit aendern!
                 $infoEsc = e($row['info'] ?? '');
                 $picEsc = e($row['pic'] ?? '');
 
-                echo "<center>
-<form action=\"{$phpSelf}?memberid={$rowId}&editmember=YES\" method=\"post\">
-" . csrf_field() . "
-<table border=\"0\" cellpadding=\"3\" cellspacing=\"2\" width=\"100%\">
-<tr><td colspan=\"2\" align=\"center\">
-<b>Member editieren</b>
-</td></tr>
-<tr><td valign=\"top\" width=\"*\" bgcolor=\"{$admin_tbl1}\">
-<b>Nickname</b><br>
-<small>Der Nickname unter dem der Member bekannt ist</small>
-</td><td valign=\"top\" width=\"250\" bgcolor=\"{$admin_tbl1}\">
-<input name=\"nick\" size=\"25\" maxlength=\"100\" value=\"{$nickEsc}\" required>
-</td></tr>
-<tr><td valign=\"top\">
-<b>E-Mail Adresse</b><br>
-<small>Die korrekte E-Mail Adresse des Members</small>
-</td><td valign=\"top\">
-<input name=\"email\" size=\"25\" maxlength=\"400\" value=\"{$emailEsc}\" type=\"email\" required>
-</td></tr>
-<tr><td valign=\"top\" bgcolor=\"{$admin_tbl1}\">
-<b>Passwort</b><br>
-<small>Das neue Passwort f&uuml;r den Member (mit Best&auml;tigung)</small>
-</td><td valign=\"top\" bgcolor=\"{$admin_tbl1}\">
-<input name=\"password1\" size=\"25\" maxlength=\"72\" type=\"password\"><br>
-<input name=\"password2\" size=\"25\" maxlength=\"72\" type=\"password\">
-</td></tr>
-<tr><td valign=\"top\">
-<b>Aufgabe</b><br>
-<small>Die Aufgabe die der Member im Clan &uuml;bernimmt</small>
-</td><td valign=\"top\">
-<input name=\"work\" size=\"25\" maxlength=\"200\" value=\"{$workEsc}\">
-</td></tr>
-<tr><td valign=\"top\" bgcolor=\"{$admin_tbl1}\">
-<b>ICQ Nummer</b><br>
-<small>Die ICQ Nummer des Members (0 = Keine Angabe)</small>
-</td><td valign=\"top\" bgcolor=\"{$admin_tbl1}\">
-<input name=\"icq\" size=\"10\" maxlength=\"10\" value=\"{$icqEsc}\">
-</td></tr>
-<tr><td valign=\"top\">
-<b>Homepage</b><br>
-<small>Die URL zur Homepage des Members (mit http://)</small>
-</td><td valign=\"top\">
-<input name=\"homepage\" size=\"25\" maxlength=\"250\" value=\"{$homepageEsc}\" type=\"url\">
-</td></tr>
-<tr><td valign=\"top\" bgcolor=\"{$admin_tbl1}\">
-<b>Realname</b><br>
-<small>Der Realname des Members</small>
-</td><td valign=\"top\" bgcolor=\"{$admin_tbl1}\">
-<input name=\"realname\" size=\"25\" maxlength=\"200\" value=\"{$realnameEsc}\">
-</td></tr>
-<tr><td valign=\"top\">
-<b>Alter</b><br>
-<small>Das Alter des Members (0 = Keine Angabe)</small>
-</td><td valign=\"top\">
-<input name=\"age\" size=\"2\" maxlength=\"2\" value=\"{$ageEsc}\" type=\"number\" min=\"0\" max=\"99\">
-</td></tr>
-<tr><td valign=\"top\" bgcolor=\"{$admin_tbl1}\">
-<b>Hardware Informationen</b><br>
-<small>Informationen &uuml;ber die Hardware des Members</small>
-</td><td valign=\"top\" bgcolor=\"{$admin_tbl1}\">
-<textarea name=\"hardware\" cols=\"35\" rows=\"5\">{$hardwareEsc}</textarea>
-</td></tr>
-<tr><td valign=\"top\">
-<b>Pers&ouml;nliche Informationen</b><br>
-<small>Pers&ouml;nliche Informationen &uuml;ber den Member</small>
-</td><td valign=\"top\">
-<textarea name=\"info\" cols=\"35\" rows=\"5\">{$infoEsc}</textarea>
-</td></tr>
-<tr><td valign=\"top\" bgcolor=\"{$admin_tbl1}\">
-<b>Bild</b><br>
-<small>URL zu einem Bild des Members (mit http://)</small>
-</td><td valign=\"top\" bgcolor=\"{$admin_tbl1}\">
-<input name=\"pic\" size=\"25\" maxlength=\"250\" value=\"{$picEsc}\" type=\"url\">
-</td></tr>
-<tr><td valign=\"top\">
-<b>Adminrechte</b><br>
-<small>Die Adminrechte die der Member besitzt</small>
-</td><td valign=\"top\">";
-
                 // Permission checkboxes
                 $permissions = [
-                    'member_add' => 'Member hinzuf&uuml;gen',
+                    'member_add' => 'Member hinzufügen',
                     'member_edit' => 'Member editieren',
-                    'member_del' => 'Member l&ouml;schen',
-                    'news_add' => 'News hinzuf&uuml;gen',
+                    'member_del' => 'Member löschen',
+                    'news_add' => 'News hinzufügen',
                     'news_edit' => 'News editieren',
-                    'news_del' => 'News l&ouml;schen',
-                    'wars_add' => 'Wars hinzuf&uuml;gen',
+                    'news_del' => 'News löschen',
+                    'wars_add' => 'Wars hinzufügen',
                     'wars_edit' => 'Wars editieren',
-                    'wars_del' => 'Wars l&ouml;schen',
+                    'wars_del' => 'Wars löschen',
                 ];
-
-                foreach ($permissions as $key => $label) {
-                    $checked = (($row[$key] ?? '') === 'YES') ? ' checked' : '';
-                    echo "<input type=\"checkbox\" name=\"{$key}\" value=\"YES\"{$checked}> {$label}<br>\n";
-                }
-
-                echo "
-</td></tr>
-<tr><td colspan=\"2\" align=\"center\" bgcolor=\"{$admin_tbl1}\">
-<input type=\"submit\" value=\"Member editieren\"> <input type=\"reset\" value=\"Daten zur&uuml;cksetzen\">
-</td></tr>
-</table>
-</form>
-</center>";
+                ?>
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-body-secondary">
+                        <h1 class="h4 mb-0">Member editieren</h1>
+                    </div>
+                    <div class="card-body">
+                        <form action="<?php echo $phpSelf; ?>?memberid=<?php echo $rowId; ?>&editmember=YES" method="post" novalidate>
+                            <?php echo csrf_field(); ?>
+                            <div class="row mb-3">
+                                <label for="nick" class="col-sm-3 col-form-label">Nickname <span class="text-danger" aria-hidden="true">*</span></label>
+                                <div class="col-sm-9">
+                                    <input id="nick" name="nick" type="text" class="form-control" maxlength="100" value="<?php echo $nickEsc; ?>" required>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <label for="email" class="col-sm-3 col-form-label">E-Mail <span class="text-danger" aria-hidden="true">*</span></label>
+                                <div class="col-sm-9">
+                                    <input id="email" name="email" type="email" class="form-control" maxlength="400" value="<?php echo $emailEsc; ?>" required>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <label for="password1" class="col-sm-3 col-form-label">Neues Passwort</label>
+                                <div class="col-sm-9">
+                                    <input id="password1" name="password1" type="password" class="form-control mb-2" maxlength="72" autocomplete="new-password" aria-describedby="pwHelp">
+                                    <input id="password2" name="password2" type="password" class="form-control" maxlength="72" autocomplete="new-password" placeholder="Passwort bestätigen">
+                                    <div id="pwHelp" class="form-text">Leer lassen, wenn das Passwort nicht geändert werden soll.</div>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <label for="work" class="col-sm-3 col-form-label">Aufgabe</label>
+                                <div class="col-sm-9">
+                                    <input id="work" name="work" type="text" class="form-control" maxlength="200" value="<?php echo $workEsc; ?>">
+                                    <div class="form-text">Die Aufgabe, die der Member im Clan übernimmt.</div>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <label for="icq" class="col-sm-3 col-form-label">ICQ-Nummer</label>
+                                <div class="col-sm-9">
+                                    <input id="icq" name="icq" type="number" class="form-control" min="0" maxlength="10" value="<?php echo $icqEsc; ?>">
+                                    <div class="form-text">0 = keine Angabe.</div>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <label for="homepage" class="col-sm-3 col-form-label">Homepage</label>
+                                <div class="col-sm-9">
+                                    <input id="homepage" name="homepage" type="url" class="form-control" maxlength="250" value="<?php echo $homepageEsc; ?>" placeholder="https://...">
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <label for="realname" class="col-sm-3 col-form-label">Realname</label>
+                                <div class="col-sm-9">
+                                    <input id="realname" name="realname" type="text" class="form-control" maxlength="200" value="<?php echo $realnameEsc; ?>">
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <label for="age" class="col-sm-3 col-form-label">Alter</label>
+                                <div class="col-sm-9">
+                                    <input id="age" name="age" type="number" min="0" max="99" class="form-control" value="<?php echo $ageEsc; ?>">
+                                    <div class="form-text">0 = keine Angabe.</div>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <label for="hardware" class="col-sm-3 col-form-label">Hardware</label>
+                                <div class="col-sm-9">
+                                    <textarea id="hardware" name="hardware" class="form-control" rows="4"><?php echo $hardwareEsc; ?></textarea>
+                                    <div class="form-text">Informationen über die Hardware des Members.</div>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <label for="info" class="col-sm-3 col-form-label">Persönliche Infos</label>
+                                <div class="col-sm-9">
+                                    <textarea id="info" name="info" class="form-control" rows="4"><?php echo $infoEsc; ?></textarea>
+                                    <div class="form-text">Persönliche Informationen über den Member (Hobbies, Job, ...).</div>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <label for="pic" class="col-sm-3 col-form-label">Bild-URL</label>
+                                <div class="col-sm-9">
+                                    <input id="pic" name="pic" type="url" class="form-control" maxlength="250" value="<?php echo $picEsc; ?>" placeholder="https://...">
+                                </div>
+                            </div>
+                            <fieldset class="row mb-4">
+                                <legend class="col-sm-3 col-form-label pt-0">Adminrechte</legend>
+                                <div class="col-sm-9">
+                                    <?php foreach ($permissions as $key => $label):
+                                        $checked = (($row[$key] ?? '') === 'YES') ? ' checked' : '';
+                                    ?>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="perm_<?php echo $key; ?>" name="<?php echo $key; ?>" value="YES"<?php echo $checked; ?>>
+                                            <label class="form-check-label" for="perm_<?php echo $key; ?>"><?php echo e($label); ?></label>
+                                        </div>
+                                    <?php endforeach; ?>
+                                    <div class="form-text mt-1">Superadmin-Rechte können hier nicht gesetzt werden.</div>
+                                </div>
+                            </fieldset>
+                            <div class="d-flex flex-wrap gap-2">
+                                <button type="submit" class="btn btn-primary">Member editieren</button>
+                                <button type="reset" class="btn btn-outline-secondary">Daten zurücksetzen</button>
+                                <a class="btn btn-link ms-auto" href="choosemember.php">Abbrechen</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <?php
             }
         } else {
             $stmt->close();
-            echo '<center><a href="choosemember.php">Der gew&auml;hlte Member existiert nicht!</a></center>';
+            echo '<div class="alert alert-warning" role="alert">'
+                . 'Der gewählte Member existiert nicht. '
+                . '<a class="alert-link" href="choosemember.php">Zur Übersicht</a></div>';
         }
     } else {
-        echo '<center><a href="choosemember.php">Bitte w&auml;hle einen Member aus!</a></center>';
+        echo '<div class="alert alert-warning" role="alert">'
+            . 'Bitte wähle einen Member aus. '
+            . '<a class="alert-link" href="choosemember.php">Zur Übersicht</a></div>';
     }
 } else {
-    echo '<center>Du hast keinen Zugang zu dieser Funktion!</center>';
+    echo '<div class="alert alert-warning" role="alert">Du hast keinen Zugang zu dieser Funktion!</div>';
 }
 ?>
-</center>
 
 <!--FOOTER FILE-->
 <?php include __DIR__ . '/footer.inc.php'; ?>

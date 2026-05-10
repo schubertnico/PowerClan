@@ -1,5 +1,5 @@
 -- PowerClan Database Schema
--- Version 2.0 (PHP 8.4)
+-- Version 2.3 (PHP 8.4 · Bootstrap 5.3)
 -- MIT License
 
 DROP TABLE IF EXISTS pc_config;

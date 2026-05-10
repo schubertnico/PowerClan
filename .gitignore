@@ -52,6 +52,7 @@ composer.phar
 /.aider*
 /.serena/
 /.mcp.json
+/.ralph-loop/
 CLAUDE.md.local
 
 # -------------------------------------------
@@ -230,6 +231,9 @@ docker-compose.override.yaml
 !/images/wars/.gitkeep
 /uploads/
 /public/uploads/
+/screenshots/*
+!/screenshots/.htaccess
+!/screenshots/.gitkeep
 
 # -------------------------------------------
 # User-specific PHP files

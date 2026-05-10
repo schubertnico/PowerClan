@@ -22,61 +22,61 @@ declare(strict_types=1);
 <?php include __DIR__ . '/header.inc.php'; ?>
 <!--MAINPAGE-->
 
-Willkommen im Adminbereich von <b>PowerClan</b>.<br>
-<br>
-Hier kannst Du als Member <a href="profile.php">dein Profil</a> editieren oder als Admin die Member, News und
-Wars verwalten.<br>
-<br>
-Du hast im Adminbereich folgende Rechte:<br>
-<br>
-<ul>
+<div class="card shadow-sm mb-4">
+    <div class="card-header bg-body-secondary">
+        <h1 class="h4 mb-0">Willkommen im Adminbereich von PowerClan</h1>
+    </div>
+    <div class="card-body">
+        <p class="mb-3">
+            Hier kannst Du als Member <a class="link-primary" href="profile.php">dein Profil</a> editieren oder als
+            Admin die Member, News und Wars verwalten.
+        </p>
+        <h2 class="h6 text-uppercase text-body-secondary small mb-2">Du hast im Adminbereich folgende Rechte</h2>
 <?php
-$i = 0;
+$rights = [];
 if (($pcadmin['member_add'] ?? '') === 'YES') {
-    echo "<li>Member hinzuf&uuml;gen</li>\n";
-    $i++;
+    $rights[] = 'Member hinzufügen';
 }
 if (($pcadmin['member_edit'] ?? '') === 'YES') {
-    echo "<li>Member editieren</li>\n";
-    $i++;
+    $rights[] = 'Member editieren';
 }
 if (($pcadmin['member_del'] ?? '') === 'YES') {
-    echo "<li>Member l&ouml;schen</li>\n";
-    $i++;
+    $rights[] = 'Member löschen';
 }
 if (($pcadmin['news_add'] ?? '') === 'YES') {
-    echo "<li>News hinzuf&uuml;gen</li>\n";
-    $i++;
+    $rights[] = 'News hinzufügen';
 }
 if (($pcadmin['news_edit'] ?? '') === 'YES') {
-    echo "<li>News editieren</li>\n";
-    $i++;
+    $rights[] = 'News editieren';
 }
 if (($pcadmin['news_del'] ?? '') === 'YES') {
-    echo "<li>News l&ouml;schen</li>\n";
-    $i++;
+    $rights[] = 'News löschen';
 }
 if (($pcadmin['wars_add'] ?? '') === 'YES') {
-    echo "<li>Wars hinzuf&uuml;gen</li>\n";
-    $i++;
+    $rights[] = 'Wars hinzufügen';
 }
 if (($pcadmin['wars_edit'] ?? '') === 'YES') {
-    echo "<li>Wars editieren</li>\n";
-    $i++;
+    $rights[] = 'Wars editieren';
 }
 if (($pcadmin['wars_del'] ?? '') === 'YES') {
-    echo "<li>Wars l&ouml;schen</li>\n";
-    $i++;
+    $rights[] = 'Wars löschen';
 }
 if (($pcadmin['superadmin'] ?? '') === 'YES') {
-    echo "<li>Alle Rechte + Konfiguration editieren</li>\n";
-    $i++;
+    $rights[] = 'Alle Rechte + Konfiguration editieren';
 }
-if ($i === 0) {
-    echo "<li>Du hast <b>keine</b> Adminrechte</li>\n";
+
+if ($rights === []) {
+    echo '<div class="alert alert-warning mb-0" role="alert">Du hast <strong>keine</strong> Adminrechte.</div>';
+} else {
+    echo '<div class="d-flex flex-wrap gap-2">';
+    foreach ($rights as $right) {
+        echo '<span class="badge text-bg-primary fs-6 fw-normal">' . e($right) . '</span>';
+    }
+    echo '</div>';
 }
 ?>
-</ul>
+    </div>
+</div>
 
 <!--FOOTER FILE-->
 <?php include __DIR__ . '/footer.inc.php'; ?>

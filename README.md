@@ -1,6 +1,7 @@
 # PowerClan
 
 ![PHP](https://img.shields.io/badge/PHP-8.4-777BB4?style=flat-square&logo=php&logoColor=white)
+![Bootstrap](https://img.shields.io/badge/Bootstrap-5.3-7952B3?style=flat-square&logo=bootstrap&logoColor=white)
 ![Tests](https://img.shields.io/badge/tests-237%20passing-brightgreen?style=flat-square)
 ![Coverage](https://img.shields.io/badge/coverage-85%25-brightgreen?style=flat-square)
 ![License](https://img.shields.io/badge/license-MIT-yellow?style=flat-square)
@@ -9,7 +10,7 @@
 
 Ein PHP/MySQL-basiertes Clan-Portal-Management-System.
 
-**Version:** 2.2 (PHP 8.4)
+**Version:** 2.3 (PHP 8.4 · Bootstrap 5.3)
 **Lizenz:** MIT
 **Repository:** <https://github.com/schubertnico/PowerClan>
 **Projektseite:** <https://www.powerscripts.org/projects-4.html>
@@ -69,6 +70,13 @@ sperrt sich selbst. Zum erneuten Ausführen `install.lock` löschen.
 - **News-System** – BBCode-Editor, Kategorien, Mehrautoren-Fähigkeit
 - **Clanwar-Verwaltung** – Ergebnisse, Berichte, Screenshots, Ligen
 - **Rollenbasierte Rechte** – `member_*`, `news_*`, `wars_*`, `superadmin`
+- **Bootstrap-5-UI** – komplette HTML-Ausgabe responsive (Public + Admin
+  + Installer), Cards / Tables / Forms / Alerts / Badges / Sticky-Sidebar
+- **Accessibility-orientierte Kontraste** – WCAG-AA-/AAA-Niveau für
+  Sehschwäche, Bedeutung nie nur über Farbe (Pille + Text + `aria-label`),
+  3 px Fokus-Indikator, sichtbarer Skip-Link
+- **Lokale Asset-Auslieferung** – Bootstrap aus `assets/bootstrap-5.3.3/`
+  (kein externes CDN nötig, deterministisch und offline-fähig)
 - **CSRF-Schutz** auf allen Formularen inkl. Login
 - **Serverseitige Sessions** (kein Passwort-Hash im Cookie)
 - **Brute-Force-Drossel** (max. 10 Loginversuche/Minute/Session)
@@ -279,6 +287,61 @@ Details siehe [`SECURITY.md`](SECURITY.md).
 
 ## Changelog
 
+### Version 2.3 (Mai 2026)
+
+**Bootstrap-5-Migration & Accessibility-Optimierung:**
+
+- Komplette HTML-Ausgabe auf **Bootstrap 5.3.3** umgestellt
+  (öffentliche Seiten, Admin-Bereich, Installer)
+- Bootstrap **lokal** unter `assets/bootstrap-5.3.3/` ausgeliefert
+  (offline-fähig, deterministisch, kein CDN-Abhängigkeit)
+- Public-Layout: Navbar mit Brand + Tag-Badge, container, Cards,
+  responsive Tabellen, Bootstrap-Alerts, Footer
+- Admin-Layout: dunkle Topbar, Sticky-Sidebar mit Sektionsgruppierung
+  (News / Clanwars / Member / Konfiguration), Card-basierte Login-Form,
+  einheitliche Card-Layouts für alle Formulare
+- Gefährliche Aktionen (Löschen) mit `card border-danger`, dunkelroter
+  Header, Warn-Alert und expliziter Doppelbestätigung – Bedeutung
+  nie nur über Farbe
+- Status-Pillen für War-Ergebnisse (Gewonnen/Verloren/Unentschieden):
+  weiße Schrift auf gesättigten dunklen Farben, zusätzlich `aria-label`
+  und Tooltip
+- War-Statistik-Übersicht als Bootstrap-Stat-Cards mit Caps-Beschriftung
+- Wiederverwendbare Helfer: `pc_render_war_map_cell()` für War-Map-Markup,
+  `pc_admin_nav_active()` für Sidebar-Highlighting
+- Header/Footer-Fallback in `header.inc.php` / `footer.inc.php` auf
+  `header.pc` / `footer.pc`, falls `pc_config.header`/`footer` leer sind
+- `getwarstats()` und `default_error()` auf Bootstrap-Stat-Cards bzw.
+  Bootstrap-Alerts umgestellt
+
+**Accessibility-Optimierung (WCAG-AA / AAA):**
+
+- Bootstrap-Default-Farben in `powerclan.css` für Sehschwäche überschrieben
+  (Sekundärtexte, Links, Status-Farben, Buttons, Cards)
+- Standard-Links: dunkleres Blau `#0a4ea4`, immer mit Underline
+- Form-Labels fett (`font-weight: 600`), Hilfetexte kontrastreicher
+  und 0.9 rem groß
+- 3 px gelber Fokus-Indikator statt blass-blauer Bootstrap-Default-Schatten
+- Sichtbarer Skip-Link bei Tastatur-Fokus
+- Brand-Badge / Topbar-Status mit eigener `pc-on-dark`-Klasse statt
+  blassem `text-white-50`
+- Logout-Button im Dunkelbereich: vollgelb mit schwarzer fetter Schrift
+  statt blass-gelbem Outline
+- Tabellen-Header: dunklerer Hintergrund + dicke Trennlinie
+
+**Regression / Verifikation:**
+
+- PHPStan Level 8 sauber
+- 67 Unit-Tests grün
+- Alle Public- und Admin-Routen liefern HTTP 200
+- Headless-Chrome-Screenshots für Desktop und Mobile
+- **Kein Docker-Build** – bestehende Container weiterverwendet
+- Bestehende Funktionalität (CSRF, Prepared Statements, Sessions,
+  Brute-Force-Drossel) **unverändert**
+- Alle bestehenden Kommentare und DocBlocks erhalten
+
+Details: [`docs/2026-05-10-Bootstrap-5-Migration-Accessibility.md`](docs/2026-05-10-Bootstrap-5-Migration-Accessibility.md)
+
 ### Version 2.2 (April 2026)
 
 **Audit-Fixes (33 Findings):**
@@ -333,6 +396,7 @@ Weiterführende Dokumente im Repository:
 | `readme.html`                                    | HTML-Version der Dokumentation             |
 | `SECURITY.md`                                    | Security-Policy + Meldewege                |
 | `CONTRIBUTING.md`                                | Mitwirken am Projekt                       |
+| `docs/2026-05-10-Bootstrap-5-Migration-Accessibility.md` | Bootstrap-5-Migration + WCAG-Kontraste |
 | `docs/2026-04-23-Userbereichs-bugs.md`           | Audit-Report: 33 Bugs (alle behoben)       |
 | `docs/2026-04-23-Userbereichs-improvements.md`   | Audit-Report: 32 UX/Workflow-Vorschläge    |
 | `docs/2026-04-23-Userbereichs-test-coverage.md`  | Audit-Report: vollständige Testmatrix      |

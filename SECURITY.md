@@ -260,6 +260,17 @@ composer run test:security
 
 ## Security Changelog
 
+### Version 2.3 (Mai 2026)
+
+- :white_check_mark: Bootstrap-5-Migration ohne Security-Regression
+- :white_check_mark: CSRF-Schutz, Prepared Statements, Brute-Force-Drossel,
+  serverseitige Sessions, Path-Traversal-Schutz unveraendert weitergefuehrt
+- :white_check_mark: Bootstrap lokal in `assets/bootstrap-5.3.3/` ausgeliefert
+  (kein externes CDN, keine SRI-Hash-Pflege noetig)
+- :white_check_mark: Accessibility-Optimierung (kontrastreichere Defaults,
+  Skip-Link, sichtbarer Fokus-Indikator) reduziert Risiko von
+  Fehlbedienung gefaehrlicher Aktionen
+
 ### Version 2.1 (Januar 2026)
 
 - :white_check_mark: PHPStan auf Level 8 erhoeht

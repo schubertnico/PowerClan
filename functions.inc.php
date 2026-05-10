@@ -25,13 +25,14 @@ function default_error(string $url, string $error): void
     }
 
     $safeError = htmlspecialchars($error, ENT_QUOTES, 'UTF-8');
-    echo '
-        <tr><td align="center" bgcolor="' . htmlspecialchars((string) $errortablebg, ENT_QUOTES, 'UTF-8') . "\">
-        <br>
-        <a href=\"{$safeUrl}\">{$safeError}</a><br>
-        <br>
-        </td></tr>
-    ";
+    // $errortablebg bleibt fuer Abwaertskompatibilitaet als Bezugsvariable erhalten,
+    // wird aber im Bootstrap-Alert-Layout nicht direkt als Hintergrund verwendet,
+    // da Bootstrap konsistente Kontraste sicherstellt.
+    unset($errortablebg);
+    echo '<div class="alert alert-warning d-flex flex-wrap align-items-center justify-content-between gap-2" role="alert">'
+        . '<span>' . $safeError . '</span>'
+        . '<a class="btn btn-sm btn-outline-secondary" href="' . $safeUrl . '">Weiter</a>'
+        . '</div>';
 }
 
 /**
@@ -169,50 +170,104 @@ function getwarstats(): void
         }
     }
 
-    $bg1 = htmlspecialchars($settings['tablebg1'] ?? '#000000', ENT_QUOTES, 'UTF-8');
-    $bg2 = htmlspecialchars($settings['tablebg2'] ?? '#FFFFFF', ENT_QUOTES, 'UTF-8');
-    $clrWon = htmlspecialchars($settings['clrwon'] ?? '#00FF00', ENT_QUOTES, 'UTF-8');
-    $clrLost = htmlspecialchars($settings['clrlost'] ?? '#FF0000', ENT_QUOTES, 'UTF-8');
-    $clrDraw = htmlspecialchars($settings['clrdraw'] ?? '#FFFF00', ENT_QUOTES, 'UTF-8');
+    // Bootstrap-5-Statistik-Karten: Werte werden ergaenzend zur Farbe immer mit Beschriftung versehen,
+    // damit die Bedeutung nicht ausschliesslich ueber Farbe transportiert wird.
     ?>
-    <tr>
-        <td bgcolor="<?php echo $bg1; ?>" align="center" width="20%">
-            <b>Gewonnen</b>
-        </td>
-        <td bgcolor="<?php echo $bg1; ?>" align="center" width="20%">
-            <b>Verloren</b>
-        </td>
-        <td bgcolor="<?php echo $bg1; ?>" align="center" width="20%">
-            <b>Unentschieden</b>
-        </td>
-        <td bgcolor="<?php echo $bg1; ?>" align="center" width="20%">
-            <b>Offen</b>
-        </td>
-        <td bgcolor="<?php echo $bg1; ?>" align="center" width="20%">
-            <b>Gesamt</b>
-        </td>
-    </tr>
-    <tr>
-        <td bgcolor="<?php echo $bg2; ?>" align="center" style="color: <?php echo $clrWon; ?>">
-            <?php echo $num_won; ?>
-        </td>
-        <td bgcolor="<?php echo $bg2; ?>" align="center" style="color: <?php echo $clrLost; ?>">
-            <?php echo $num_lost; ?>
-        </td>
-        <td bgcolor="<?php echo $bg2; ?>" align="center" style="color: <?php echo $clrDraw; ?>">
-            <?php echo $num_draw; ?>
-        </td>
-        <td bgcolor="<?php echo $bg2; ?>" align="center">
-            <?php echo $num_open; ?>
-        </td>
-        <td bgcolor="<?php echo $bg2; ?>" align="center">
-            <?php echo $allnum; ?>
-        </td>
-    </tr>
-    </table>
-    <br>
-    <table border="0" cellpadding="2" cellspacing="2" width="100%">
+    <div class="row row-cols-2 row-cols-md-5 g-3 mb-4" aria-label="War-Statistik">
+        <div class="col">
+            <div class="card text-bg-success h-100">
+                <div class="card-body text-center">
+                    <div class="text-uppercase small">Gewonnen</div>
+                    <div class="display-6 fw-bold"><?php echo $num_won; ?></div>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card text-bg-danger h-100">
+                <div class="card-body text-center">
+                    <div class="text-uppercase small">Verloren</div>
+                    <div class="display-6 fw-bold"><?php echo $num_lost; ?></div>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card text-bg-warning h-100">
+                <div class="card-body text-center">
+                    <div class="text-uppercase small">Unentschieden</div>
+                    <div class="display-6 fw-bold"><?php echo $num_draw; ?></div>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card text-bg-secondary h-100">
+                <div class="card-body text-center">
+                    <div class="text-uppercase small">Offen</div>
+                    <div class="display-6 fw-bold"><?php echo $num_open; ?></div>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card text-bg-primary h-100">
+                <div class="card-body text-center">
+                    <div class="text-uppercase small">Gesamt</div>
+                    <div class="display-6 fw-bold"><?php echo $allnum; ?></div>
+                </div>
+            </div>
+        </div>
+    </div>
     <?php
+    // Hinweis: Die in $settings hinterlegten Akzentfarben (clrwon/clrlost/clrdraw) bleiben
+    // weiterhin in der War-Detailausgabe verfuegbar; in der Statistik-Uebersicht werden
+    // konsistente Bootstrap-Kontextfarben verwendet, damit alle Bedeutungen zusaetzlich
+    // ueber sichtbare Texte (Gewonnen, Verloren ...) transportiert werden.
+}
+
+/**
+ * Liefert ein einzelnes Map-Ergebnis als Bootstrap-Markup zurueck.
+ * Die Bedeutung (gewonnen/verloren/unentschieden) wird immer zusaetzlich
+ * ueber den `aria-label` und die Tooltip-aehnliche `title`-Beschriftung
+ * transportiert, damit sie nicht ausschliesslich ueber Farbe entsteht.
+ *
+ * @param string|null $mapName  Name der Map (z. B. de_dust2).
+ * @param string|null $screen   Optionaler Screenshot-Dateiname unterhalb von images/wars/.
+ * @param string|null $resRaw   Rohwert wie "16:14".
+ * @param array{0:int,1:int} $endres Aufaddiertes Gesamtergebnis (wird modifiziert).
+ */
+function pc_render_war_map_cell(?string $mapName, ?string $screen, ?string $resRaw, array &$endres): string
+{
+    $map = e($mapName ?? '');
+    $cell = '';
+
+    if (!empty($screen)) {
+        $cell .= '<a class="link-secondary" href="showpic.php?path=images/wars/' . e($screen) . '">' . $map . '</a>';
+    } else {
+        $cell .= '<span>' . ($map !== '' ? $map : '<span class="text-body-secondary">—</span>') . '</span>';
+    }
+
+    if (!empty($resRaw)) {
+        $res = explode(':', (string) $resRaw);
+        $r0 = (int) ($res[0] ?? 0);
+        $r1 = (int) ($res[1] ?? 0);
+
+        if ($r0 > $r1) {
+            $cls = 'pc-result pc-result-won';
+            $label = 'Gewonnen';
+        } elseif ($r0 === $r1) {
+            $cls = 'pc-result pc-result-draw';
+            $label = 'Unentschieden';
+        } else {
+            $cls = 'pc-result pc-result-lost';
+            $label = 'Verloren';
+        }
+        $endres[0] += $r0;
+        $endres[1] += $r1;
+
+        $cell .= '<br><span class="' . $cls . '" aria-label="' . $label . '" title="' . $label . '">'
+            . $r0 . ':' . $r1
+            . '</span>';
+    }
+
+    return $cell;
 }
 
 /**

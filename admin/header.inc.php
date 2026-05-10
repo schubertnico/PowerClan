@@ -40,9 +40,13 @@ if (ob_get_level() === 0) {
 
 pc_session_start();
 
-$admin_tbl1 = '#B0B0B0';
-$admin_tbl2 = '#E0E0E0';
-$admin_tbl3 = '#F0F0F0';
+// Hinweis: Die ehemaligen $admin_tbl1/$admin_tbl2/$admin_tbl3 Variablen werden
+// im Bootstrap-Layout nicht mehr fuer Hintergrundfarben verwendet. Sie werden
+// hier weiterhin als leere Strings bereitgestellt, um Abwaertskompatibilitaet
+// fuer Admin-Skripte zu gewaehrleisten, die sie ggf. noch referenzieren.
+$admin_tbl1 = '';
+$admin_tbl2 = '';
+$admin_tbl3 = '';
 
 $login = $_GET['login'] ?? '';
 $logout = $_GET['logout'] ?? '';
@@ -135,89 +139,132 @@ if ($login === 'YES' && $_SERVER['REQUEST_METHOD'] === 'POST') {
 
 getsettings();
 
+$pcAdminCurrentScript = basename((string) ($_SERVER['SCRIPT_NAME'] ?? ''));
+
 ?>
 <!DOCTYPE html>
 <html lang="de">
 <head>
-<meta charset="UTF-8">
-<title>PowerClan Adminbereich</title>
-<meta name="author" content="PowerScripts">
-<link rel="stylesheet" href="powerclan.css" type="text/css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PowerClan Adminbereich</title>
+    <meta name="author" content="PowerScripts">
+    <link rel="stylesheet" href="../assets/bootstrap-5.3.3/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../powerclan.css">
 </head>
-<body text="#000000" bgcolor="#FFFFFF" link="#000080" alink="#000080" vlink="#000080">
-
-<center>
-<table border="0" cellpadding="0" cellspacing="0" width="95%">
-<tr><td bgcolor="#000080" width="100%">
-  <table border="0" width="100%" cellpadding="2" cellspacing="1">
+<body class="bg-body-tertiary">
+<a class="visually-hidden-focusable position-absolute top-0 start-0 m-2 btn btn-primary" href="#admin-main">Zum Inhalt springen</a>
+<nav class="navbar navbar-dark bg-dark mb-4" aria-label="Adminnavigation">
+    <div class="container-fluid">
+        <a class="navbar-brand fw-semibold" href="index.php">
+            PowerClan
+            <span class="badge text-bg-secondary ms-1">Adminbereich</span>
+        </a>
+        <div class="d-flex align-items-center gap-2">
+            <a class="btn btn-outline-light btn-sm" href="../">&laquo; Öffentliche Seite</a>
+<?php if ($loggedin === 'YES'): ?>
+            <span class="navbar-text pc-on-dark small d-none d-md-inline">
+                <?php
+                /** @var array<string, mixed>|array{} $pcadmin */
+                $nickValue = $pcadmin['nick'] ?? 'Unknown'; // @phpstan-ignore-line
+                echo 'Eingeloggt als <strong>' . e($nickValue) . '</strong>';
+                ?>
+            </span>
+            <a class="btn btn-outline-warning btn-sm fw-semibold" href="<?php echo e($_SERVER['PHP_SELF']); ?>?logout=YES">Logout</a>
+<?php endif; ?>
+        </div>
+    </div>
+</nav>
+<?php if ($loggedin === 'NO'): ?>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-8 col-lg-5">
+            <div class="card shadow-sm">
+                <div class="card-header bg-body-secondary">
+                    <h1 class="h5 mb-0">Login</h1>
+                </div>
+                <div class="card-body">
+                    <p class="text-body-secondary small mb-3">
+                        Bitte melde Dich mit Deiner E-Mail-Adresse und Deinem Passwort an, um den
+                        Adminbereich zu nutzen.
+                    </p>
 <?php
-if ($loggedin === 'NO') {
-    $formAction = e($_SERVER['PHP_SELF']) . '?login=YES';
-    $loginError = (string) ($_SESSION['login_error'] ?? '');
-    unset($_SESSION['login_error']);
-    $csrfLogin = e(login_csrf_token());
-    echo "
-      <tr><td bgcolor=\"{$admin_tbl1}\">
-      <b>Login</b>
-      </td></tr>";
-    if ($loginError !== '') {
-        echo '<tr><td bgcolor="#FFCCCC" align="center"><b>' . e($loginError) . '</b></td></tr>';
-    }
-    echo "
-      <tr><td bgcolor=\"{$admin_tbl2}\" align=\"center\">
-        <form action=\"{$formAction}\" method=\"post\">
-        <input type=\"hidden\" name=\"login_csrf\" value=\"{$csrfLogin}\">
-        <table border=\"0\" cellpadding=\"3\" cellspacing=\"0\">
-        <tr><td>
-        <b>Deine E-Mail</b>
-        </td><td>
-        <input name=\"loginemail\" size=\"25\" maxlength=\"200\" type=\"email\" required>
-        </td></tr>
-        <tr><td>
-        <b>Dein Passwort</b>
-        </td><td>
-        <input name=\"loginpassword\" size=\"25\" maxlength=\"100\" type=\"password\" required>
-        </td></tr>
-        <tr><td colspan=\"2\" align=\"center\">
-        <input type=\"submit\" value=\"Login\">
-        </td></tr>
-        </table>
-        </form>
-      </td></tr>
-    ";
-    exit;
-}
-
-/** @var array<string, mixed>|array{} $pcadmin */
-$nickValue = $pcadmin['nick'] ?? 'Unknown'; // @phpstan-ignore-line
-$nickDisplay = e($nickValue);
-$phpSelf = e($_SERVER['PHP_SELF']);
+$loginError = (string) ($_SESSION['login_error'] ?? '');
+unset($_SESSION['login_error']);
+if ($loginError !== ''):
 ?>
-  <tr><td bgcolor="<?php echo $admin_tbl2; ?>" width="125" valign="top">
-  <br>
-  <center><b><a href="profile.php"><?php echo $nickDisplay; ?></a></b></center><br>
-  <b>News</b><br>
-  <a href="addnews.php">News hinzuf&uuml;gen</a><br>
-  <a href="choosenews.php">News editieren</a><br>
-  <br>
-  <b>Clanwars</b><br>
-  <a href="addwar.php">War hinzuf&uuml;gen</a><br>
-  <a href="choosewar.php">War editieren</a><br>
-  <br>
-  <b>Member</b><br>
-  <a href="addmember.php">Member hinzuf&uuml;gen</a><br>
-  <a href="choosemember.php">Member editieren</a><br>
-  <br>
-  <b>Konfiguration</b><br>
-  <a href="editconfig.php">Konf. editieren</a><br>
-  <br>
-  <center><small>
-  <a href="../">&Ouml;ffentliche Seite</a><br>
-  <br>
-  <a href="<?php echo $phpSelf; ?>?logout=YES">Logout</a><br>
-  <br>
-  <a href="https://www.powerscripts.org" target="_blank" rel="noopener noreferrer">PowerScripts.org</a><br>
-  <br>
-  </small></center>
-  </td><td bgcolor="<?php echo $admin_tbl3; ?>" valign="top">
-  <br>
+                    <div class="alert alert-danger" role="alert">
+                        <?php echo e($loginError); ?>
+                    </div>
+<?php endif; ?>
+                    <form action="<?php echo e($_SERVER['PHP_SELF']) . '?login=YES'; ?>" method="post" novalidate>
+                        <input type="hidden" name="login_csrf" value="<?php echo e(login_csrf_token()); ?>">
+                        <div class="mb-3">
+                            <label for="loginemail" class="form-label">Deine E-Mail</label>
+                            <input id="loginemail" name="loginemail" type="email" class="form-control" maxlength="200" autocomplete="email" required aria-describedby="loginemailHelp">
+                            <div id="loginemailHelp" class="form-text">Die im Profil hinterlegte E-Mail-Adresse.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="loginpassword" class="form-label">Dein Passwort</label>
+                            <input id="loginpassword" name="loginpassword" type="password" class="form-control" maxlength="100" autocomplete="current-password" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Login</button>
+                    </form>
+                </div>
+                <div class="card-footer text-body-secondary small text-center">
+                    <a class="link-secondary" href="../">Zurück zur öffentlichen Seite</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
+<?php
+exit;
+endif;
+?>
+<div class="container-fluid">
+    <div class="row g-4">
+        <aside class="col-12 col-lg-3 col-xl-2 pc-admin-sidebar">
+            <div class="card shadow-sm sticky-lg-top" style="top: 1rem;">
+                <div class="card-body">
+                    <div class="text-center mb-3">
+                        <a class="fw-semibold" href="profile.php">
+                            <?php
+                            /** @var array<string, mixed>|array{} $pcadmin */
+                            echo e($pcadmin['nick'] ?? 'Unknown'); // @phpstan-ignore-line
+                            ?>
+                        </a>
+                        <div class="text-body-secondary small">Mein Profil</div>
+                    </div>
+                    <hr>
+                    <h2 class="h6 text-uppercase text-body-secondary small mb-2">News</h2>
+                    <ul class="nav flex-column mb-3">
+                        <li class="nav-item"><a class="nav-link p-1<?php echo pc_admin_nav_active($pcAdminCurrentScript, ['addnews.php']); ?>" href="addnews.php">News hinzufügen</a></li>
+                        <li class="nav-item"><a class="nav-link p-1<?php echo pc_admin_nav_active($pcAdminCurrentScript, ['choosenews.php', 'editnews.php', 'delnews.php']); ?>" href="choosenews.php">News editieren</a></li>
+                    </ul>
+                    <h2 class="h6 text-uppercase text-body-secondary small mb-2">Clanwars</h2>
+                    <ul class="nav flex-column mb-3">
+                        <li class="nav-item"><a class="nav-link p-1<?php echo pc_admin_nav_active($pcAdminCurrentScript, ['addwar.php']); ?>" href="addwar.php">War hinzufügen</a></li>
+                        <li class="nav-item"><a class="nav-link p-1<?php echo pc_admin_nav_active($pcAdminCurrentScript, ['choosewar.php', 'editwar.php', 'delwar.php']); ?>" href="choosewar.php">War editieren</a></li>
+                    </ul>
+                    <h2 class="h6 text-uppercase text-body-secondary small mb-2">Member</h2>
+                    <ul class="nav flex-column mb-3">
+                        <li class="nav-item"><a class="nav-link p-1<?php echo pc_admin_nav_active($pcAdminCurrentScript, ['addmember.php']); ?>" href="addmember.php">Member hinzufügen</a></li>
+                        <li class="nav-item"><a class="nav-link p-1<?php echo pc_admin_nav_active($pcAdminCurrentScript, ['choosemember.php', 'editmember.php', 'delmember.php']); ?>" href="choosemember.php">Member editieren</a></li>
+                    </ul>
+                    <h2 class="h6 text-uppercase text-body-secondary small mb-2">Konfiguration</h2>
+                    <ul class="nav flex-column mb-3">
+                        <li class="nav-item"><a class="nav-link p-1<?php echo pc_admin_nav_active($pcAdminCurrentScript, ['editconfig.php']); ?>" href="editconfig.php">Konfiguration editieren</a></li>
+                    </ul>
+                    <hr>
+                    <div class="text-center small">
+                        <a class="link-secondary d-block mb-1" href="../">Öffentliche Seite</a>
+                        <a class="link-secondary d-block mb-1" href="<?php echo e($_SERVER['PHP_SELF']); ?>?logout=YES">Logout</a>
+                        <a class="link-secondary d-block" href="https://www.powerscripts.org" target="_blank" rel="noopener noreferrer">PowerScripts.org</a>
+                    </div>
+                </div>
+            </div>
+        </aside>
+        <section id="admin-main" class="col-12 col-lg-9 col-xl-10">

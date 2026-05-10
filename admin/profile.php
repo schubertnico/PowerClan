@@ -22,7 +22,6 @@ include __DIR__ . '/header.inc.php';
 ?>
 <!--MAINPAGE-->
 
-<center>
 <?php
 
 // Get current member data using prepared statement
@@ -61,7 +60,10 @@ if ($num === 1) {
 
         // Validation
         if (empty($nick) || empty($email)) {
-            echo '<center><a href="javascript:history.back()">Bitte gib Nickname und E-Mail an!</a></center>';
+            echo '<div class="alert alert-danger" role="alert">'
+                . 'Bitte gib Nickname und E-Mail an! '
+                . '<a class="alert-link" href="javascript:history.back()">Zurück</a></div>';
+            include __DIR__ . '/footer.inc.php';
             exit;
         }
 
@@ -74,18 +76,21 @@ if ($num === 1) {
             throw new RuntimeException('Failed to get result');
         }
         if (mysqli_num_rows($checkResult) !== 0) {
-            echo '<center><a href="javascript:history.back()">'
-                . 'Es gibt schon einen Member mit dieser E-Mail Adresse oder diesem Nickname!'
-                . '</a></center>';
+            echo '<div class="alert alert-danger" role="alert">'
+                . 'Es gibt schon einen Member mit dieser E-Mail-Adresse oder diesem Nickname! '
+                . '<a class="alert-link" href="javascript:history.back()">Zurück</a></div>';
             $checkStmt->close();
+            include __DIR__ . '/footer.inc.php';
             exit;
         }
         $checkStmt->close();
 
         // Validate email using filter_var (replaces deprecated regex)
         if (!validate_email($email)) {
-            echo '<center><a href="javascript:history.back()">'
-                . 'Die angegebene E-Mail Adresse ist ung&uuml;ltig!</a></center>';
+            echo '<div class="alert alert-danger" role="alert">'
+                . 'Die angegebene E-Mail-Adresse ist ungültig! '
+                . '<a class="alert-link" href="javascript:history.back()">Zurück</a></div>';
+            include __DIR__ . '/footer.inc.php';
             exit;
         }
 
@@ -94,13 +99,17 @@ if ($num === 1) {
             ($password1 !== '' && $password2 === '')
             || ($password1 === '' && $password2 !== '')
         ) {
-            echo '<center><a href="javascript:history.back()">'
-                . 'Du musst Dein neues Passwort best&auml;tigen</a></center>';
+            echo '<div class="alert alert-danger" role="alert">'
+                . 'Du musst Dein neues Passwort bestätigen. '
+                . '<a class="alert-link" href="javascript:history.back()">Zurück</a></div>';
+            include __DIR__ . '/footer.inc.php';
             exit;
         }
         if ($password1 !== $password2) {
-            echo '<center><a href="javascript:history.back()">'
-                . 'Das neue Passwort wurde falsch best&auml;tigt!</a></center>';
+            echo '<div class="alert alert-danger" role="alert">'
+                . 'Das neue Passwort wurde falsch bestätigt! '
+                . '<a class="alert-link" href="javascript:history.back()">Zurück</a></div>';
+            include __DIR__ . '/footer.inc.php';
             exit;
         }
 
@@ -135,12 +144,15 @@ if ($num === 1) {
         $updateStmt->execute();
         $updateStmt->close();
 
-        echo '<center><a href="profile.php">Dein Profil wurde erfolgreich editiert</a></center>';
+        echo '<div class="alert alert-success" role="alert">'
+            . 'Dein Profil wurde erfolgreich editiert. '
+            . '<a class="alert-link" href="profile.php">Profil erneut öffnen</a></div>';
 
         // Update password if changed
         if ($password1 !== '' && $password2 !== '' && $password1 === $password2) {
             if (strlen($password1) < 8) {
-                echo '<br><br><center>Das Passwort muss mindestens 8 Zeichen haben. Andere Profildaten wurden gespeichert.</center>';
+                echo '<div class="alert alert-warning" role="alert">'
+                    . 'Das Passwort muss mindestens 8 Zeichen haben. Andere Profildaten wurden gespeichert.</div>';
             } else {
                 $newPassword = password_hash(trim($password1), PASSWORD_DEFAULT);
                 $pwStmt = db_prepare($conn, 'UPDATE pc_members SET password = ? WHERE id = ?');
@@ -149,7 +161,9 @@ if ($num === 1) {
                 $pwStmt->close();
 
                 pc_session_logout();
-                echo '<br><br><center>Da Du Dein Passwort ge&auml;ndert hast, wurdest Du abgemeldet. Bitte neu einloggen.</center>';
+                echo '<div class="alert alert-info" role="alert">'
+                    . 'Da Du Dein Passwort geändert hast, wurdest Du abgemeldet. '
+                    . '<a class="alert-link" href="index.php">Bitte neu einloggen</a>.</div>';
             }
         }
     } else {
@@ -164,90 +178,97 @@ if ($num === 1) {
         $infoValue = e($row['info'] ?? '');
         $picValue = e($row['pic'] ?? '');
         $phpSelf = e($_SERVER['PHP_SELF']);
-
-        echo "
-        <center>
-        <form action=\"{$phpSelf}?editprofile=YES\" method=\"post\">
-        " . csrf_field() . "
-        <table border=\"0\" cellpadding=\"3\" cellspacing=\"2\" width=\"100%\">
-        <tr><td colspan=\"2\" align=\"center\">
-        <b>Profil editieren</b>
-        </td></tr>
-        <tr><td valign=\"top\" width=\"*\" bgcolor=\"{$admin_tbl1}\">
-        <b>Nickname</b><br>
-        <small>Der Nickname unter dem Du bekannt ist</small>
-        </td><td valign=\"top\" width=\"250\" bgcolor=\"{$admin_tbl1}\">
-        <input name=\"nick\" size=\"25\" maxlength=\"100\" value=\"{$nickValue}\">
-        </td></tr>
-        <tr><td valign=\"top\">
-        <b>E-Mail Adresse</b><br>
-        <small>Deine korrekte E-Mail Adresse</small>
-        </td><td valign=\"top\">
-        <input name=\"email\" size=\"25\" maxlength=\"400\" value=\"{$emailValue}\" type=\"email\">
-        </td></tr>
-        <tr><td valign=\"top\" bgcolor=\"{$admin_tbl1}\">
-        <b>Passwort</b><br>
-        <small>Dein neues Passwort(mit Best&auml;tigung)</small>
-        </td><td valign=\"top\" bgcolor=\"{$admin_tbl1}\">
-        <input name=\"password1\" size=\"25\" maxlength=\"72\" type=\"password\"><br>
-        <input name=\"password2\" size=\"25\" maxlength=\"72\" type=\"password\">
-        </td></tr>
-        <tr><td valign=\"top\">
-        <b>ICQ Nummer</b><br>
-        <small>Deine ICQ Nummer (0 = Keine Angabe)</small>
-        </td><td valign=\"top\">
-        <input name=\"icq\" size=\"10\" maxlength=\"10\" value=\"{$icqValue}\">
-        </td></tr>
-        <tr><td valign=\"top\" bgcolor=\"{$admin_tbl1}\">
-        <b>Homepage</b><br>
-        <small>Die URL zu Deiner Homepage (mit http://)</small>
-        </td><td valign=\"top\" bgcolor=\"{$admin_tbl1}\">
-        <input name=\"homepage\" size=\"25\" maxlength=\"250\" value=\"{$homepageValue}\" type=\"url\">
-        </td></tr>
-        <tr><td valign=\"top\">
-        <b>Realname</b><br>
-        <small>Dein realer Name</small>
-        </td><td valign=\"top\">
-        <input name=\"realname\" size=\"25\" maxlength=\"200\" value=\"{$realnameValue}\">
-        </td></tr>
-        <tr><td valign=\"top\" bgcolor=\"{$admin_tbl1}\">
-        <b>Alter</b><br>
-        <small>Dein Alter (0 = Keine Angabe)</small>
-        </td><td valign=\"top\" bgcolor=\"{$admin_tbl1}\">
-        <input name=\"age\" size=\"2\" maxlength=\"2\" value=\"{$ageValue}\" type=\"number\" min=\"0\" max=\"99\">
-        </td></tr>
-        <tr><td valign=\"top\">
-        <b>Hardware Informationen</b><br>
-        <small>Informationen &uuml;ber Deine Hardware (CPU, RAM, Grafikkarte, ...)</small>
-        </td><td valign=\"top\">
-        <textarea name=\"hardware\" cols=\"35\" rows=\"5\">{$hardwareValue}</textarea>
-        </td></tr>
-        <tr><td valign=\"top\" bgcolor=\"{$admin_tbl1}\">
-        <b>Pers&ouml;nliche Informationen</b><br>
-        <small>Pers&ouml;nliche Informationen &uuml;ber Dich (Hobbies, Job, ...)</small>
-        </td><td valign=\"top\" bgcolor=\"{$admin_tbl1}\">
-        <textarea name=\"info\" cols=\"35\" rows=\"5\">{$infoValue}</textarea>
-        </td></tr>
-        <tr><td valign=\"top\">
-        <b>Bild</b><br>
-        <small>URL zu einem Bild von Dir (mit http://)</small>
-        </td><td valign=\"top\">
-        <input name=\"pic\" size=\"25\" maxlength=\"250\" value=\"{$picValue}\" type=\"url\">
-        </td></tr>
-        <tr><td colspan=\"2\" align=\"center\">
-        <input type=\"submit\" value=\"Profil editieren\"> <input type=\"reset\" value=\"Daten zur&uuml;cksetzen\">
-        </td></tr>
-        </table>
-        </form>
-        </center>
-      ";
+        ?>
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-body-secondary">
+                <h1 class="h4 mb-0">Profil editieren</h1>
+            </div>
+            <div class="card-body">
+                <form action="<?php echo $phpSelf; ?>?editprofile=YES" method="post" novalidate>
+                    <?php echo csrf_field(); ?>
+                    <div class="row mb-3">
+                        <label for="nick" class="col-sm-3 col-form-label">Nickname <span class="text-danger" aria-hidden="true">*</span></label>
+                        <div class="col-sm-9">
+                            <input id="nick" name="nick" type="text" class="form-control" maxlength="100" value="<?php echo $nickValue; ?>" required>
+                            <div class="form-text">Der Nickname, unter dem Du bekannt bist.</div>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <label for="email" class="col-sm-3 col-form-label">E-Mail-Adresse <span class="text-danger" aria-hidden="true">*</span></label>
+                        <div class="col-sm-9">
+                            <input id="email" name="email" type="email" class="form-control" maxlength="400" value="<?php echo $emailValue; ?>" required>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <label for="password1" class="col-sm-3 col-form-label">Neues Passwort</label>
+                        <div class="col-sm-9">
+                            <input id="password1" name="password1" type="password" class="form-control mb-2" maxlength="72" autocomplete="new-password" aria-describedby="pwHelp">
+                            <input id="password2" name="password2" type="password" class="form-control" maxlength="72" autocomplete="new-password" placeholder="Passwort bestätigen">
+                            <div id="pwHelp" class="form-text">Mindestens 8 Zeichen. Leer lassen, wenn nichts geändert werden soll.</div>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <label for="icq" class="col-sm-3 col-form-label">ICQ-Nummer</label>
+                        <div class="col-sm-9">
+                            <input id="icq" name="icq" type="text" class="form-control" maxlength="10" value="<?php echo $icqValue; ?>">
+                            <div class="form-text">0 = keine Angabe.</div>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <label for="homepage" class="col-sm-3 col-form-label">Homepage</label>
+                        <div class="col-sm-9">
+                            <input id="homepage" name="homepage" type="url" class="form-control" maxlength="250" value="<?php echo $homepageValue; ?>" placeholder="https://...">
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <label for="realname" class="col-sm-3 col-form-label">Realname</label>
+                        <div class="col-sm-9">
+                            <input id="realname" name="realname" type="text" class="form-control" maxlength="200" value="<?php echo $realnameValue; ?>">
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <label for="age" class="col-sm-3 col-form-label">Alter</label>
+                        <div class="col-sm-9">
+                            <input id="age" name="age" type="number" min="0" max="99" class="form-control" value="<?php echo $ageValue; ?>">
+                            <div class="form-text">0 = keine Angabe.</div>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <label for="hardware" class="col-sm-3 col-form-label">Hardware</label>
+                        <div class="col-sm-9">
+                            <textarea id="hardware" name="hardware" class="form-control" rows="4"><?php echo $hardwareValue; ?></textarea>
+                            <div class="form-text">CPU, RAM, Grafikkarte ...</div>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <label for="info" class="col-sm-3 col-form-label">Persönliche Infos</label>
+                        <div class="col-sm-9">
+                            <textarea id="info" name="info" class="form-control" rows="4"><?php echo $infoValue; ?></textarea>
+                            <div class="form-text">Hobbies, Job, ...</div>
+                        </div>
+                    </div>
+                    <div class="row mb-4">
+                        <label for="pic" class="col-sm-3 col-form-label">Bild-URL</label>
+                        <div class="col-sm-9">
+                            <input id="pic" name="pic" type="url" class="form-control" maxlength="250" value="<?php echo $picValue; ?>" placeholder="https://...">
+                        </div>
+                    </div>
+                    <div class="d-flex flex-wrap gap-2">
+                        <button type="submit" class="btn btn-primary">Profil editieren</button>
+                        <button type="reset" class="btn btn-outline-secondary">Daten zurücksetzen</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <?php
     }
 } else {
     $stmt->close();
-    echo '<center><a href="index.php">Der Member existiert nicht, oder Du bist nicht eingeloggt!</a></center>';
+    echo '<div class="alert alert-warning" role="alert">'
+        . 'Der Member existiert nicht oder Du bist nicht eingeloggt. '
+        . '<a class="alert-link" href="index.php">Zum Dashboard</a></div>';
 }
 ?>
-</center>
 
 <!--FOOTER FILE-->
 <?php include __DIR__ . '/footer.inc.php'; ?>

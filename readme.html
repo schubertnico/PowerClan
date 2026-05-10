@@ -136,7 +136,7 @@
 <div class="header-info">
     <p><strong>Ein PHP/MySQL-basiertes Clan-Portal-Management-System.</strong></p>
     <p>
-        <strong>Version:</strong> 2.2 (PHP 8.4)<br>
+        <strong>Version:</strong> 2.3 (PHP 8.4 &middot; Bootstrap 5.3)<br>
         <strong>Lizenz:</strong> MIT<br>
         <strong>Repository:</strong> <a href="https://github.com/schubertnico/PowerClan">github.com/schubertnico/PowerClan</a><br>
         <strong>Projektseite:</strong> <a href="https://www.powerscripts.org/projects-4.html">powerscripts.org/projects-4.html</a>
@@ -355,6 +355,57 @@ composer run cs-fix              # Code Style automatisch fixen</code></pre>
 
 <h2 id="changelog">Changelog</h2>
 
+<h3>Version 2.3 (Mai 2026)</h3>
+<p><strong>Bootstrap-5-Migration &amp; Accessibility-Optimierung:</strong></p>
+<ul>
+    <li>Komplette HTML-Ausgabe auf <strong>Bootstrap&nbsp;5.3.3</strong> umgestellt
+        (&ouml;ffentliche Seiten, Admin-Bereich, Installer)</li>
+    <li>Bootstrap <strong>lokal</strong> unter <code>assets/bootstrap-5.3.3/</code>
+        ausgeliefert (offline-f&auml;hig, keine CDN-Abh&auml;ngigkeit)</li>
+    <li>Public-Layout: Navbar mit Brand und Tag-Badge, container, Cards,
+        responsive Tabellen, Bootstrap-Alerts, Footer</li>
+    <li>Admin-Layout: dunkle Topbar, Sticky-Sidebar mit Sektionsgruppierung
+        (News / Clanwars / Member / Konfiguration), Card-basierte Login-Form,
+        einheitliche Card-Layouts f&uuml;r alle Formulare</li>
+    <li>Gef&auml;hrliche Aktionen (L&ouml;schen) mit <code>card border-danger</code>,
+        dunkelrotem Header, Warn-Alert und expliziter Doppelbest&auml;tigung &ndash;
+        Bedeutung nie nur &uuml;ber Farbe</li>
+    <li>Status-Pillen f&uuml;r War-Ergebnisse (Gewonnen/Verloren/Unentschieden):
+        wei&szlig;e Schrift auf ges&auml;ttigten dunklen Farben, zus&auml;tzlich
+        <code>aria-label</code> und Tooltip</li>
+    <li>War-Statistik-&Uuml;bersicht als Bootstrap-Stat-Cards mit Caps-Beschriftung</li>
+    <li>Wiederverwendbare Helfer: <code>pc_render_war_map_cell()</code> f&uuml;r
+        War-Map-Markup, <code>pc_admin_nav_active()</code> f&uuml;r Sidebar-Highlighting</li>
+    <li>Header/Footer-Fallback in <code>header.inc.php</code> /
+        <code>footer.inc.php</code> auf <code>header.pc</code> /
+        <code>footer.pc</code>, falls <code>pc_config.header</code>/
+        <code>footer</code> leer sind</li>
+    <li><code>getwarstats()</code> und <code>default_error()</code> auf
+        Bootstrap-Stat-Cards bzw. Bootstrap-Alerts umgestellt</li>
+</ul>
+<p><strong>Accessibility (WCAG-AA / AAA, fokussiert auf Sehschw&auml;che):</strong></p>
+<ul>
+    <li>Bootstrap-Default-Farben in <code>powerclan.css</code> systematisch
+        nachgeschaerft (Sekund&auml;rtexte, Links, Status-Farben, Buttons, Cards)</li>
+    <li>Standard-Links: dunkleres Blau <code>#0a4ea4</code>, immer mit Underline</li>
+    <li>Form-Labels fett (<code>font-weight: 600</code>), Hilfetexte
+        kontrastreicher und 0.9&nbsp;rem gro&szlig;</li>
+    <li>3&nbsp;px gelber Fokus-Indikator statt blass-blauer
+        Bootstrap-Default-Schatten</li>
+    <li>Sichtbarer Skip-Link bei Tastatur-Fokus</li>
+    <li>Brand-Badge / Topbar-Status mit eigener <code>pc-on-dark</code>-Klasse
+        statt blassem <code>text-white-50</code></li>
+    <li>Logout-Button im Dunkelbereich: vollgelb mit schwarzer fetter Schrift
+        statt blass-gelbem Outline</li>
+    <li>Tabellen-Header: dunklerer Hintergrund + dicke Trennlinie</li>
+</ul>
+<p><strong>Regression / Verifikation:</strong> PHPStan Level 8 sauber, 67 Unit-Tests
+   gr&uuml;n, alle Public- und Admin-Routen liefern HTTP&nbsp;200,
+   Headless-Chrome-Screenshots f&uuml;r Desktop und Mobile, kein Docker-Build.
+   Bestehende Funktionalit&auml;t (CSRF, Prepared Statements, Sessions,
+   Brute-Force-Drossel) und alle Kommentare unver&auml;ndert.</p>
+<p>Details: <code>docs/2026-05-10-Bootstrap-5-Migration-Accessibility.md</code>.</p>
+
 <h3>Version 2.2 (April 2026)</h3>
 <p><strong>Audit-Fixes &ndash; 33 Befunde aus dem Userbereichs-Audit:</strong></p>
 <ul>
@@ -402,6 +453,7 @@ composer run cs-fix              # Code Style automatisch fixen</code></pre>
     <tr><td><code>README.md</code></td><td>Markdown-Version dieser Seite</td></tr>
     <tr><td><code>SECURITY.md</code></td><td>Security-Policy + Meldewege</td></tr>
     <tr><td><code>CONTRIBUTING.md</code></td><td>Mitwirken am Projekt</td></tr>
+    <tr><td><code>docs/2026-05-10-Bootstrap-5-Migration-Accessibility.md</code></td><td>Bootstrap-5-Migration + WCAG-Kontraste</td></tr>
     <tr><td><code>docs/2026-04-23-Userbereichs-bugs.md</code></td><td>Audit-Report: 33 Bugs (alle behoben)</td></tr>
     <tr><td><code>docs/2026-04-23-Userbereichs-improvements.md</code></td><td>32 UX/Workflow-Vorschl&auml;ge</td></tr>
     <tr><td><code>docs/2026-04-23-Userbereichs-test-coverage.md</code></td><td>Vollst&auml;ndige Testmatrix</td></tr>

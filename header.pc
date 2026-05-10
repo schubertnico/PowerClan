@@ -4,23 +4,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo e($settings['clanname'] ?? 'PowerClan'); ?></title>
+    <link rel="stylesheet" href="assets/bootstrap-5.3.3/css/bootstrap.min.css">
     <link rel="stylesheet" href="powerclan.css">
 </head>
-<body>
-<center>
-<table border="0" cellpadding="5" cellspacing="0" width="750">
-<tr>
-    <td bgcolor="<?php echo e($settings['tablebg1'] ?? '#A0A0A0'); ?>" colspan="2">
-        <b><?php echo e($settings['clanname'] ?? 'PowerClan'); ?> [<?php echo e($settings['clantag'] ?? 'PC'); ?>]</b>
-    </td>
-</tr>
-<tr>
-    <td bgcolor="<?php echo e($settings['tablebg2'] ?? '#F0F0F0'); ?>" colspan="2">
-        <a href="index.php">Home</a> |
-        <a href="member.php">Members</a> |
-        <a href="wars.php">Wars</a> |
-        <a href="admin/">Mitglieder-Login</a>
-    </td>
-</tr>
-<tr>
-    <td bgcolor="<?php echo e($settings['tablebg3'] ?? '#E0E0E0'); ?>" colspan="2">
+<body class="bg-body-tertiary">
+<a class="visually-hidden-focusable position-absolute top-0 start-0 m-2 btn btn-primary" href="#main-content">Zum Inhalt springen</a>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4" aria-label="Hauptnavigation">
+    <div class="container">
+        <a class="navbar-brand fw-semibold" href="index.php">
+            <?php echo e($settings['clanname'] ?? 'PowerClan'); ?>
+            <span class="badge text-bg-secondary ms-1">[<?php echo e($settings['clantag'] ?? 'PC'); ?>]</span>
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="Navigation umschalten">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="mainNav">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item"><a class="nav-link" href="index.php">Home</a></li>
+                <li class="nav-item"><a class="nav-link" href="member.php">Members</a></li>
+                <li class="nav-item"><a class="nav-link" href="wars.php">Wars</a></li>
+            </ul>
+            <a class="btn btn-outline-light" href="admin/">Mitglieder-Login</a>
+        </div>
+    </div>
+</nav>
+<main id="main-content" class="container pb-5">

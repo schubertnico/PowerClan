@@ -1,6 +1,10 @@
-    </td>
-</tr>
-</table>
-</center>
+</main>
+<footer class="border-top bg-body py-3 mt-5">
+    <div class="container text-center text-body-secondary small">
+        PowerClan &copy; Copyright 2001-2026 by
+        <a href="https://www.powerscripts.org" target="_blank" rel="noopener noreferrer" class="link-secondary">PowerScripts</a>
+    </div>
+</footer>
+<script src="assets/bootstrap-5.3.3/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

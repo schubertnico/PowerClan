@@ -56,6 +56,18 @@ function pc_can(string $perm): bool
 }
 
 /**
+ * Hilfsfunktion fuer aktive Sidebar-Eintraege.
+ * Markiert den Link als "active", wenn das aktuelle Skript damit uebereinstimmt
+ * oder zur selben fachlichen Gruppe gehoert.
+ *
+ * @param string[] $matches Liste relativer Skriptnamen, die als aktiv gelten.
+ */
+function pc_admin_nav_active(string $current, array $matches): string
+{
+    return in_array($current, $matches, true) ? ' active' : '';
+}
+
+/**
  * Load settings from database (admin version)
  */
 if (!function_exists('getsettings')) {

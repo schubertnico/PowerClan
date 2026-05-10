@@ -22,7 +22,6 @@ include __DIR__ . '/header.inc.php';
 ?>
 <!--MAINPAGE-->
 
-<center>
 <?php
 // CSRF protection
 csrf_check();
@@ -55,37 +54,52 @@ if (($pcadmin['news_del'] ?? '') === 'YES' || ($pcadmin['superadmin'] ?? '') ===
                 $delStmt->bind_param('i', $newsidInt);
                 $delStmt->execute();
                 $delStmt->close();
-                echo '<center><a href="choosenews.php">Der Newseintrag wurde erfolgreich gel&ouml;scht!</a></center>';
+                echo '<div class="alert alert-success" role="alert">'
+                    . 'Der Newseintrag wurde erfolgreich gelöscht. '
+                    . '<a class="alert-link" href="choosenews.php">Zur News-Übersicht</a></div>';
             } else {
                 $date = date('d.m.Y', (int) $row['time']);
                 $title = e($row['title'] ?? '');
                 $newsId = (int) $row['id'];
-
-                echo "
-<center>
-Sollen die News <b>{$title}</b> vom {$date} wirklich gel&ouml;scht werden?<br>
-<br>
-<form action=\"delnews.php\" method=\"post\" style=\"display:inline;\">
-" . csrf_field() . "
-<input type=\"hidden\" name=\"newsid\" value=\"{$newsId}\">
-<input type=\"hidden\" name=\"delnews\" value=\"YES\">
-<button type=\"submit\">Ja, Newseintrag l&ouml;schen!</button>
-</form>
- | <a href=\"choosenews.php\">Nein, Newseintrag nicht l&ouml;schen!</a>
-</center>";
+                ?>
+                <div class="card border-danger shadow-sm mb-4">
+                    <div class="card-header bg-danger text-white">
+                        <h1 class="h5 mb-0">News löschen?</h1>
+                    </div>
+                    <div class="card-body">
+                        <div class="alert alert-warning" role="alert">
+                            <strong>Achtung:</strong> Dieser Vorgang kann nicht rückgängig gemacht werden.
+                        </div>
+                        <p>
+                            Sollen die News <strong><?php echo $title; ?></strong> vom <strong><?php echo $date; ?></strong>
+                            wirklich gelöscht werden?
+                        </p>
+                        <form action="delnews.php" method="post" class="d-flex flex-wrap gap-2">
+                            <?php echo csrf_field(); ?>
+                            <input type="hidden" name="newsid" value="<?php echo $newsId; ?>">
+                            <input type="hidden" name="delnews" value="YES">
+                            <button type="submit" class="btn btn-danger">Ja, Newseintrag endgültig löschen</button>
+                            <a class="btn btn-outline-secondary" href="choosenews.php">Nein, abbrechen</a>
+                        </form>
+                    </div>
+                </div>
+                <?php
             }
         } else {
             $stmt->close();
-            echo '<center><a href="choosenews.php">Der gew&auml;hlte Newseintrag existiert nicht!</a></center>';
+            echo '<div class="alert alert-warning" role="alert">'
+                . 'Der gewählte Newseintrag existiert nicht. '
+                . '<a class="alert-link" href="choosenews.php">Zurück zur Übersicht</a></div>';
         }
     } else {
-        echo '<center><a href="choosenews.php">Bitte w&auml;hle einen Newseintrag aus!</a></center>';
+        echo '<div class="alert alert-warning" role="alert">'
+            . 'Bitte wähle einen Newseintrag aus. '
+            . '<a class="alert-link" href="choosenews.php">Zur Übersicht</a></div>';
     }
 } else {
-    echo '<center>Du hast keinen Zugang zu dieser Funktion!</center>';
+    echo '<div class="alert alert-warning" role="alert">Du hast keinen Zugang zu dieser Funktion!</div>';
 }
 ?>
-</center>
 
 <!--FOOTER FILE-->
 <?php include __DIR__ . '/footer.inc.php'; ?>

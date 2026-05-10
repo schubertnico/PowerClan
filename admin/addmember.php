@@ -22,7 +22,6 @@ include __DIR__ . '/header.inc.php';
 ?>
 <!--MAINPAGE-->
 
-<center>
 <?php
 // CSRF protection
 csrf_check();
@@ -46,7 +45,10 @@ if (($pcadmin['member_add'] ?? '') === 'YES' || ($pcadmin['superadmin'] ?? '') =
         $wars_del = ($_POST['wars_del'] ?? '') === 'YES' ? 'YES' : 'NO';
 
         if (empty($nickname) || empty($email)) {
-            echo '<center><a href="javascript:history.back()">Bitte gib Nickname und E-Mail an!</a></center>';
+            echo '<div class="alert alert-danger" role="alert">'
+                . 'Bitte gib Nickname und E-Mail an! '
+                . '<a class="alert-link" href="javascript:history.back()">Zurück</a></div>';
+            include __DIR__ . '/footer.inc.php';
             exit;
         }
 
@@ -61,17 +63,21 @@ if (($pcadmin['member_add'] ?? '') === 'YES' || ($pcadmin['superadmin'] ?? '') =
         }
 
         if (mysqli_num_rows($checkResult) !== 0) {
-            echo '<center><a href="javascript:history.back()">'
-                . 'Es gibt schon einen Member mit dieser E-Mail oder diesem Nickname!</a></center>';
+            echo '<div class="alert alert-danger" role="alert">'
+                . 'Es gibt schon einen Member mit dieser E-Mail oder diesem Nickname! '
+                . '<a class="alert-link" href="javascript:history.back()">Zurück</a></div>';
             $checkStmt->close();
+            include __DIR__ . '/footer.inc.php';
             exit;
         }
         $checkStmt->close();
 
         // Validate email
         if (!validate_email($email)) {
-            echo '<center><a href="javascript:history.back()">'
-                . 'Die angegebene E-Mail-Adresse ist ung&uuml;ltig!</a></center>';
+            echo '<div class="alert alert-danger" role="alert">'
+                . 'Die angegebene E-Mail-Adresse ist ungültig! '
+                . '<a class="alert-link" href="javascript:history.back()">Zurück</a></div>';
+            include __DIR__ . '/footer.inc.php';
             exit;
         }
 
@@ -127,57 +133,80 @@ Das Passwort und Deine anderen Daten kannst Du jederzeit aendern.
         // Suppress mail errors if mail server not configured
         $ok = @mail($email, $subject, $message, $headers);
 
-        $successText = $ok
-            ? 'Der Member wurde erfolgreich hinzugef&uuml;gt und per E-Mail benachrichtigt!'
-            : 'Der Member wurde erfolgreich hinzugef&uuml;gt. <b>Achtung:</b> Die E-Mail konnte nicht versendet werden &mdash; bitte das generierte Passwort manuell an <code>' . e($email) . '</code> weiterreichen.';
-        echo '<center><a href="index.php">' . $successText . '</a></center>';
+        if ($ok) {
+            echo '<div class="alert alert-success" role="alert">'
+                . 'Der Member wurde erfolgreich hinzugefügt und per E-Mail benachrichtigt! '
+                . '<a class="alert-link" href="index.php">Zum Dashboard</a></div>';
+        } else {
+            echo '<div class="alert alert-warning" role="alert">'
+                . '<strong>Achtung:</strong> Der Member wurde erfolgreich hinzugefügt, '
+                . 'die E-Mail konnte aber nicht versendet werden. '
+                . 'Bitte das generierte Passwort manuell an <code>' . e($email) . '</code> weiterreichen. '
+                . '<a class="alert-link" href="index.php">Zum Dashboard</a></div>';
+        }
     } else {
         $phpSelf = e($_SERVER['PHP_SELF']);
-
-        echo "
-<form action=\"{$phpSelf}?addmember=YES\" method=\"post\">
-" . csrf_field() . "
-<table border=\"0\" cellpadding=\"3\" cellspacing=\"2\" width=\"100%\">
-<tr><td colspan=\"2\" align=\"center\">
-<b>Member hinzuf&uuml;gen</b>
-</td></tr>
-<tr><td width=\"*\" bgcolor=\"{$admin_tbl1}\" valign=\"top\">
-<b>Nickname</b><br>
-<small>Der Nickname unter dem der Member bekannt ist</small>
-</td><td width=\"400\" bgcolor=\"{$admin_tbl1}\" valign=\"top\">
-<input name=\"nickname\" size=\"25\" maxlength=\"100\" required>
-</td></tr>
-<tr><td valign=\"top\">
-<b>E-Mail</b><br>
-<small>Die korrekte E-Mail Adresse des Members</small>
-</td><td valign=\"top\">
-<input name=\"email\" size=\"25\" maxlength=\"250\" type=\"email\" required>
-</td></tr>
-<tr><td valign=\"top\" bgcolor=\"{$admin_tbl1}\">
-<b>Adminrechte</b><br>
-<small>Die Adminrechte die der Member besitzt</small>
-</td><td valign=\"top\" bgcolor=\"{$admin_tbl1}\">
-<input type=\"checkbox\" name=\"member_add\" value=\"YES\"> Member hinzuf&uuml;gen<br>
-<input type=\"checkbox\" name=\"member_edit\" value=\"YES\"> Member editieren<br>
-<input type=\"checkbox\" name=\"member_del\" value=\"YES\"> Member l&ouml;schen<br>
-<input type=\"checkbox\" name=\"news_add\" value=\"YES\"> News hinzuf&uuml;gen<br>
-<input type=\"checkbox\" name=\"news_edit\" value=\"YES\"> News editieren<br>
-<input type=\"checkbox\" name=\"news_del\" value=\"YES\"> News l&ouml;schen<br>
-<input type=\"checkbox\" name=\"wars_add\" value=\"YES\"> Wars hinzuf&uuml;gen<br>
-<input type=\"checkbox\" name=\"wars_edit\" value=\"YES\"> Wars editieren<br>
-<input type=\"checkbox\" name=\"wars_del\" value=\"YES\"> Wars l&ouml;schen<br>
-</td></tr>
-<tr><td colspan=\"2\" align=\"center\">
-<input type=\"submit\" value=\"Member hinzuf&uuml;gen\">
-</td></tr>
-</table>
-</form>";
+        ?>
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-body-secondary">
+                <h1 class="h4 mb-0">Member hinzufügen</h1>
+            </div>
+            <div class="card-body">
+                <form action="<?php echo $phpSelf; ?>?addmember=YES" method="post" novalidate>
+                    <?php echo csrf_field(); ?>
+                    <div class="row mb-3">
+                        <label for="nickname" class="col-sm-3 col-form-label">Nickname <span class="text-danger" aria-hidden="true">*</span></label>
+                        <div class="col-sm-9">
+                            <input id="nickname" name="nickname" type="text" class="form-control" maxlength="100" required aria-describedby="nicknameHelp">
+                            <div id="nicknameHelp" class="form-text">Der Nickname, unter dem der Member bekannt ist.</div>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <label for="email" class="col-sm-3 col-form-label">E-Mail <span class="text-danger" aria-hidden="true">*</span></label>
+                        <div class="col-sm-9">
+                            <input id="email" name="email" type="email" class="form-control" maxlength="250" required aria-describedby="emailHelp">
+                            <div id="emailHelp" class="form-text">Die korrekte E-Mail-Adresse des Members. An diese wird das Initialpasswort versendet.</div>
+                        </div>
+                    </div>
+                    <fieldset class="row mb-4">
+                        <legend class="col-sm-3 col-form-label pt-0">Adminrechte</legend>
+                        <div class="col-sm-9">
+                            <div class="row">
+                                <div class="col-12 col-md-6">
+                                    <h2 class="h6 text-uppercase text-body-secondary small">Member</h2>
+                                    <div class="form-check"><input class="form-check-input" id="p_member_add" type="checkbox" name="member_add" value="YES"><label class="form-check-label" for="p_member_add">Member hinzufügen</label></div>
+                                    <div class="form-check"><input class="form-check-input" id="p_member_edit" type="checkbox" name="member_edit" value="YES"><label class="form-check-label" for="p_member_edit">Member editieren</label></div>
+                                    <div class="form-check mb-3"><input class="form-check-input" id="p_member_del" type="checkbox" name="member_del" value="YES"><label class="form-check-label" for="p_member_del">Member löschen</label></div>
+                                    <h2 class="h6 text-uppercase text-body-secondary small">News</h2>
+                                    <div class="form-check"><input class="form-check-input" id="p_news_add" type="checkbox" name="news_add" value="YES"><label class="form-check-label" for="p_news_add">News hinzufügen</label></div>
+                                    <div class="form-check"><input class="form-check-input" id="p_news_edit" type="checkbox" name="news_edit" value="YES"><label class="form-check-label" for="p_news_edit">News editieren</label></div>
+                                    <div class="form-check"><input class="form-check-input" id="p_news_del" type="checkbox" name="news_del" value="YES"><label class="form-check-label" for="p_news_del">News löschen</label></div>
+                                </div>
+                                <div class="col-12 col-md-6 mt-3 mt-md-0">
+                                    <h2 class="h6 text-uppercase text-body-secondary small">Wars</h2>
+                                    <div class="form-check"><input class="form-check-input" id="p_wars_add" type="checkbox" name="wars_add" value="YES"><label class="form-check-label" for="p_wars_add">Wars hinzufügen</label></div>
+                                    <div class="form-check"><input class="form-check-input" id="p_wars_edit" type="checkbox" name="wars_edit" value="YES"><label class="form-check-label" for="p_wars_edit">Wars editieren</label></div>
+                                    <div class="form-check"><input class="form-check-input" id="p_wars_del" type="checkbox" name="wars_del" value="YES"><label class="form-check-label" for="p_wars_del">Wars löschen</label></div>
+                                </div>
+                            </div>
+                            <div class="form-text mt-2">
+                                Wähle nur Rechte aus, die der neue Member tatsächlich braucht. Superadmin-Rechte werden hier nicht vergeben.
+                            </div>
+                        </div>
+                    </fieldset>
+                    <div class="d-flex flex-wrap gap-2">
+                        <button type="submit" class="btn btn-primary">Member hinzufügen</button>
+                        <button type="reset" class="btn btn-outline-secondary">Daten zurücksetzen</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <?php
     }
 } else {
-    echo '<center>Du hast keinen Zugang zu dieser Funktion!</center>';
+    echo '<div class="alert alert-warning" role="alert">Du hast keinen Zugang zu dieser Funktion!</div>';
 }
 ?>
-</center>
 
 <!--FOOTER FILE-->
 <?php include __DIR__ . '/footer.inc.php'; ?>

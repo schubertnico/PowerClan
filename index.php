@@ -19,14 +19,13 @@ declare(strict_types=1);
 <?php include __DIR__ . '/header.inc.php'; ?>
 <!--MAIN PAGE-->
 
-<center>
-<table border="0" cellpadding="3" cellspacing="2" width="100%">
-  <tr><td width="50%" bgcolor="<?php echo e($settings['tablebg1'] ?? ''); ?>">
-  <b>latest news</b>
-  </td><td width="50%" bgcolor="<?php echo e($settings['tablebg1'] ?? ''); ?>">
-  <b>latest wars</b>
-  </td></tr>
-  <tr><td valign="top" bgcolor="<?php echo e($settings['tablebg2'] ?? ''); ?>">
+<div class="row g-4 mb-4">
+    <div class="col-12 col-lg-6">
+        <div class="card h-100 shadow-sm">
+            <div class="card-header bg-body-secondary fw-semibold">
+                Neueste News
+            </div>
+            <ul class="list-group list-group-flush">
 <?php
 $newsLimit = (int) ($settings['newslimit'] ?? 5);
 $stmt = db_prepare($conn, 'SELECT * FROM pc_news ORDER BY id DESC LIMIT ?');
@@ -43,12 +42,25 @@ if ($num !== 0) {
         $date = date('d.m.Y', (int) $row['time']);
         $newsId = (int) $row['id'];
         $title = e($row['title'] ?? '');
-        echo "<small>{$date}</small> <a href=\"#news{$newsId}\">{$title}</a><br>\n";
+        echo '<li class="list-group-item d-flex justify-content-between align-items-start gap-3">'
+            . '<a class="fw-semibold" href="#news' . $newsId . '">' . $title . '</a>'
+            . '<span class="text-body-secondary small text-nowrap">' . $date . '</span>'
+            . "</li>\n";
     }
+} else {
+    echo '<li class="list-group-item text-body-secondary">Keine News vorhanden</li>';
 }
 $stmt->close();
 ?>
-  </td><td valign="top" bgcolor="<?php echo e($settings['tablebg2'] ?? ''); ?>">
+            </ul>
+        </div>
+    </div>
+    <div class="col-12 col-lg-6">
+        <div class="card h-100 shadow-sm">
+            <div class="card-header bg-body-secondary fw-semibold">
+                Neueste Wars
+            </div>
+            <ul class="list-group list-group-flush">
 <?php
 $warLimit = (int) ($settings['warlimit'] ?? 5);
 $stmt = db_prepare($conn, "SELECT * FROM pc_wars WHERE res1 != '' AND res2 != '' ORDER BY time DESC LIMIT ?");
@@ -82,26 +94,40 @@ if ($num !== 0) {
         }
 
         if ($allres['left'] > $allres['right']) {
-            $style = e($settings['clrwon'] ?? '#00FF00');
+            $badgeClass = 'text-bg-success';
+            $badgeLabel = 'Gewonnen';
         } elseif ($allres['left'] === $allres['right']) {
-            $style = e($settings['clrdraw'] ?? '#FFFF00');
+            $badgeClass = 'text-bg-warning';
+            $badgeLabel = 'Unentschieden';
         } else {
-            $style = e($settings['clrlost'] ?? '#FF0000');
+            $badgeClass = 'text-bg-danger';
+            $badgeLabel = 'Verloren';
         }
 
         $warId = (int) $row['id'];
         $clanTag = e($settings['clantag'] ?? '');
         $enemyTag = e($row['enemy_tag'] ?? '');
-        echo "<small>{$date}</small> <a href=\"wars.php#war{$warId}\" style=\"color: {$style}\">{$clanTag} vs. {$enemyTag}</a><br>\n";
+        echo '<li class="list-group-item d-flex justify-content-between align-items-center gap-2 flex-wrap">'
+            . '<a class="fw-semibold" href="wars.php#war' . $warId . '">'
+            . $clanTag . ' vs. ' . $enemyTag
+            . '</a>'
+            . '<span class="d-inline-flex align-items-center gap-2">'
+            . '<span class="badge ' . $badgeClass . '">' . $badgeLabel . '</span>'
+            . '<span class="text-body-secondary small text-nowrap">' . $date . '</span>'
+            . '</span>'
+            . "</li>\n";
     }
 } else {
-    echo 'Keine Wars vorhanden';
+    echo '<li class="list-group-item text-body-secondary">Keine Wars vorhanden</li>';
 }
 $stmt->close();
 ?>
-  </td></tr>
-</table>
-<table border="0" cellpadding="3" cellspacing="2" width="100%">
+            </ul>
+        </div>
+    </div>
+</div>
+
+<section aria-label="News">
 <?php
 $stmt = db_prepare($conn, 'SELECT * FROM pc_news ORDER BY id DESC LIMIT ?');
 $stmt->bind_param('i', $newsLimit);
@@ -120,35 +146,24 @@ if ($num !== 0) {
         $title = e($row['title'] ?? '');
         $nick = e($row['nick'] ?? '');
         $email = e($row['email'] ?? '');
-        $bg1 = e($settings['tablebg1'] ?? '');
-        $bg2 = e($settings['tablebg2'] ?? '');
-        $bg3 = e($settings['tablebg3'] ?? '');
 
-        echo "
-          <tr><td height=\"10\">
-          </td></tr>
-          <tr><td bgcolor=\"{$bg1}\" colspan=\"2\">
-          <a name=\"#news{$newsId}\"></a><b>{$title}</b>
-          </td></tr>
-          <tr><td bgcolor=\"{$bg2}\" valign=\"top\">
-          {$text}
-          </td><td bgcolor=\"{$bg3}\" valign=\"top\" width=\"100\" align=\"right\">
-          {$date}<br>
-          <br>
-          <a href=\"mailto:{$email}\">{$nick}</a><br>
-          <br>
-          </td></tr>
-        ";
+        echo '<article class="card shadow-sm mb-4" id="news' . $newsId . '">'
+            . '<div class="card-header d-flex flex-wrap justify-content-between align-items-center gap-2">'
+            . '<h2 class="h5 mb-0">' . $title . '</h2>'
+            . '<span class="text-body-secondary small">' . $date . '</span>'
+            . '</div>'
+            . '<div class="card-body pc-news-body">' . $text . '</div>'
+            . '<div class="card-footer text-body-secondary small">'
+            . 'von <a class="link-secondary" href="mailto:' . $email . '">' . $nick . '</a>'
+            . '</div>'
+            . '</article>';
     }
+} else {
+    echo '<div class="alert alert-info" role="alert">Aktuell sind keine News vorhanden.</div>';
 }
 $stmt->close();
 ?>
-</table>
-</center>
-<br>
-<center>
-<small><a href="https://www.powerscripts.org" target="_blank" rel="noopener noreferrer">PowerClan</a> &copy; Copyright 2001-2026 by <a href="mailto:info@powerscripts.org?subject=PowerClan Copyright">PowerScripts</a></small>
-</center>
+</section>
 
 <!--FOOTER FILE-->
 <?php include __DIR__ . '/footer.inc.php'; ?>

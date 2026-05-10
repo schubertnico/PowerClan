@@ -25,11 +25,13 @@ getsettings();
 
 // Safely include header file if configured and exists
 $headerFile = $settings['header'] ?? '';
-if (!empty($headerFile) && is_string($headerFile)) {
-    // Security: Only allow files from the current directory
-    $headerFile = basename($headerFile);
-    $headerPath = __DIR__ . '/' . $headerFile;
-    if (file_exists($headerPath) && is_file($headerPath)) {
-        include $headerPath;
-    }
+if (empty($headerFile) || !is_string($headerFile)) {
+    // Fallback auf das Bootstrap-Standardlayout, falls die Konfiguration keinen Header benennt.
+    $headerFile = 'header.pc';
+}
+// Security: Only allow files from the current directory
+$headerFile = basename($headerFile);
+$headerPath = __DIR__ . '/' . $headerFile;
+if (file_exists($headerPath) && is_file($headerPath)) {
+    include $headerPath;
 }

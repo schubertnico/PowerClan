@@ -19,58 +19,61 @@ declare(strict_types=1);
 <?php include __DIR__ . '/header.inc.php'; ?>
 <!--MAIN PAGE-->
 
-<center>
-<table border="0" cellpadding="3" cellspacing="2" width="100%">
 <?php
 $pcpage = $_GET['pcpage'] ?? '';
 $memberid = $_GET['memberid'] ?? '';
 
 switch ($pcpage) {
     default:
-        $bg1 = e($settings['tablebg1'] ?? '');
-        echo "
-          <tr><td colspan=\"2\" align=\"center\" bgcolor=\"{$bg1}\">
-          <b>Member&uuml;bersicht</b>
-          </td></tr>
-        ";
-
         $result = db_query($conn, 'SELECT * FROM pc_members ORDER BY nick');
-
         $num = mysqli_num_rows($result);
-        if ($num === 0) {
-            echo '
-              <tr><td colspan="2" align="center">
-              <br>Es sind keine Member vorhanden!<br><br>
-              </td></tr>
-            ';
-        } else {
-            echo '<ul>';
-            $i = 1;
-            while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
-                $tablebg = ($i === 1)
-                    ? e($settings['tablebg2'] ?? '')
-                    : e($settings['tablebg3'] ?? '');
-                $i = ($i === 1) ? 2 : 1;
-
-                $memberId = (int) $row['id'];
-                $nick = e($row['nick'] ?? '');
-                $work = e($row['work'] ?? '');
-
-                echo "
-                  <tr><td width=\"60%\" bgcolor=\"{$tablebg}\">
-                  <b><a href=\"member.php?pcpage=showmember&amp;memberid={$memberId}\">{$nick}</a></b>
-                  </td><td width=\"40%\" bgcolor=\"{$tablebg}\">
-                  {$work}
-                  </td></tr>
-                ";
-            }
-        }
-        echo '</td></tr>';
+        ?>
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-body-secondary fw-semibold">
+                Memberübersicht
+            </div>
+            <?php if ($num === 0): ?>
+                <div class="card-body">
+                    <div class="alert alert-info mb-0" role="alert">
+                        Es sind keine Member vorhanden.
+                    </div>
+                </div>
+            <?php else: ?>
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th scope="col" class="w-50">Nick</th>
+                                <th scope="col">Aufgabe</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        <?php while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)): ?>
+                            <?php
+                            $memberId = (int) $row['id'];
+                            $nick = e($row['nick'] ?? '');
+                            $work = e($row['work'] ?? '');
+                            ?>
+                            <tr>
+                                <td>
+                                    <a class="fw-semibold" href="member.php?pcpage=showmember&amp;memberid=<?php echo $memberId; ?>">
+                                        <?php echo $nick; ?>
+                                    </a>
+                                </td>
+                                <td><?php echo $work !== '' ? $work : '<span class="text-body-secondary">—</span>'; ?></td>
+                            </tr>
+                        <?php endwhile; ?>
+                        </tbody>
+                    </table>
+                </div>
+            <?php endif; ?>
+        </div>
+        <?php
         break;
 
     case 'showmember':
         if (empty($memberid)) {
-            default_error('member.php', 'Bitte w&auml;hle einen Member aus!');
+            default_error('member.php', 'Bitte wähle einen Member aus!');
         } else {
             $stmt = db_prepare($conn, 'SELECT * FROM pc_members WHERE id = ?');
             $memberIdInt = (int) $memberid;
@@ -97,94 +100,77 @@ switch ($pcpage) {
                 $hardwareRaw = $row['hardware'] ?? '';
                 $picRaw = $row['pic'] ?? '';
 
-                $icq = empty($icqRaw)
-                    ? 'N/A'
-                    : '<a href="https://web.icq.com/people/' . e($icqRaw) . '">' . e($icqRaw) . '</a>';
+                $icqHtml = empty($icqRaw)
+                    ? '<span class="text-body-secondary">N/A</span>'
+                    : '<a class="link-secondary" href="https://web.icq.com/people/' . e($icqRaw) . '">' . e($icqRaw) . '</a>';
 
-                $homepage = empty($homepageRaw)
-                    ? 'Keine Homepage'
-                    : '<a href="' . e($homepageRaw) . '" target="_blank" rel="noopener noreferrer">' . e($homepageRaw) . '</a>';
+                $homepageHtml = empty($homepageRaw)
+                    ? '<span class="text-body-secondary">Keine Homepage</span>'
+                    : '<a class="link-secondary" href="' . e($homepageRaw) . '" target="_blank" rel="noopener noreferrer">' . e($homepageRaw) . '</a>';
 
-                $realname = empty($realnameRaw) ? 'N/A' : e($realnameRaw);
-                $age = empty($ageRaw) ? 'N/A' : e($ageRaw) . ' Jahre';
-                $infos = empty($infoRaw) ? 'Keine pers&ouml;nlichen Informationen' : nl2br(e($infoRaw));
-                $hardware = empty($hardwareRaw) ? 'Keine Hardwareinformationen' : nl2br(e($hardwareRaw));
+                $realnameHtml = empty($realnameRaw) ? '<span class="text-body-secondary">N/A</span>' : e($realnameRaw);
+                $ageHtml = empty($ageRaw) ? '<span class="text-body-secondary">N/A</span>' : e($ageRaw) . ' Jahre';
+                $infosHtml = empty($infoRaw) ? '<span class="text-body-secondary">Keine persönlichen Informationen</span>' : nl2br(e($infoRaw));
+                $hardwareHtml = empty($hardwareRaw) ? '<span class="text-body-secondary">Keine Hardwareinformationen</span>' : nl2br(e($hardwareRaw));
 
                 if (!empty($picRaw)) {
                     $safePic = e($picRaw);
-                    $pic = "<a href=\"showpic.php?path={$safePic}\"><img src=\"{$safePic}\" border=\"0\" width=\"145\" alt=\"{$nick}\"></a>";
+                    $picHtml = '<a href="showpic.php?path=' . $safePic . '">'
+                        . '<img src="' . $safePic . '" class="pc-member-pic" alt="' . $nick . '">'
+                        . '</a>';
                 } else {
-                    $pic = 'Kein Bild vorhanden';
+                    $picHtml = '<span class="text-body-secondary">Kein Bild vorhanden</span>';
                 }
+                ?>
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-body-secondary d-flex flex-wrap justify-content-between align-items-center gap-2">
+                        <h1 class="h4 mb-0"><?php echo $nick; ?>s Details</h1>
+                        <a class="btn btn-sm btn-outline-secondary" href="member.php">&laquo; Zurück zur Memberübersicht</a>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-4">
+                            <div class="col-12 col-md-3 text-center">
+                                <?php echo $picHtml; ?>
+                            </div>
+                            <div class="col-12 col-md-9">
+                                <dl class="row mb-0">
+                                    <dt class="col-sm-4">E-Mail</dt>
+                                    <dd class="col-sm-8"><a class="link-secondary" href="mailto:<?php echo $email; ?>"><?php echo $email; ?></a></dd>
 
-                $bg1 = e($settings['tablebg1'] ?? '');
-                $bg2 = e($settings['tablebg2'] ?? '');
-                $bg3 = e($settings['tablebg3'] ?? '');
+                                    <dt class="col-sm-4">Aufgabe</dt>
+                                    <dd class="col-sm-8"><?php echo $work !== '' ? $work : '<span class="text-body-secondary">—</span>'; ?></dd>
 
-                echo "
-                  <tr><td colspan=\"3\" align=\"center\" bgcolor=\"{$bg1}\">
-                  <b>{$nick}s Details</b>
-                  </td></tr>
-                  <tr><td bgcolor=\"{$bg2}\" width=\"125\">
-                  <b>E-Mail</b>
-                  </td><td bgcolor=\"{$bg2}\">
-                  <a href=\"mailto:{$email}\">{$email}</a>
-                  </td><td rowspan=\"8\" bgcolor=\"{$bg1}\" width=\"150\" align=\"center\">
-                  {$pic}
-                  </td></tr>
-                  <tr><td bgcolor=\"{$bg3}\">
-                  <b>Aufgabe</b>
-                  </td><td bgcolor=\"{$bg3}\">
-                  {$work}
-                  </td></tr>
-                  <tr><td bgcolor=\"{$bg2}\">
-                  <b>ICQ</b>
-                  </td><td bgcolor=\"{$bg2}\">
-                  {$icq}
-                  </td></tr>
-                  <tr><td bgcolor=\"{$bg3}\">
-                  <b>Homepage</b>
-                  </td><td bgcolor=\"{$bg3}\">
-                  {$homepage}
-                  </td></tr>
-                  <tr><td bgcolor=\"{$bg2}\">
-                  <b>Realname</b>
-                  </td><td bgcolor=\"{$bg2}\">
-                  {$realname}
-                  </td></tr>
-                  <tr><td bgcolor=\"{$bg3}\">
-                  <b>Alter</b>
-                  </td><td bgcolor=\"{$bg3}\">
-                  {$age}
-                  </td></tr>
-                  <tr><td bgcolor=\"{$bg2}\" valign=\"top\">
-                  <b>Pers&ouml;nliche Infos</b>
-                  </td><td bgcolor=\"{$bg2}\">
-                  {$infos}
-                  </td></tr>
-                  <tr><td bgcolor=\"{$bg3}\" valign=\"top\">
-                  <b>Hardware</b>
-                  </td><td bgcolor=\"{$bg3}\">
-                  {$hardware}
-                  </td></tr>
-                  <tr><td colspan=\"3\" align=\"center\" bgcolor=\"{$bg1}\">
-                  <a href=\"member.php\">Zur&uuml;ck zur Member&uuml;bersicht</a>
-                  </td></tr>
-                ";
+                                    <dt class="col-sm-4">ICQ</dt>
+                                    <dd class="col-sm-8"><?php echo $icqHtml; ?></dd>
+
+                                    <dt class="col-sm-4">Homepage</dt>
+                                    <dd class="col-sm-8"><?php echo $homepageHtml; ?></dd>
+
+                                    <dt class="col-sm-4">Realname</dt>
+                                    <dd class="col-sm-8"><?php echo $realnameHtml; ?></dd>
+
+                                    <dt class="col-sm-4">Alter</dt>
+                                    <dd class="col-sm-8"><?php echo $ageHtml; ?></dd>
+
+                                    <dt class="col-sm-4">Persönliche Infos</dt>
+                                    <dd class="col-sm-8"><?php echo $infosHtml; ?></dd>
+
+                                    <dt class="col-sm-4">Hardware</dt>
+                                    <dd class="col-sm-8"><?php echo $hardwareHtml; ?></dd>
+                                </dl>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <?php
             } else {
-                default_error('member.php', 'Bitte w&auml;hle einen existierenden Member aus!');
+                default_error('member.php', 'Bitte wähle einen existierenden Member aus!');
             }
             $stmt->close();
         }
         break;
 }
 ?>
-</table>
-</center>
-<br>
-<center>
-<small><a href="https://www.powerscripts.org" target="_blank" rel="noopener noreferrer">PowerClan</a> &copy; Copyright 2001-2026 by <a href="mailto:info@powerscripts.org?subject=PowerClan Copyright">PowerScripts</a></small>
-</center>
 
 <!--FOOTER FILE-->
 <?php include __DIR__ . '/footer.inc.php'; ?>

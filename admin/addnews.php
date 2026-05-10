@@ -22,7 +22,6 @@ include __DIR__ . '/header.inc.php';
 ?>
 <!--MAINPAGE-->
 
-<center>
 <?php
 // CSRF protection
 csrf_check();
@@ -35,7 +34,9 @@ if (($pcadmin['news_add'] ?? '') === 'YES' || ($pcadmin['superadmin'] ?? '') ===
         $text = trim($_POST['text'] ?? '');
 
         if (empty($title) || empty($text)) {
-            echo '<center><a href="javascript:history.back()">Bitte f&uuml;lle alle Felder aus!</a></center>';
+            echo '<div class="alert alert-danger" role="alert">'
+                . 'Bitte fülle alle Felder aus! '
+                . '<a class="alert-link" href="javascript:history.back()">Zurück</a></div>';
         } else {
             // BUG-025: strip_tags entfernt, Ausgabe wird stattdessen via e()/htmlspecialchars escaped
             $now = time();
@@ -51,114 +52,97 @@ if (($pcadmin['news_add'] ?? '') === 'YES' || ($pcadmin['superadmin'] ?? '') ===
             $stmt->execute();
             $stmt->close();
 
-            echo '<center><a href="choosenews.php">Deine News wurden erfolgreich gepostet!</a></center>';
+            echo '<div class="alert alert-success" role="alert">'
+                . 'Deine News wurden erfolgreich gepostet! '
+                . '<a class="alert-link" href="choosenews.php">Zur News-Übersicht</a></div>';
         }
     } else {
         $phpSelf = e($_SERVER['PHP_SELF']);
         $nickDisplay = e($pcadmin['nick'] ?? '');
         $emailDisplay = e($pcadmin['email'] ?? '');
+        ?>
+        <script>
+        function insertBBCode(tag) {
+            var textarea = document.getElementById("text");
+            var startPos = textarea.selectionStart;
+            var endPos = textarea.selectionEnd;
+            var selectedText = textarea.value.substring(startPos, endPos);
 
-        echo '<script>
-function insertBBCode(tag) {
-    var textarea = document.getElementById("text");
-    var startPos = textarea.selectionStart;
-    var endPos = textarea.selectionEnd;
-    var selectedText = textarea.value.substring(startPos, endPos);
-
-    var newText = "[" + tag + "]" + selectedText + "[/" + tag + "]";
-    textarea.value = textarea.value.substring(0, startPos) + newText + textarea.value.substring(endPos);
-}
-</script>';
-
-        echo "<center>
-<form action=\"{$phpSelf}?addnews=YES\" method=\"post\">
-    " . csrf_field() . "
-    <table border=\"0\" cellpadding=\"3\" cellspacing=\"2\" width=\"100%\">
-        <tr>
-            <td colspan=\"2\" align=\"center\">
-                <b>News hinzuf&uuml;gen</b>
-            </td>
-        </tr>
-        <tr>
-            <td bgcolor=\"{$admin_tbl1}\" valign=\"top\">
-                <b>Nickname</b><br>
-                <small>Wenn Du Deinen Nickname &auml;ndern m&ouml;chtest, editiere "
-            . "<a href=\"profile.php\">Dein Profil</a></small>
-            </td>
-            <td bgcolor=\"{$admin_tbl1}\" valign=\"top\" width=\"400\">
-                {$nickDisplay}
-            </td>
-        </tr>
-        <tr>
-            <td valign=\"top\">
-                <b>E-Mail Adresse</b><br>
-                <small>Wenn Du Deine E-Mail Adresse &auml;ndern m&ouml;chtest, editiere "
-            . "<a href=\"profile.php\">Dein Profil</a></small>
-            </td>
-            <td valign=\"top\">
-                {$emailDisplay}
-            </td>
-        </tr>
-        <tr>
-            <td bgcolor=\"{$admin_tbl1}\" valign=\"top\">
-                <b>Titel</b><br>
-                <small>Der Titel f&uuml;r Deinen Newseintrag</small>
-            </td>
-            <td bgcolor=\"{$admin_tbl1}\" valign=\"top\">
-                <input name=\"title\" size=\"50\" maxlength=\"150\" required>
-            </td>
-        </tr>
-        <tr>
-            <td valign=\"top\">
-                <b>Text</b><br>
-                <small>Der Text f&uuml;r Deinen Newseintrag</small><br>
-                <br>
-                <small>
-                    Folgende, rotgekennzeichneten, Befehle k&ouml;nnen verwendet werden:<br>
-                    <b class=\"red\">[b]</b><b>fett</b><b class=\"red\">[/b]</b><br>
-                    <b class=\"red\">[u]</b><u>unterstrichen</u><b class=\"red\">[/u]</b><br>
-                    <b class=\"red\">[i]</b><i>kursiv</i><b class=\"red\">[/i]</b><br>
-                    <b class=\"red\">[url]</b>"
-            . '<a href="https://www.powerscripts.org/" target="_new">'
-            . 'www.powerscripts.org</a><b class="red">[/url]</b><br>
-                    <b class="red">[url=https://www.powerscripts.org/]</b>'
-            . '<a href="https://www.powerscripts.org/">PowerScripts</a>'
-            . '<b class="red">[/url]</b><br>
-                    <b class="red">[email]</b>'
-            . '<a href="mailto:support@powerscripts.org">support@powerscripts.org</a>'
-            . '<b class="red">[/email]</b><br>
-                    <b class="red">[email=support@powerscripts.org]</b>'
-            . '<a href="mailto:support@powerscripts.org">Support</a>'
-            . "<b class=\"red\">[/email]</b><br>
-                    <br>
-                    Enter f&uuml;r Zeilenumbruch
-                </small>
-            </td>
-            <td valign=\"top\">
-                <button type=\"button\" onclick=\"insertBBCode('b')\">Fett</button>
-                <button type=\"button\" onclick=\"insertBBCode('u')\">Unterstrichen</button>
-                <button type=\"button\" onclick=\"insertBBCode('i')\">Kursiv</button>
-                <button type=\"button\" onclick=\"insertBBCode('url')\">URL</button>
-                <button type=\"button\" onclick=\"insertBBCode('email')\">E-Mail</button>
-                <textarea id=\"text\" name=\"text\" cols=\"45\" rows=\"15\" "
-            . "style=\"margin-top: 5px;\" required></textarea>
-            </td>
-        </tr>
-        <tr>
-            <td colspan=\"2\" align=\"center\" bgcolor=\"{$admin_tbl1}\">
-                <input type=\"submit\" value=\"News hinzuf&uuml;gen\"> "
-            . '<input type="reset" value="Daten zur&uuml;cksetzen">
-            </td>
-        </tr>
-    </table>
-</form>
-</center>';
+            var newText = "[" + tag + "]" + selectedText + "[/" + tag + "]";
+            textarea.value = textarea.value.substring(0, startPos) + newText + textarea.value.substring(endPos);
+        }
+        </script>
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-body-secondary">
+                <h1 class="h4 mb-0">News hinzufügen</h1>
+            </div>
+            <div class="card-body">
+                <form action="<?php echo $phpSelf; ?>?addnews=YES" method="post" novalidate>
+                    <?php echo csrf_field(); ?>
+                    <div class="row mb-3">
+                        <label class="col-sm-3 col-form-label">Nickname</label>
+                        <div class="col-sm-9">
+                            <p class="form-control-plaintext fw-semibold mb-1"><?php echo $nickDisplay; ?></p>
+                            <div class="form-text">
+                                Wenn Du Deinen Nickname ändern möchtest, editiere
+                                <a class="link-primary" href="profile.php">Dein Profil</a>.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <label class="col-sm-3 col-form-label">E-Mail-Adresse</label>
+                        <div class="col-sm-9">
+                            <p class="form-control-plaintext mb-1"><?php echo $emailDisplay; ?></p>
+                            <div class="form-text">
+                                Wenn Du Deine E-Mail-Adresse ändern möchtest, editiere
+                                <a class="link-primary" href="profile.php">Dein Profil</a>.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <label for="title" class="col-sm-3 col-form-label">Titel <span class="text-danger" aria-hidden="true">*</span></label>
+                        <div class="col-sm-9">
+                            <input id="title" name="title" type="text" class="form-control" maxlength="150" required aria-describedby="titleHelp">
+                            <div id="titleHelp" class="form-text">Der Titel für Deinen Newseintrag.</div>
+                        </div>
+                    </div>
+                    <div class="row mb-4">
+                        <label for="text" class="col-sm-3 col-form-label">Text <span class="text-danger" aria-hidden="true">*</span></label>
+                        <div class="col-sm-9">
+                            <div class="btn-group btn-group-sm mb-2" role="group" aria-label="BBCode-Schnellbefehle">
+                                <button type="button" class="btn btn-outline-secondary" onclick="insertBBCode('b')"><strong>Fett</strong></button>
+                                <button type="button" class="btn btn-outline-secondary" onclick="insertBBCode('u')"><u>Unterstrichen</u></button>
+                                <button type="button" class="btn btn-outline-secondary" onclick="insertBBCode('i')"><em>Kursiv</em></button>
+                                <button type="button" class="btn btn-outline-secondary" onclick="insertBBCode('url')">URL</button>
+                                <button type="button" class="btn btn-outline-secondary" onclick="insertBBCode('email')">E-Mail</button>
+                            </div>
+                            <textarea id="text" name="text" class="form-control" rows="12" required aria-describedby="textHelp"></textarea>
+                            <div id="textHelp" class="form-text">
+                                Folgende BBCode-Befehle stehen zur Verfügung:
+                                <code>[b]fett[/b]</code>,
+                                <code>[u]unterstrichen[/u]</code>,
+                                <code>[i]kursiv[/i]</code>,
+                                <code>[url]https://...[/url]</code>,
+                                <code>[url=https://...]Linktext[/url]</code>,
+                                <code>[email]a@b.de[/email]</code>,
+                                <code>[email=a@b.de]Mail[/email]</code>.
+                                Enter erzeugt einen Zeilenumbruch.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-flex flex-wrap gap-2">
+                        <button type="submit" class="btn btn-primary">News hinzufügen</button>
+                        <button type="reset" class="btn btn-outline-secondary">Daten zurücksetzen</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <?php
     }
 } else {
-    echo '<center>Du hast keinen Zugang zu dieser Funktion!</center>';
+    echo '<div class="alert alert-warning" role="alert">Du hast keinen Zugang zu dieser Funktion!</div>';
 }
 ?>
-</center>
 
 <!--FOOTER FILE-->
 <?php include __DIR__ . '/footer.inc.php'; ?>
